@@ -7,4 +7,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+    <Folder Include="Arguments\" />
+    <Folder Include="Parser\" />
+  </ItemGroup>
+
 </Project>

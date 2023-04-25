@@ -8,4 +8,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\verse-interpreter.lib\verse-interpreter.lib.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,12 @@
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\bin\Debug\net7.0\verse-interpreter.lib.deps.json
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\bin\Debug\net7.0\verse-interpreter.lib.dll
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\bin\Debug\net7.0\verse-interpreter.lib.pdb
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\obj\Debug\net7.0\verse-interpreter.lib.csproj.AssemblyReference.cache
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\obj\Debug\net7.0\verse-interpreter.lib.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\obj\Debug\net7.0\verse-interpreter.lib.AssemblyInfoInputs.cache
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\obj\Debug\net7.0\verse-interpreter.lib.AssemblyInfo.cs
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\obj\Debug\net7.0\verse-interpreter.lib.csproj.CoreCompileInputs.cache
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\obj\Debug\net7.0\verse-interpreter.lib.dll
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\obj\Debug\net7.0\refint\verse-interpreter.lib.dll
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\obj\Debug\net7.0\verse-interpreter.lib.pdb
+C:\Users\onura\source\repos\verse-interpreter\verse-interpreter.lib\obj\Debug\net7.0\ref\verse-interpreter.lib.dll
