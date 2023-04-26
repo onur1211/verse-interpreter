@@ -12,10 +12,9 @@ namespace verse_interpreter.exe
         public void Run()
         {
             Lexer lexer = new Lexer();
-            string sampleVerseCode = "x:=5; y:=1;";
-            var result = lexer.Tokenize(sampleVerseCode);
-
-            foreach (var token in result)
+            string sampleVerseCode = "test:=5; y:=1;";
+           var res2= lexer.TestTokenize(sampleVerseCode);
+            foreach (var token in res2)
             {
                 Console.WriteLine($"TokenValue: {token.Value}  ||  TokenType: {token.TokenType.ToString()}");
             }
