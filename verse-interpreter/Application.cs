@@ -12,7 +12,7 @@ namespace verse_interpreter.exe
         public void Run()
         {
             Lexer lexer = new Lexer();
-            string sampleVerseCode = "x:=5; y:=1;";
+            string sampleVerseCode = "testInput:= 6; x := 2; testInput + x;";
             var result = lexer.Tokenize(sampleVerseCode);
 
             foreach (var token in result)

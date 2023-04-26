@@ -22,6 +22,8 @@ namespace verse_interpreter.lib.Lexer
         TokenOpenBracket,
         TokenCloseBracket,
         TokenComma,
-        TokenLiteral
+        TokenLiteral,
+        TokenIdentifier,
+        TokenOperator,
     }
 }
