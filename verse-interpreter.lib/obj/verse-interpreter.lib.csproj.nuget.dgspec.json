@@ -45,6 +45,10 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "Antlr": {
+              "target": "Package",
+              "version": "[3.5.0.2, )"
+            },
             "Sprache": {
               "target": "Package",
               "version": "[2.3.1, )"

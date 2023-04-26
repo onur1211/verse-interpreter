@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "ql5BrDy3FdPSqtdcjL/+XTZ2gFkiM8YDa/himBZDvlM6XKwAfSUC8+7lhlfKFt1aMyyHbjPzMckntDo8Vu9lMQ==",
+  "dgSpecHash": "nLehYFCAzs1TdzmZEcHijvDE/13qmpyqMjY1QbWGzegdiEO+IZvxDNLDUUVbX3+Do1S4KeAxSWRSXMGS7wdwkw==",
   "success": true,
   "projectFilePath": "C:\\Users\\cleme\\Source\\Repos\\verse-interpreter\\verse-interpreter.lib\\verse-interpreter.lib.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\cleme\\.nuget\\packages\\antlr\\3.5.0.2\\antlr.3.5.0.2.nupkg.sha512",
     "C:\\Users\\cleme\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.1\\microsoft.netcore.platforms.1.1.1.nupkg.sha512",
     "C:\\Users\\cleme\\.nuget\\packages\\microsoft.netcore.targets\\1.1.3\\microsoft.netcore.targets.1.1.3.nupkg.sha512",
     "C:\\Users\\cleme\\.nuget\\packages\\sprache\\2.3.1\\sprache.2.3.1.nupkg.sha512",
@@ -22,5 +23,16 @@
     "C:\\Users\\cleme\\.nuget\\packages\\system.text.regularexpressions\\4.3.0\\system.text.regularexpressions.4.3.0.nupkg.sha512",
     "C:\\Users\\cleme\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Das Paket \"Antlr 3.5.0.2\" wurde nicht mit dem Projektzielframework \"net7.0\", sondern mit \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\" wiederhergestellt. Dieses Paket ist mit Ihrem Projekt möglicherweise nicht vollständig kompatibel.",
+      "libraryId": "Antlr",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
 }
