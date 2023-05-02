@@ -1,14 +1,44 @@
 ﻿grammar Verse;
 options {tokenVocab=VerseLexer;}
 
-verse_text: ( expr) * EOF;
+verse_text: ( block ) * EOF;
 
-term : ID ':' INTTYPE ';' 
-     | ID '=' INT ';' 
-     ;
+declaration : ID ':' INTTYPE 
+            | ID '=' (INT | expression)
+            | ID ':=' INT 
+            ;
 
-expr : term expr 
-     | term 
-     | ID '+' ID ';'
-     | ID
-     ;
+block : expression ';' 
+      | declaration ';' 
+      | block block
+      ;
+    
+
+// Math expression rules
+expression
+    : term
+    | expression operator term 
+    ;
+
+term
+    : factor
+    | term operator factor
+    | term operator factor
+    | term operator factor
+    ;
+
+factor
+    : primary
+    | operator factor
+    | operator factor
+    ;
+
+primary
+    : ID
+    | INT
+    | '(' expression ')'
+    ;
+    
+operator : ('*'|'-'|'+' | '/' | '>');
+
+
