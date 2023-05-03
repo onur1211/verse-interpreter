@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace verse_interpreter.lib.Parser
+namespace verse_interpreter.lib.InputProcessing
 {
-    internal class Parser
+    public class Lexer
     {
+
     }
 }

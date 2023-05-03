@@ -1,7 +1,7 @@
 ﻿grammar Verse;
 options {tokenVocab=VerseLexer;}
 
-verse_text: ( block ) * EOF;
+verse_text: ( block | declaration ) * EOF;
 
 declaration : ID ':' INTTYPE 
             | ID '=' (INT | expression)
