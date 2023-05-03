@@ -1,12 +1,16 @@
 ﻿grammar Verse;
 options {tokenVocab=VerseLexer;}
 
-verse_text: ( block | declaration ) * EOF;
+verse_text: ( block | declaration | function_declaration ) * EOF;
 
 declaration : ID ':' INTTYPE 
             | ID '=' (INT | expression)
             | ID ':=' INT 
             ;
+
+function_declaration : (ID '(' ID ':' INTTYPE ')' ':' INTTYPE ':=' block)
+                      | (ID ':=' '(' ID ':' INTTYPE '=>' block ')')
+                      ;
 
 block : expression ';' 
       | declaration ';' 
