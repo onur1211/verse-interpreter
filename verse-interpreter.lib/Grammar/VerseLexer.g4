@@ -12,6 +12,9 @@ LPAREN : '(' ;
 RPAREN : ')' ;
 LCURLY : '{' ;
 RCURLY : '}' ;
+LBRACK : '[' ;
+RBRACK : ']' ;
+GT : '>' ;
 
 // Types
 INTTYPE : 'int';
@@ -27,7 +30,8 @@ LAMBDA : '=>' ;
 IF: 'if';
 THEN: 'then';
 ELSE: 'else';
-
+FST: 'fst';
+ARRAY: 'array';
 
 INT : [0-9]+ ;
 ID: [a-zA-Z_][a-zA-Z_0-9]* ;
