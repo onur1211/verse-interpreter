@@ -1,27 +1,33 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <RootNamespace>verse_interpreter.lib</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<RootNamespace>verse_interpreter.lib</RootNamespace>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Antlr4UseCSharpGenerator>True</Antlr4UseCSharpGenerator>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Arguments\**" />
-    <Compile Remove="Interfaces\**" />
-    <EmbeddedResource Remove="Arguments\**" />
-    <EmbeddedResource Remove="Interfaces\**" />
-    <None Remove="Arguments\**" />
-    <None Remove="Interfaces\**" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Antlr4" Version="4.6.6">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.12.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Arguments\**" />
+		<Compile Remove="Interfaces\**" />
+		<EmbeddedResource Remove="Arguments\**" />
+		<EmbeddedResource Remove="Interfaces\**" />
+		<None Remove="Arguments\**" />
+		<None Remove="Interfaces\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Antlr4 Update="QueryLanguage.g4">
+			<Listener>false</Listener>
+			<CustomToolNamespace>Example.Generated</CustomToolNamespace>
+		</Antlr4>
+		<PackageReference Include="Antlr4" Version="4.6.6">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
+	</ItemGroup>
 
 </Project>

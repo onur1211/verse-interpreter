@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace verse_interpreter.lib.Parser
+namespace verse_interpreter.lib
 {
-    internal class Parser
+    internal class ApplicationState
     {
     }
 }
