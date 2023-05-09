@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace verse_interpreter.lib.InputProcessing
+namespace verse_interpreter.lib
 {
-    public class Lexer
+    internal class ApplicationState
     {
-
     }
 }

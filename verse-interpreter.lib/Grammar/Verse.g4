@@ -1,36 +1,54 @@
 ﻿parser grammar Verse;
 options {tokenVocab=VerseLexer;}
 
-verse_text: ( block | declaration | function_declaration ) * EOF;
+verse_text: ( program ) * EOF;
 
 declaration : ID ':' INTTYPE 
             | ID '=' (INT | expression)
             | ID ':=' (INT | expression) 
             ;
 
-function_call        : ID '(' expression ')'
-                     | ID '(' ')'
+program : declaration program
+        | function_definition program
+        | function_call program
+        | (NEWLINE | NEWLINE NEWLINE) program
+        | declaration
+        | function_call
+        | function_definition
+        ;
+
+block : declaration
+      | function_call
+      | expression
+      | declaration block
+      | function_call block
+      | expression block
+      ;
+
+// Functions
+
+function_call : ID '(' param_call_item ')'
+              | ID '(' ')'
+              ;
+
+function_definition : ID function_param ':' INTTYPE '=' function_body
                      ;
 
-function_declaration :  (ID '(' param')' ':' INTTYPE ':=' block)
-                      | (ID ':=' '(' ID ':' INTTYPE '=>' block ')')
-                      | (ID '(' ')' ':' INTTYPE ':=' block)
-                      ;
-                    
+function_body : NEWLINE INDENT block function_body
+              | block
+              ;
 
-block : (expression ';' block *)
-      | (declaration ';' block *)
-      | (function_call block *)
-      | (function_declaration ';' block *)
-      | (if_rules block *)
-      ;
-    
-if_rules : IF '(' expression ')' THEN (ID | INT ) ELSE ( ID | INT | function_call )
-         ;
-
-param : declaration
-      | declaration ',' param
-      ;
+function_param : '(' ')'
+               | '(' param_def_item ')'
+               ;
+               
+param_def_item     : declaration
+                   | declaration ',' param_def_item
+                   ;
+                   
+param_call_item : (INT | ID | function_call)
+                | (INT | ID | function_call) ',' param_call_item
+                ;
 
 // Math expression rules
 expression
@@ -54,10 +72,7 @@ factor
 primary
     : ID
     | INT
-    | function_call
     | '(' expression ')'
     ;
     
 operator : ('*'|'-'|'+' | '/' | '>' | '=');
-
-
