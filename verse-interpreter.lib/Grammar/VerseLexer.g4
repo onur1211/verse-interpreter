@@ -15,6 +15,7 @@ RCURLY : '}' ;
 LBRACK : '[' ;
 RBRACK : ']' ;
 GT : '>' ;
+LT : '<' ;
 
 // Types
 INTTYPE : 'int';
@@ -25,6 +26,7 @@ MINUS : '-' ;
 MUL : '*' ;
 DIV : '/' ;
 LAMBDA : '=>' ;
+CHOICE : '|' ;
 
 // Keywords
 IF: 'if';

@@ -4,20 +4,20 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib.Visitors
 {
-    public partial class MainVisitor
+    public class FunctionExecutionVisitor : AbstractVerseVisitor<FunctionExecutionResult>
     {
-        public override int VisitFunction_call([NotNull] Verse.Function_callContext context)
+        public FunctionExecutionVisitor(ApplicationState applicationState) : base(applicationState)
         {
-            throw new NotImplementedException();
         }
 
-        public override int VisitParam_call_item([NotNull] Verse.Param_call_itemContext context)
+        public override FunctionExecutionResult VisitFunction_call([Antlr4.Runtime.Misc.NotNull] Verse.Function_callContext context)
         {
-            throw new NotImplementedException();
+            return base.VisitFunction_call(context);
         }
     }
 }

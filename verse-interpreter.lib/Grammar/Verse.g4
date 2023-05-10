@@ -50,6 +50,32 @@ param_call_item : (INT | ID | function_call)
                 | (INT | ID | function_call) ',' param_call_item
                 ;
 
+// Conditionals
+
+if_block    : 'if' '(' comp_expression ')' 'then' 'else' ;
+
+comp_expression
+    : comp_term
+    | comp_expression comparsion_op comp_term 
+    ;
+
+comp_term
+    : comp_factor
+    | comp_term comparsion_op factor
+    ;
+
+comp_factor
+    : comp_primary
+    | comparsion_op comp_factor
+    ;
+
+comp_primary
+    : ID
+    | INT
+    | '(' comp_expression ')'
+    ;
+
+
 // Math expression rules
 expression
     : term
@@ -59,13 +85,10 @@ expression
 term
     : factor
     | term operator factor
-    | term operator factor
-    | term operator factor
     ;
 
 factor
     : primary
-    | operator factor
     | operator factor
     ;
 
@@ -74,5 +97,6 @@ primary
     | INT
     | '(' expression ')'
     ;
-    
-operator : ('*'|'-'|'+' | '/' | '>' | '=');
+
+comparsion_op : ('>' | '<' | '|' )   ; 
+operator : ('*'|'-'|'+' | '/' | '>' | '=' | '|');
