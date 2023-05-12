@@ -31,7 +31,7 @@ namespace verse_interpreter.exe
         {
             _services = BuildService();
             ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener, _parseTreeListener);
-            var parseTree = generator.GenerateParseTree("x:int; y:int");
+            var parseTree = generator.GenerateParseTree("myFac(x:int, y:int, z:int):int = myFac(x - 1) * x");
             var mainListener = _services.GetRequiredService<MainVisitor>();
             mainListener.VisitProgram(parseTree);
             // Note: The most top level element --> such as a function_declaration has differnet visitors as children and according to that traverses the tree in a scoped manner.

@@ -26,8 +26,14 @@ namespace verse_interpreter.lib.Visitors
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
-            context.Accept(_declarationVisitor);
+            var res = context.Accept(_declarationVisitor);
             return base.VisitChildren(context);
+        }
+
+        public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
+        {
+            var result = context.Accept(_functionDeclarationVisitor);
+            return base.VisitFunction_definition(context);
         }
     }
 }
