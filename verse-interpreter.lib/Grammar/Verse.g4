@@ -12,6 +12,7 @@ program : declaration program
         | function_definition program
         | function_call program
         | (NEWLINE | NEWLINE NEWLINE) program
+        | program ';' program
         | declaration
         | function_call
         | function_definition

@@ -15,12 +15,15 @@ namespace verse_interpreter.lib
         private VerseLexer _lexer;
         private Verse _parser;
         private IParserErrorListener _listener;
+        private IParseTreeListener _treeListener;
 
-        public ParserTreeGenerator(IParserErrorListener errorListener)
+        public ParserTreeGenerator(IParserErrorListener errorListener, 
+                                   IParseTreeListener parseListener)
         {
             _lexer = null!;
             _parser = null!;
             _listener = errorListener;
+            _treeListener = parseListener;
         }
 
         public Verse.ProgramContext GenerateParseTree(string inputSequence)
@@ -37,6 +40,7 @@ namespace verse_interpreter.lib
                 BuildParseTree = true
             };
             _parser.AddErrorListener(_listener);
+            _parser.AddParseListener(_treeListener);
             return _parser.program();
         }
     }

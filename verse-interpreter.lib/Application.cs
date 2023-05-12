@@ -15,23 +15,26 @@ namespace verse_interpreter.exe
     public class Application
     {
         private IParserErrorListener _errorListener;
+        private IParseTreeListener _parseTreeListener;
         private ApplicationState _applicationState;
         private IServiceProvider _services;
 
         public Application()
         {
             _errorListener = new ErrorListener();
+            _parseTreeListener = new ParserListener();
             _applicationState = new ApplicationState();
             _services = null!;
         }
 
-
         public void Run(string[] args)
         {
             _services = BuildService();
-            ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
-            var parseTree = generator.GenerateParseTree("test(x:int, y:int):int = \n    x + y\n\nmulBySix(x:int):int = \n    x * 6\n\nmulBySix(test(1,5))");
-            _services.GetRequiredService<DeclarationVisitor>().Visit(parseTree);  
+            ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener, _parseTreeListener);
+            var parseTree = generator.GenerateParseTree("x:int; y:int");
+            var mainListener = _services.GetRequiredService<MainVisitor>();
+            mainListener.VisitProgram(parseTree);
+            // Note: The most top level element --> such as a function_declaration has differnet visitors as children and according to that traverses the tree in a scoped manner.
         }
 
         private IServiceProvider BuildService()
@@ -42,7 +45,8 @@ namespace verse_interpreter.exe
                 .AddTransient<ExpressionVisitor>()
                 .AddTransient<FunctionDeclarationVisitor>()
                 .AddTransient<FunctionExecutionVisitor>()
-                .BuildServiceProvider() ;
+                .AddTransient<MainVisitor>()
+                .BuildServiceProvider();
 
             return services;
         }

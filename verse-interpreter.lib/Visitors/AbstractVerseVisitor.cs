@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib.Visitors
@@ -17,5 +13,10 @@ namespace verse_interpreter.lib.Visitors
         }
 
         public ApplicationState ApplicationState { get { return _state; } }
+
+        protected void AddScopedVariable(string scopeName, IScope<int> scope)
+        {
+            _state.Scopes.Add(scopeName, scope);
+        }
     }
 }
