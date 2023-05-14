@@ -13,12 +13,12 @@ namespace verse_interpreter.lib
     {
         public void EnterEveryRule([NotNull] ParserRuleContext ctx)
         {
-            Console.WriteLine("Entered rule");
+            //Console.WriteLine("Entered rule" + ctx.GetText());
         }
 
         public void ExitEveryRule([NotNull] ParserRuleContext ctx)
         {
-            Console.WriteLine("Exited rule");
+            //Console.WriteLine("Exited rule");
         }
 
         public void VisitErrorNode([NotNull] IErrorNode node)
@@ -28,7 +28,7 @@ namespace verse_interpreter.lib
 
         public void VisitTerminal([NotNull] ITerminalNode node)
         {
-            Console.WriteLine(node.ToStringTree());
+            //Console.WriteLine(node.ToStringTree());
         }
     }
 }

@@ -16,6 +16,7 @@ program : declaration program
         | declaration
         | function_call
         | function_definition
+        | expression
         ;
 
 block : declaration
@@ -100,4 +101,4 @@ primary
     ;
 
 comparsion_op : ('>' | '<' | '|' )   ; 
-operator : ('*'|'-'|'+' | '/' | '>' | '=' | '|');
+operator : ('*' | '/' |'-'|'+'| '>' | '=' | '|');

@@ -13,21 +13,35 @@ namespace verse_interpreter.lib.Visitors
 {
     public class MainVisitor : VerseBaseVisitor<object>
     {
-        private VerseBaseVisitor<object> _baseVisitor;
         private FunctionDeclarationVisitor _functionDeclarationVisitor;
         private DeclarationVisitor _declarationVisitor;
+        private ExpressionVisitor _expressionVisitor;
 
-        public MainVisitor(FunctionDeclarationVisitor functionDeclarationVisitor, DeclarationVisitor declarationVisitor)
+        public MainVisitor(FunctionDeclarationVisitor functionDeclarationVisitor,
+                           DeclarationVisitor declarationVisitor,
+                           ExpressionVisitor expressionVisitor)
         {
-            _baseVisitor = new VerseBaseVisitor<object>();
             _functionDeclarationVisitor = functionDeclarationVisitor;
             _declarationVisitor = declarationVisitor;
+            _expressionVisitor = expressionVisitor;
         }
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
-            context.Accept(_declarationVisitor);
+            var res = context.Accept(_declarationVisitor);
             return base.VisitChildren(context);
+        }
+
+        public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
+        {
+            var result = context.Accept(_functionDeclarationVisitor);
+            return base.VisitFunction_definition(context);
+        }
+
+        public override object VisitExpression([NotNull] Verse.ExpressionContext context)
+        {
+            _expressionVisitor.Visit(context);
+            return base.VisitExpression(context);
         }
     }
 }

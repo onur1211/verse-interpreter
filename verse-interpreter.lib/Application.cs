@@ -33,15 +33,10 @@ namespace verse_interpreter.exe
         {
             _services = BuildService();
             ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener, _parseTreeListener);
-            var parseTree = generator.GenerateParseTree("x:int; y:int");
-            var mainListener = _services.GetRequiredService<MainVisitor>();
-            mainListener.VisitProgram(parseTree);
+            var parseTree = generator.GenerateParseTree("x = 5 * 2 - 3\r\ny = 1\r\nx + y");
+            var mainVisitor = _services.GetRequiredService<MainVisitor>();
+            mainVisitor.VisitProgram(parseTree);
             // Note: The most top level element --> such as a function_declaration has differnet visitors as children and according to that traverses the tree in a scoped manner.
-
-            // Lookup Test
-            // Verse Code in this test: 
-            // x:=5; y:=10; z:=100; x:=500;
-            this.LookupManagerTEST();
         }
 
         private IServiceProvider BuildService()
