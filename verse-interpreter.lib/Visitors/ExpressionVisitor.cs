@@ -12,16 +12,15 @@ namespace verse_interpreter.lib.Visitors
 
         public override ExpressionResult VisitExpression([NotNull] Verse.ExpressionContext context)
         {
-            throw new NotImplementedException();
-        }
-
-        public override ExpressionResult VisitFactor([NotNull] Verse.FactorContext context)
-        {
+            var res = context.term().Accept(this);
             throw new NotImplementedException();
         }
 
         public override ExpressionResult VisitTerm([NotNull] Verse.TermContext context)
         {
+            var firstprimary = context.term().factor().primary().GetText();
+            var operator1 = context.@operator().GetText();
+            var secondPrimary = context.factor().primary().GetText();
             throw new NotImplementedException();
         }
 

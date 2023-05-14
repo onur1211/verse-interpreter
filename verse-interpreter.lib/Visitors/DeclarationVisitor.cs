@@ -38,12 +38,10 @@ namespace verse_interpreter.lib.Visitors
         {
             string name = context.ID().GetText();
             string type = context.INTTYPE().GetText();
-            Nullable<int> value = null;
 
             return new DeclarationResult()
             {
                 Name = name,
-                Value = value,
                 TypeName = type,
             };
         }
