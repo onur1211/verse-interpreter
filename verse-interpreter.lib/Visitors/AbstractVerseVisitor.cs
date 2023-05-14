@@ -13,10 +13,5 @@ namespace verse_interpreter.lib.Visitors
         }
 
         public ApplicationState ApplicationState { get { return _state; } }
-
-        protected void AddScopedVariable(string scopeName, IScope<int> scope)
-        {
-            _state.Scopes.Add(scopeName, scope);
-        }
     }
 }

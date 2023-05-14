@@ -29,6 +29,7 @@
 		</PackageReference>
 		<PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+		<PackageReference Include="Z.Expressions.Eval" Version="5.0.3" />
 	</ItemGroup>
 
 </Project>

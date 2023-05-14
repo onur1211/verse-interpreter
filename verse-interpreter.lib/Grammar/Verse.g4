@@ -4,7 +4,6 @@ options {tokenVocab=VerseLexer;}
 verse_text: ( program ) * EOF;
 
 declaration : ID ':' INTTYPE 
-            | ID '=' (INT | expression)
             | ID ':=' (INT | expression) 
             ;
 
@@ -16,6 +15,7 @@ program : declaration program
         | declaration
         | function_call
         | function_definition
+        | expression
         ;
 
 block : declaration
@@ -99,5 +99,5 @@ primary
     | '(' expression ')'
     ;
 
-comparsion_op : ('>' | '<' | '|' )   ; 
-operator : ('*'|'-'|'+' | '/' | '>' | '=' | '|');
+comparsion_op : ('>' | '<' | '|' | '=' )   ; 
+operator : ('*' | '/' |'-'|'+'| '>' | '|');

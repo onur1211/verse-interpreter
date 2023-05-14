@@ -11,14 +11,21 @@ namespace verse_interpreter.lib
 {
     public class ParserListener : IParseTreeListener
     {
+        private ApplicationState _applicationState;
+
+        public ParserListener(ApplicationState applicationState)
+        {
+            _applicationState = applicationState;
+        }
+
         public void EnterEveryRule([NotNull] ParserRuleContext ctx)
         {
-            Console.WriteLine("Entered rule");
+            _applicationState.CurrentScopeLevel += 1;
         }
 
         public void ExitEveryRule([NotNull] ParserRuleContext ctx)
         {
-            Console.WriteLine("Exited rule");
+            _applicationState.CurrentScopeLevel -= 1;
         }
 
         public void VisitErrorNode([NotNull] IErrorNode node)
@@ -28,7 +35,7 @@ namespace verse_interpreter.lib
 
         public void VisitTerminal([NotNull] ITerminalNode node)
         {
-            Console.WriteLine(node.ToStringTree());
+            //Console.WriteLine(node.ToStringTree());
         }
     }
 }

@@ -6,31 +6,62 @@ namespace verse_interpreter.lib.Visitors
 {
     public class DeclarationVisitor : AbstractVerseVisitor<DeclarationResult>
     {
-        public DeclarationVisitor(ApplicationState applicationState) : base(applicationState)
+        private ExpressionVisitor _expressionVisitor;
+
+        public DeclarationVisitor(ApplicationState applicationState,
+                                  ExpressionVisitor expressionVisitor) : base(applicationState)
         {
+            _expressionVisitor = expressionVisitor;
         }
 
         public override DeclarationResult VisitDeclaration([Antlr4.Runtime.Misc.NotNull] Verse.DeclarationContext context)
         {
+            var declarationType = context.children[1];
+            switch (declarationType.GetText())
+            {
+                case ":":
+                    return ParseBringToScopeOperator(context);
+
+                    // Needs to be updated to conform actual semantics 
+                case ":=":
+                    return ParseGiveValueOperator(context);
+
+                case "=":
+                    return ParseGiveValueOperator(context);
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+        }
+
+        private DeclarationResult ParseBringToScopeOperator(Verse.DeclarationContext context)
+        {
             string name = context.ID().GetText();
             string type = context.INTTYPE().GetText();
+
+            return new DeclarationResult()
+            {
+                Name = name,
+                TypeName = type,
+            };
+        }
+
+        private DeclarationResult ParseGiveValueOperator(Verse.DeclarationContext context)
+        {
+            string name = context.ID().GetText();
             Nullable<int> value = null;
             ITerminalNode valueNode = context.INT();
             if (valueNode != null)
             {
                 value = int.Parse(valueNode.GetText());
             }
-
             return new DeclarationResult()
             {
                 Name = name,
-                TypeName = type,
-                Value = value,  
+                TypeName = "int",
+                Value = value,
             };
-        }
-
-        private void AddVariableToState(DeclarationResult result)
-        {
         }
     }
 }
