@@ -53,10 +53,20 @@ namespace verse_interpreter.lib.Visitors
         {
             _expressionVisitor.ExpressionParsedSucessfully += (sender, args) =>
             {
-                Console.WriteLine(_evaluator.Evaluate(args.Expressions));
+                // The first printed result is the correct one.
+                this.PrintResult(_evaluator.Evaluate(args.Expressions).ToString());
             };
+
             _expressionVisitor.Visit(context);
             return base.VisitChildren(context);
+        }
+
+        private void PrintResult(string result)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("VERSE CODE RESULT: ");
+            Console.ResetColor();
+            Console.WriteLine(result);
         }
     }
 }
