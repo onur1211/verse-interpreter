@@ -22,7 +22,7 @@ namespace verse_interpreter.lib.Visitors
         private FunctionDeclarationVisitor _functionDeclarationVisitor;
         private DeclarationVisitor _declarationVisitor;
         private ExpressionVisitor _expressionVisitor;
-        IEvaluator<int, List<List<ExpressionResult>>> _evaluator;
+        private IEvaluator<int, List<List<ExpressionResult>>> _evaluator;
 
         public MainVisitor(ApplicationState applictationState,
                            FunctionDeclarationVisitor functionDeclarationVisitor,
@@ -58,7 +58,7 @@ namespace verse_interpreter.lib.Visitors
             };
 
             _expressionVisitor.Visit(context);
-            return base.VisitChildren(context);
+            return 1;
         }
 
         private void PrintResult(string result)

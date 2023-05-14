@@ -33,11 +33,9 @@ namespace verse_interpreter.exe
             ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener, _services.GetRequiredService<IParseTreeListener>());
 
             // With this test code the end result should be 19.
-            var parseTree = generator.GenerateParseTree("x:=5;\r\ny:=10;\r\nx+y+(5*2-(3+3))");
+            var parseTree = generator.GenerateParseTree("x:=5\ny:=10\nx+y+((5*2-(1+3))-6)");
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
             mainVisitor.VisitProgram(parseTree);
-
-            // Note: The most top level element --> such as a function_declaration has differnet visitors as children and according to that traverses the tree in a scoped manner.
         }
 
         private IServiceProvider BuildService()

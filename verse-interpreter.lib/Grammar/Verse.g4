@@ -36,6 +36,7 @@ function_definition : ID function_param ':' INTTYPE '=' function_body
                      ;
 
 function_body : NEWLINE INDENT block function_body
+              | block ';' block
               | block
               ;
 
