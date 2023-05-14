@@ -7,7 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Lexer;
+using verse_interpreter.lib.Lookup;
 using verse_interpreter.lib.Visitors;
 
 namespace verse_interpreter.exe
@@ -49,6 +51,58 @@ namespace verse_interpreter.exe
                 .BuildServiceProvider();
 
             return services;
+        }
+
+        /// <summary>
+        /// Used for testing the lookup manager. Currently only works with int?
+        /// </summary>
+        private void LookupManagerTEST()
+        { 
+            // Verse Code in this test: 
+            // x:=5; y:=10; z:=100; x:=500;
+
+            LookupManager lookupManager = new LookupManager(new LookupTable<int?>());
+
+            DeclarationResult x = new DeclarationResult();
+            x.Name = "x";
+            x.TypeName = "int";
+            x.Value = 5;
+
+            DeclarationResult y = new DeclarationResult();
+            y.Name = "y";
+            y.TypeName = "int";
+            y.Value = 10;
+
+            DeclarationResult z = new DeclarationResult();
+            z.Name = "z";
+            z.TypeName = "int";
+            z.Value = 100;
+
+            lookupManager.Add(x);
+            lookupManager.Add(y);
+            lookupManager.Add(z);
+
+            var xValues = lookupManager.GetVariableValue("x");
+
+            Console.WriteLine("Lookup Table: ");
+
+            foreach (var value in xValues)
+            {
+                Console.WriteLine(value);
+            }
+
+            x.Name = "x";
+            x.TypeName = "int";
+            x.Value = 500;
+
+            lookupManager.Add(x);
+
+            xValues = lookupManager.GetVariableValue("x");
+
+            foreach (var value in xValues)
+            {
+                Console.WriteLine(value);
+            }
         }
     }
 }
