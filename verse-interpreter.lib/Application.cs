@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Lexer;
 using verse_interpreter.lib.Lookup;
 using verse_interpreter.lib.Visitors;
@@ -17,23 +19,19 @@ namespace verse_interpreter.exe
     public class Application
     {
         private IParserErrorListener _errorListener;
-        private IParseTreeListener _parseTreeListener;
-        private ApplicationState _applicationState;
         private IServiceProvider _services;
 
         public Application()
         {
             _errorListener = new ErrorListener();
-            _parseTreeListener = new ParserListener();
-            _applicationState = new ApplicationState();
             _services = null!;
         }
 
         public void Run(string[] args)
         {
             _services = BuildService();
-            ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener, _parseTreeListener);
-            var parseTree = generator.GenerateParseTree("x = 5 * 2 - 3\r\ny = 1\r\nx + y");
+            ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener, _services.GetRequiredService<IParseTreeListener>());
+            var parseTree = generator.GenerateParseTree("x:=5;\r\ny:=10;\r\nx+y+(5*2-(3+3))");
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
             mainVisitor.VisitProgram(parseTree);
             // Note: The most top level element --> such as a function_declaration has differnet visitors as children and according to that traverses the tree in a scoped manner.
@@ -47,7 +45,9 @@ namespace verse_interpreter.exe
                 .AddTransient<ExpressionVisitor>()
                 .AddTransient<FunctionDeclarationVisitor>()
                 .AddTransient<FunctionExecutionVisitor>()
+                .AddTransient<IParseTreeListener, ParserListener>()
                 .AddTransient<MainVisitor>()
+                .AddTransient<IEvaluator<int, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
                 .BuildServiceProvider();
 
             return services;

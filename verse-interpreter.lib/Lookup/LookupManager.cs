@@ -10,9 +10,9 @@ namespace verse_interpreter.lib.Lookup
 {
     public class LookupManager
     {
-        private LookupTable<int?> lookup;
+        private ILookupTable<int?> lookup;
 
-        public LookupManager(LookupTable<int?> table) 
+        public LookupManager(ILookupTable<int?> table) 
         {
             this.lookup = table;
         }

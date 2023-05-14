@@ -22,8 +22,9 @@ namespace verse_interpreter.lib.Visitors
                 case ":":
                     return ParseBringToScopeOperator(context);
 
+                    // Needs to be updated to conform actual semantics 
                 case ":=":
-                    throw new NotImplementedException();
+                    return ParseGiveValueOperator(context);
 
                 case "=":
                     return ParseGiveValueOperator(context);
@@ -55,8 +56,12 @@ namespace verse_interpreter.lib.Visitors
             {
                 value = int.Parse(valueNode.GetText());
             }
-            var expression = context.expression().Accept(_expressionVisitor);
-            return new DeclarationResult() { };
+            return new DeclarationResult()
+            {
+                Name = name,
+                TypeName = "int",
+                Value = value,
+            };
         }
     }
 }

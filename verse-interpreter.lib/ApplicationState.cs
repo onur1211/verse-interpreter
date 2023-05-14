@@ -10,11 +10,18 @@ namespace verse_interpreter.lib
 {
     public class ApplicationState
     {
-        public Dictionary<string, IScope<int>> Scopes { get; set; }
+        public Dictionary<int, IScope<int>> Scopes { get; set; }
 
         public ApplicationState()
         {
-            Scopes = new Dictionary<string, IScope<int>>();
+            Scopes = new Dictionary<int, IScope<int>>
+            {
+                { 1, new CurrentScope() }
+            };
+            CurrentScopeLevel = 1;
         }
+
+        public int CurrentScopeLevel { get; set; }  
+
     }
 }
