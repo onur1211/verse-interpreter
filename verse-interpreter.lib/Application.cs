@@ -20,22 +20,25 @@ namespace verse_interpreter.exe
     {
         private IParserErrorListener _errorListener;
         private IServiceProvider _services;
+        private FileReader _reader;
 
         public Application()
         {
             _errorListener = new ErrorListener();
             _services = null!;
+            _reader = new FileReader();
         }
 
         public void Run(string[] args)
         {
             _services = BuildService();
-            FileReader reader = new FileReader();
-            var res =reader.ReadFileToEnd("../../../../verse-interpreter.lib/VerseTemplate.verse");
             ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener, _services.GetRequiredService<IParseTreeListener>());
-            var parseTree = generator.GenerateParseTree(res);
+
+            var inputCode = _reader.ReadFileToEnd("../../../../verse-interpreter.lib/VerseTemplate.verse");
+            var parseTree = generator.GenerateParseTree(inputCode);
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
             mainVisitor.VisitProgram(parseTree);
+
             Console.ReadKey();
         }
 
@@ -47,7 +50,6 @@ namespace verse_interpreter.exe
                 .AddTransient<ExpressionVisitor>()
                 .AddTransient<FunctionDeclarationVisitor>()
                 .AddTransient<FunctionExecutionVisitor>()
-                // EXAM_UPDATED
                 .AddTransient<TypeDefinitionVisitor>()
                 .AddTransient<TypeConstructorVisitor>()
                 .AddTransient<IParseTreeListener, ParserListener>()

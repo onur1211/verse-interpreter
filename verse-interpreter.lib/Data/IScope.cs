@@ -17,6 +17,8 @@ namespace verse_interpreter.lib.Data
 
         LookupManager LookupManager { get; }
 
+        int Level { get; set; }
+
         void AddScopedVariable(int scopeId, DeclarationResult variable);
     }
 }
