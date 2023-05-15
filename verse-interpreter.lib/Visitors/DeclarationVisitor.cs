@@ -7,11 +7,14 @@ namespace verse_interpreter.lib.Visitors
     public class DeclarationVisitor : AbstractVerseVisitor<DeclarationResult>
     {
         private ExpressionVisitor _expressionVisitor;
+        private TypeInferencer _typeInferencer;
 
         public DeclarationVisitor(ApplicationState applicationState,
-                                  ExpressionVisitor expressionVisitor) : base(applicationState)
+                                  ExpressionVisitor expressionVisitor,
+                                  TypeInferencer inferencer) : base(applicationState)
         {
             _expressionVisitor = expressionVisitor;
+            _typeInferencer = inferencer;
         }
 
         public override DeclarationResult VisitDeclaration([Antlr4.Runtime.Misc.NotNull] Verse.DeclarationContext context)
@@ -38,7 +41,7 @@ namespace verse_interpreter.lib.Visitors
         private DeclarationResult ParseBringToScopeOperator(Verse.DeclarationContext context)
         {
             string name = context.ID().GetText();
-            string type = context.INTTYPE().GetText();
+            string type = context.type().GetText();
 
             return new DeclarationResult()
             {
@@ -47,21 +50,10 @@ namespace verse_interpreter.lib.Visitors
             };
         }
 
+        // EXAM_UPDATED
         private DeclarationResult ParseGiveValueOperator(Verse.DeclarationContext context)
         {
-            string name = context.ID().GetText();
-            Nullable<int> value = null;
-            ITerminalNode valueNode = context.INT();
-            if (valueNode != null)
-            {
-                value = int.Parse(valueNode.GetText());
-            }
-            return new DeclarationResult()
-            {
-                Name = name,
-                TypeName = "int",
-                Value = value,
-            };
+            return _typeInferencer.InferGivenType(context);
         }
     }
 }

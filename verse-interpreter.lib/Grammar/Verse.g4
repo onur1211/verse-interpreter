@@ -3,19 +3,32 @@ options {tokenVocab=VerseLexer;}
 
 verse_text: ( program ) * EOF;
 
-declaration : ID ':' INTTYPE 
+declaration : ID ':' type 
             | ID ':=' (INT | expression) 
+            | ID ':' type
+            | ID ':=' string_rule
             ;
+
+constructors : type_constructor
+             ;
 
 program : declaration program
         | function_definition program
         | function_call program
+        | type_header program
+        | type_member_access program
+        | type_member_definition program
+        | constructors program
         | (NEWLINE | NEWLINE NEWLINE) program
         | program ';' program
         | declaration
         | function_call
         | function_definition
         | expression
+        | type_header
+        | type_member_access
+        | type_member_definition
+        | constructors
         ;
 
 block : declaration
@@ -52,6 +65,28 @@ param_call_item : (INT | ID | function_call)
                 | (INT | ID | function_call) ',' param_call_item
                 ;
 
+// Type definition
+
+type_constructor : ID ':=' ID '('')'
+                 ;
+
+type_header : DATA ID '=' ID NEWLINE '{' type_body NEWLINE '}'
+            ;
+            
+type_body : NEWLINE INDENT declaration
+          | NEWLINE INDENT declaration type_body
+          ;
+   
+type_member_definition : type_member_access '=' (string_rule | INT)
+                       ;
+
+          
+type_member_access : ID'.'ID
+                   ;
+
+// Strings
+string_rule : '"' ~'"'* '"'
+            ;
 // Conditionals
 
 if_block    : 'if' '(' comp_expression ')' 'then' 'else' ;
@@ -97,8 +132,10 @@ factor
 primary
     : ID
     | INT
+    | type_member_access
     | '(' expression ')'
     ;
 
+type : (INTTYPE | STRINGTYPE ) ;
 comparsion_op : ('>' | '<' | '|' | '=' )   ; 
 operator : ('*' | '/' |'-'|'+'| '>' | '|');

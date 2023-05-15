@@ -22,24 +22,36 @@ namespace verse_interpreter.lib.Visitors
         private FunctionDeclarationVisitor _functionDeclarationVisitor;
         private DeclarationVisitor _declarationVisitor;
         private ExpressionVisitor _expressionVisitor;
-        private IEvaluator<int, List<List<ExpressionResult>>> _evaluator;
+        private TypeDefinitionVisitor _typeDefinitionVisitor;
+        private TypeInferencer _inferencer;
+        private TypeConstructorVisitor _typeConstructorVisitor;
+        private IEvaluator<int, List<List<ExpressionResult>>> _arithmeticEvaluator;
+        private IEvaluator<string, List<List<ExpressionResult>>> _stringEvaluator;
 
         public MainVisitor(ApplicationState applictationState,
                            FunctionDeclarationVisitor functionDeclarationVisitor,
                            DeclarationVisitor declarationVisitor,
                            ExpressionVisitor expressionVisitor,
-                           IEvaluator<int, List<List<ExpressionResult>>> evaluator) : base(applictationState)
+                           TypeDefinitionVisitor typeDefinitionVisitor,
+                           TypeConstructorVisitor typeConstructorVisitor,
+                           TypeInferencer typeInferencer,
+                           IEvaluator<int, List<List<ExpressionResult>>> arithmeticEvaluator,
+                           IEvaluator<string, List<List<ExpressionResult>>> stringEvaluator) : base(applictationState)
         {
             _functionDeclarationVisitor = functionDeclarationVisitor;
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
-            _evaluator = evaluator;
+            _typeDefinitionVisitor = typeDefinitionVisitor; 
+            _inferencer = typeInferencer;
+            _typeConstructorVisitor = typeConstructorVisitor;
+            _arithmeticEvaluator = arithmeticEvaluator;
+            _stringEvaluator = stringEvaluator;
         }
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
             var res = context.Accept(_declarationVisitor);
-            ApplicationState.Scopes[1].AddScopedVariable(1, res);
+            ApplicationState.Scopes[1].AddScopedVariable(1, _inferencer.InferGivenType(res));
             return base.VisitChildren(context);
         }
 
@@ -54,11 +66,31 @@ namespace verse_interpreter.lib.Visitors
             _expressionVisitor.ExpressionParsedSucessfully += (sender, args) =>
             {
                 // The first printed result is the correct one.
-                this.PrintResult(_evaluator.Evaluate(args.Expressions).ToString());
+                string result = HandleEvaluation(args.Expressions);
+                this.PrintResult(result);
             };
 
             _expressionVisitor.Visit(context);
             return 1;
+        }
+
+        // EXAM_UPDATED
+        public override object VisitType_header([NotNull] Verse.Type_headerContext context)
+        {
+            var novelType = _typeDefinitionVisitor.Visit(context);
+            this.ApplicationState.Types.Add(novelType.Name, novelType);
+            if(context.parent.ChildCount >= 2)
+            {
+                return base.Visit(context.parent.GetChild(1));
+            }
+
+            return 1;
+        }
+
+        public override object VisitConstructors([NotNull] Verse.ConstructorsContext context)
+        {
+            _typeConstructorVisitor.Visit(context);
+            return base.VisitConstructors(context);
         }
 
         private void PrintResult(string result)
@@ -67,6 +99,27 @@ namespace verse_interpreter.lib.Visitors
             Console.WriteLine("VERSE CODE RESULT: ");
             Console.ResetColor();
             Console.WriteLine(result);
+        }
+
+        // EXAM_UPDATED
+        private string HandleEvaluation(List<List<ExpressionResult>> expressionResults)
+        {
+            foreach(var expressionResult in expressionResults)
+            {
+                foreach(var res in expressionResult)
+                {
+                    if(res.ValueIdentifier != null )
+                    {
+                        var test = ApplicationState.Scopes[1].LookupManager.GetVariableStrings(res.ValueIdentifier).Count;
+                        var test2 = ApplicationState.Scopes[1].LookupManager.GetVariableInts(res.ValueIdentifier).Count;
+
+                        return (test == test2)? throw new InvalidOperationException("Cant mix types!") : 
+                            (test > test2)? _stringEvaluator.Evaluate(expressionResults) : _arithmeticEvaluator.Evaluate(expressionResults).ToString();
+                    } 
+                }
+            }
+
+            return null;
         }
     }
 }

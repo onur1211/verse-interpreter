@@ -1,0 +1,5 @@
+﻿data Triangle = Triangle 
+{
+    width:int
+    height:int
+}

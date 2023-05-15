@@ -30,12 +30,13 @@ namespace verse_interpreter.exe
         public void Run(string[] args)
         {
             _services = BuildService();
+            FileReader reader = new FileReader();
+            var res =reader.ReadFileToEnd("../../../../verse-interpreter.lib/VerseTemplate.verse");
             ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener, _services.GetRequiredService<IParseTreeListener>());
-
-            // With this test code the end result should be 19.
-            var parseTree = generator.GenerateParseTree("x:=5\ny:=10\nx+y+((5*2-(1+3))-6)");
+            var parseTree = generator.GenerateParseTree(res);
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
             mainVisitor.VisitProgram(parseTree);
+            Console.ReadKey();
         }
 
         private IServiceProvider BuildService()
@@ -46,64 +47,17 @@ namespace verse_interpreter.exe
                 .AddTransient<ExpressionVisitor>()
                 .AddTransient<FunctionDeclarationVisitor>()
                 .AddTransient<FunctionExecutionVisitor>()
+                // EXAM_UPDATED
+                .AddTransient<TypeDefinitionVisitor>()
+                .AddTransient<TypeConstructorVisitor>()
                 .AddTransient<IParseTreeListener, ParserListener>()
                 .AddTransient<MainVisitor>()
+                .AddTransient<TypeInferencer>()
                 .AddTransient<IEvaluator<int, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
+                .AddTransient<IEvaluator<string, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
                 .BuildServiceProvider();
 
             return services;
-        }
-
-        /// <summary>
-        /// Used for testing the lookup manager. Currently only works with int?
-        /// </summary>
-        private void LookupManagerTEST()
-        { 
-            // Verse Code in this test: 
-            // x:=5; y:=10; z:=100; x:=500;
-
-            LookupManager lookupManager = new LookupManager(new LookupTable<int?>());
-
-            DeclarationResult x = new DeclarationResult();
-            x.Name = "x";
-            x.TypeName = "int";
-            x.Value = 5;
-
-            DeclarationResult y = new DeclarationResult();
-            y.Name = "y";
-            y.TypeName = "int";
-            y.Value = 10;
-
-            DeclarationResult z = new DeclarationResult();
-            z.Name = "z";
-            z.TypeName = "int";
-            z.Value = 100;
-
-            lookupManager.Add(x);
-            lookupManager.Add(y);
-            lookupManager.Add(z);
-
-            var xValues = lookupManager.GetVariableValue("x");
-
-            Console.WriteLine("Lookup Table: ");
-
-            foreach (var value in xValues)
-            {
-                Console.WriteLine(value);
-            }
-
-            x.Name = "x";
-            x.TypeName = "int";
-            x.Value = 500;
-
-            lookupManager.Add(x);
-
-            xValues = lookupManager.GetVariableValue("x");
-
-            foreach (var value in xValues)
-            {
-                Console.WriteLine(value);
-            }
         }
     }
 }

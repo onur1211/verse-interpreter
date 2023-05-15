@@ -12,16 +12,23 @@ namespace verse_interpreter.lib
     {
         public Dictionary<int, IScope<int>> Scopes { get; set; }
 
+        // EXAM_UPDATED
+        public Dictionary<string, DynamicType> Types { get; set; }
+
+
         public ApplicationState()
         {
             Scopes = new Dictionary<int, IScope<int>>
             {
                 { 1, new CurrentScope() }
             };
+            Types = new Dictionary<string, DynamicType>();
             CurrentScopeLevel = 1;
         }
 
         public int CurrentScopeLevel { get; set; }  
+
+
 
     }
 }
