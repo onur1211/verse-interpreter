@@ -50,15 +50,15 @@ namespace verse_interpreter.lib.Visitors
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
-            var res = context.Accept(_declarationVisitor);
-            ApplicationState.Scopes[1].AddScopedVariable(1, _inferencer.InferGivenType(res));
-            return base.VisitChildren(context);
+            var declaredVariable = context.Accept(_declarationVisitor);
+            ApplicationState.Scopes[1].AddScopedVariable(1, _inferencer.InferGivenType(declaredVariable));
+            return null!;
         }
 
         public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
         {
             var result = context.Accept(_functionDeclarationVisitor);
-            return base.VisitFunction_definition(context);
+            return null!;
         }
 
         public override object VisitExpression([NotNull] Verse.ExpressionContext context)
@@ -71,26 +71,22 @@ namespace verse_interpreter.lib.Visitors
             };
 
             _expressionVisitor.Visit(context);
-            return 1;
+            return null!;
         }
 
-        // EXAM_UPDATED
         public override object VisitType_header([NotNull] Verse.Type_headerContext context)
         {
+            ApplicationState.CurrentScopeLevel += 1;
             var novelType = _typeDefinitionVisitor.Visit(context);
             this.ApplicationState.Types.Add(novelType.Name, novelType);
-            if(context.parent.ChildCount >= 2)
-            {
-                return base.Visit(context.parent.GetChild(1));
-            }
 
-            return 1;
+            return null!;
         }
 
         public override object VisitConstructors([NotNull] Verse.ConstructorsContext context)
         {
             _typeConstructorVisitor.Visit(context);
-            return base.VisitConstructors(context);
+            return null!;
         }
 
         private void PrintResult(string result)
