@@ -10,59 +10,103 @@ namespace verse_interpreter.lib.Lookup
 {
     public class LookupManager
     {
-        private ILookupTable<int?> lookup;
+        private ILookupTable<int?> intLookupTable;
+        private ILookupTable<string> stringLookupTable;
 
-        public LookupManager(ILookupTable<int?> table) 
+        public LookupManager(ILookupTable<int?> intTable,
+                             ILookupTable<string> stringTable)
         {
-            this.lookup = table;
+            this.intLookupTable = intTable;
+            this.stringLookupTable = stringTable;
         }
 
-        public void Add(DeclarationResult declarationResult) 
+        public void Add(DeclarationResult declarationResult)
         {
             // Create a values list
-            List<int?> values = new List<int?>();
+            List<int?> intValues = new List<int?>();
+            List<string> stringValues = new List<string>();
 
             // Check if variable is already in lookup table (which means the variable was already declared once).
             // If true then throw exception.
-            if (this.lookup.Table.ContainsKey(declarationResult.Name)) 
+            if (this.intLookupTable.Table.ContainsKey(declarationResult.Name))
+            {
+                throw new Exception();
+            }
+            if (this.stringLookupTable.Table.ContainsKey(declarationResult.Name))
             {
                 throw new Exception();
             }
 
+            if (declarationResult.TypeName == "int")
+            {
+                int parsedValue = 0;
+                var hasValues = int.TryParse(declarationResult.Value, out parsedValue);
+                if (hasValues)
+                {
+                    this.intLookupTable.Table.Add(declarationResult.Name, intValues);
+                    intValues.Add(parsedValue);
+                    return;
+                }
+                this.intLookupTable.Table.Add(declarationResult.Name, null);
+
+            }
+            if (declarationResult.TypeName == "string")
+            {
+                stringValues.Add(declarationResult.Value);
+                this.stringLookupTable.Table.Add(declarationResult.Name, stringValues);
+            }
             // Get the values from the declaration result and add to lookup.
-            values.Add(declarationResult.Value);
-            this.lookup.Table.Add(declarationResult.Name, values);
         }
 
-        public List<int?> GetVariableValue(string variableName)
+        public List<string> GetVariableStrings(string variableName)
         {
-            if (string.IsNullOrEmpty(variableName)) 
+            if (string.IsNullOrEmpty(variableName))
             {
                 throw new ArgumentNullException();
             }
 
             // Check if variable is in lookup.
             // If false then the variable does not exist (which means it was never declared).
-            if (!this.lookup.Table.ContainsKey(variableName))
+            if (!this.stringLookupTable.Table.ContainsKey(variableName))
             {
-                throw new Exception();
+                return new List<string>();
+            }
+
+            // Get the values of the variable and return it.
+            List<string> values;
+            this.stringLookupTable.Table.TryGetValue(variableName, out values!);
+            return values!;
+        }
+
+        public List<int?> GetVariableInts(string variableName)
+        {
+            if (string.IsNullOrEmpty(variableName))
+            {
+                throw new ArgumentNullException();
+            }
+
+            // Check if variable is in lookup.
+            // If false then the variable does not exist (which means it was never declared).
+            if (!this.intLookupTable.Table.ContainsKey(variableName))
+            {
+                return new List<int?>();
             }
 
             // Get the values of the variable and return it.
             List<int?> values;
-            this.lookup.Table.TryGetValue(variableName, out values!);
+            this.intLookupTable.Table.TryGetValue(variableName, out values!);
             return values!;
         }
 
         public bool IsVariable(string name)
         {
-            if (string.IsNullOrEmpty(name)) 
+            if (string.IsNullOrEmpty(name))
             {
                 return false;
             }
             else
             {
-                return this.lookup.Table.ContainsKey(name);
+                return this.intLookupTable.Table.ContainsKey(name) || this.stringLookupTable.Table.ContainsKey(name);
             }
         }
     }

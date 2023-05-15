@@ -11,7 +11,9 @@ namespace verse_interpreter.lib.Data
     {
         Dictionary<int, IScope<T>> SubScope { get;  }
 
-        ILookupTable<int?> LookupTable { get; }
+        ILookupTable<string> StringLookupTable{ get; }
+
+        ILookupTable<int?> IntLookupTable { get; }
 
         LookupManager LookupManager { get; }
 

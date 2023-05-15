@@ -16,10 +16,13 @@ LBRACK : '[' ;
 RBRACK : ']' ;
 GT : '>' ;
 LT : '<' ;
+QUOTE : '"';
+DOT: '.';
 
 // Types
 INTTYPE : 'int';
-
+STRINGTYPE: 'string';
+DATA : 'data';
 // Operators
 PLUS : '+' ;
 MINUS : '-' ;
@@ -38,5 +41,5 @@ ARRAY: 'array';
 INDENT: '    ';
 INT : [0-9]+ ;
 ID: [a-zA-Z_][a-zA-Z_0-9]* ;
-WS: [ \t\f]+ -> skip ;
+WHITESPACE: [ \t\f]+ -> skip ;
 NEWLINE: '\r'? '\n';

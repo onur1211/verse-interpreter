@@ -20,6 +20,7 @@ namespace verse_interpreter.lib.Evaluators
         public int Evaluate(List<List<ExpressionResult>> input)
         {
             StringBuilder stringBuilder = new StringBuilder();
+       
 
             foreach (var expressionList in input)
             {
@@ -29,7 +30,7 @@ namespace verse_interpreter.lib.Evaluators
                 {
                     if (this._applicationState.Scopes[1].LookupManager.IsVariable(value.ValueIdentifier.ToString()))
                     {
-                        var variableValue = this._applicationState.Scopes[1].LookupManager.GetVariableValue(value.ValueIdentifier.ToString());
+                        var variableValue = this._applicationState.Scopes[1].LookupManager.GetVariableInts(value.ValueIdentifier.ToString());
                         stringBuilder.Append(variableValue.First());
                         continue;
                     }

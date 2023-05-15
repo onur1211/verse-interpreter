@@ -11,14 +11,17 @@ namespace verse_interpreter.lib.Data
     {
         public Dictionary<int, IScope<int>> SubScope { get; private set; }
 
-        public ILookupTable<int?> LookupTable { get; private set; }
-
         public LookupManager LookupManager { get; private set; }
+
+        public ILookupTable<string> StringLookupTable {get; private set;}
+
+        public ILookupTable<int?> IntLookupTable { get; private set; }
 
         public CurrentScope()
         {
-            LookupTable = new LookupTable<int?>();
-            LookupManager = new LookupManager(LookupTable);
+            IntLookupTable = new LookupTable<int?>();
+            StringLookupTable = new LookupTable<string>();
+            LookupManager = new LookupManager(IntLookupTable, StringLookupTable);
             SubScope = new Dictionary<int, IScope<int>>();
         }
 
