@@ -23,8 +23,9 @@ namespace verse_interpreter.lib.Visitors
 
         public override FunctionDeclarationResult VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
         {
+            this.ApplicationState.CurrentScopeLevel += 1;
             var name = context.ID();
-            var type = context.INTTYPE();
+            var type = context.type();
             var parameter = context.function_param();
             var functionResult = new FunctionDeclarationResult()
             {
@@ -44,7 +45,9 @@ namespace verse_interpreter.lib.Visitors
                                                     .Select(g => g.First());
             }
 
-            return base.VisitChildren(context);
+            VisitChildren(context);
+            this.ApplicationState.CurrentScopeLevel -= 1;
+            return null;
         }
 
         public override FunctionDeclarationResult VisitParam_def_item([NotNull] Verse.Param_def_itemContext context)

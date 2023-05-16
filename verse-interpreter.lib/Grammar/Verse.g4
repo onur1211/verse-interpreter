@@ -5,14 +5,14 @@ verse_text: ( program ) * EOF;
 
 declaration : ID ':' type 
             | ID ':=' (INT | expression) 
-            | ID ':' type
             | ID ':=' string_rule
             ;
 
 constructors : type_constructor
              ;
 
-program : declaration program
+program : function_definition program
+        | declaration program
         | function_definition program
         | function_call program
         | type_header program
@@ -23,36 +23,44 @@ program : declaration program
         | program ';' program
         | declaration
         | function_call
-        | function_definition
         | expression
         | type_header
         | type_member_access
         | type_member_definition
+        | function_definition
         | constructors
         ;
 
 block : declaration
       | function_call
       | expression
-      | declaration block
-      | function_call block
-      | expression block
+      | declaration
+      | function_call
+      | expression 
       ;
 
 // Functions
 
 function_call : ID '(' param_call_item ')'
-              | ID '(' ')'
+              | ID '(' ')' 
               ;
 
-function_definition : ID function_param ':' INTTYPE '=' function_body
-                     ;
-
-function_body : NEWLINE INDENT block function_body
-              | block ';' block
-              | block
+function_definition : ID function_param ':' type ':=' function_body
+                    | ID function_param ':' type ':=' '{' function_body NEWLINE?'}'
+                    ;
+                     
+function_body : inline_body
+              | NEWLINE spaced_body
               ;
-
+              
+inline_body : block ';' inline_body
+            | block
+            ;
+            
+spaced_body : INDENT block
+            | INDENT block NEWLINE spaced_body
+            ;
+                     
 function_param : '(' ')'
                | '(' param_def_item ')'
                ;
@@ -61,8 +69,8 @@ param_def_item     : declaration
                    | declaration ',' param_def_item
                    ;
                    
-param_call_item : (INT | ID | function_call)
-                | (INT | ID | function_call) ',' param_call_item
+param_call_item : (INT | ID | function_call | expression)
+                | (INT | ID | function_call | expression) ',' param_call_item
                 ;
 
 // Type definition
@@ -85,11 +93,11 @@ type_member_access : ID'.'ID
                    ;
 
 // Strings
-string_rule : '"' ~'"'* '"'
+string_rule : SEARCH_TYPE
             ;
 // Conditionals
 
-if_block    : 'if' '(' comp_expression ')' 'then' 'else' ;
+if_block    : 'if' '(' comp_expression ')' 'then' 'else'  ;
 
 comp_expression
     : comp_term
@@ -133,6 +141,7 @@ primary
     : ID
     | INT
     | type_member_access
+    | function_call
     | '(' expression ')'
     ;
 

@@ -2,7 +2,7 @@
 {
     public class ExpressionResult
     {
-        public Nullable<int> Value { get; set; }
+        public Nullable<int> IntegerValue { get; set; }
 
         public string ValueIdentifier { get; set; }
 
@@ -10,10 +10,9 @@
 
         public ExpressionResult()
         {
-            Value = null;
+            IntegerValue = null;
             ValueIdentifier = string.Empty;
             Operator = string.Empty;
         }
-
     }
 }

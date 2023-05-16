@@ -24,5 +24,7 @@ namespace verse_interpreter.lib
         }
 
         public int CurrentScopeLevel { get; set; }  
+
+        public IScope<int> CurrentScope { get { return Scopes[CurrentScopeLevel]; } }
     }
 }
