@@ -45,6 +45,10 @@ namespace verse_interpreter.lib.Evaluators
                     // Merge two expression blocks
                     lastExpression = MergeTwoExpressionBlocks(lastExpression, expression);
                 }
+                if(exp.Count > 3)
+                {
+                    lastExpression = BuildSimpleComposedExpression(lastExpression, expression);
+                }
                 //Console.WriteLine($"{lastExpression.StringRepresentation} | {input.IndexOf(expression)}");
             }
 
@@ -135,6 +139,27 @@ namespace verse_interpreter.lib.Evaluators
             return new ArithmeticExpression()
             {
                 StringRepresentation = $"({evaluation}){expressionResults[0].Operator}"
+            };
+        }
+
+        private ArithmeticExpression BuildSimpleComposedExpression(ArithmeticExpression lastEpxression, List<ExpressionResult> expressionResults)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach(var expressionResult in expressionResults)
+            {
+                if (!string.IsNullOrEmpty(expressionResult.Operator))
+                {
+                    builder.Append(expressionResult.Operator);
+                }
+                else
+                {
+                    builder.Append(expressionResult.IntegerValue);
+                }
+            }
+
+            return new ArithmeticExpression()
+            {
+                StringRepresentation = builder.ToString()
             };
         }
     }
