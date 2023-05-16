@@ -46,7 +46,7 @@ namespace verse_interpreter.lib.Visitors
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
             var declaredVariable = context.Accept(_declarationVisitor);
-            ApplicationState.Scopes[1].AddScopedVariable(1, _inferencer.InferGivenType(declaredVariable));
+            ApplicationState.CurrentScope.AddScopedVariable(1, _inferencer.InferGivenType(declaredVariable));
             return null!;
         }
 

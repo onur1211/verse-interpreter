@@ -9,12 +9,12 @@ using verse_interpreter.lib.Factories;
 
 namespace verse_interpreter.lib
 {
-    public class ExperssionValidator
+    public class ExpressionValidator
     {
         private IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> _arithmeticEvaluator;
         private IEvaluator<string, List<List<ExpressionResult>>> _stringEvaluator;
 
-        public ExperssionValidator(IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> arithmeticEvaluator,
+        public ExpressionValidator(IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> arithmeticEvaluator,
                                    IEvaluator<string, List<List<ExpressionResult>>> stringEvaluator)
         {
             _arithmeticEvaluator = arithmeticEvaluator;
@@ -28,6 +28,12 @@ namespace verse_interpreter.lib
         /// <returns></returns>
         public bool IsTypeConformityGiven(List<List<ExpressionResult>> expressions)
         {
+            foreach (var expression in expressions)
+            {
+                foreach(var exp in expression)
+                {
+                }
+            }
             return false;
         }
     }

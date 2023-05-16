@@ -57,6 +57,7 @@ namespace verse_interpreter.lib
                 .AddTransient<TypeInferencer>()
                 .AddTransient<IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
                 .AddTransient<IEvaluator<string, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
+                .AddTransient<ExpressionValidator>()
                 .BuildServiceProvider();
 
             return services;

@@ -8,11 +8,12 @@ using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib.Visitors
 {
-    public class ExpressionVisitor : AbstractVerseVisitor<ExpressionResult>
+    public class ExpressionVisitor : AbstractVerseVisitor<List<List<ExpressionResult>>>
     {
         private List<List<ExpressionResult>> _expressions;
 
-        public ExpressionVisitor(ApplicationState applicationState) : base(applicationState)
+        public ExpressionVisitor(ApplicationState applicationState,
+                                 ExpressionValidator expressionValidator) : base(applicationState)
         {
             _expressions = new List<List<ExpressionResult>>();
             ExpressionTerminalVisited += TerminalNodeVisitedCallback;
@@ -21,7 +22,7 @@ namespace verse_interpreter.lib.Visitors
         private event EventHandler<ExpressionTerminalVisited> ExpressionTerminalVisited = null!;
         public event EventHandler<ExpressionParsedSucessfullyEventArgs> ExpressionParsedSucessfully = null!;
 
-        public override ExpressionResult VisitExpression([Antlr4.Runtime.Misc.NotNull] Verse.ExpressionContext context)
+        public override List<List<ExpressionResult>> VisitExpression([Antlr4.Runtime.Misc.NotNull] Verse.ExpressionContext context)
         {
             // After every recursive call, a new sublist ist created to differentiate between the "scopes" of the expression --> see brackets
             _expressions.Add(new List<ExpressionResult>());
@@ -30,13 +31,10 @@ namespace verse_interpreter.lib.Visitors
             //ExpressionParsedSucessfully?.Invoke(this, new ExpressionParsedSucessfullyEventArgs(_expressions));
             VisitChildren(context);
 
-            return new ExpressionResult()
-            {
-                Values = _expressions
-            };
+            return _expressions;
         }
 
-        public override ExpressionResult VisitTerm([Antlr4.Runtime.Misc.NotNull] Verse.TermContext context)
+        public override List<List<ExpressionResult>> VisitTerm([Antlr4.Runtime.Misc.NotNull] Verse.TermContext context)
         {
             return base.VisitTerm(context);
         }
@@ -50,7 +48,7 @@ namespace verse_interpreter.lib.Visitors
             _expressions.Last().Add(args!.ExpressionResult);
         }
 
-        public override ExpressionResult VisitPrimary([Antlr4.Runtime.Misc.NotNull] Verse.PrimaryContext context)
+        public override List<List<ExpressionResult>> VisitPrimary([Antlr4.Runtime.Misc.NotNull] Verse.PrimaryContext context)
         {
             Verse.ExpressionContext? expressionContext = context.expression();
             // Checks if the there are any subexpressions --> due to brackets for instance
@@ -86,7 +84,7 @@ namespace verse_interpreter.lib.Visitors
             return base.VisitChildren(context);
         }
 
-        public override ExpressionResult VisitOperator([Antlr4.Runtime.Misc.NotNull] Verse.OperatorContext context)
+        public override List<List<ExpressionResult>> VisitOperator([Antlr4.Runtime.Misc.NotNull] Verse.OperatorContext context)
         {
             var operatorResult = new ExpressionResult
             {
