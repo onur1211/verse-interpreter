@@ -13,5 +13,10 @@ namespace verse_interpreter.lib.Data
         public string Name { get; set; } = null!;
 
         public string TypeName { get; set; } = null!;
+
+        public DeclarationResult()
+        {
+            TypeName = "undefined";
+        }
     }
 }

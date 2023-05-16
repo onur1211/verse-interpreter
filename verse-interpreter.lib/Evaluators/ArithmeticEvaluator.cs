@@ -45,7 +45,7 @@ namespace verse_interpreter.lib.Evaluators
                     // Merge two expression blocks
                     lastExpression = MergeTwoExpressionBlocks(lastExpression, expression);
                 }
-                Console.WriteLine($"{lastExpression.StringRepresentation} | {input.IndexOf(expression)}");
+                //Console.WriteLine($"{lastExpression.StringRepresentation} | {input.IndexOf(expression)}");
             }
 
             // If the result value of the last expression is not set, evaluate the string representation

@@ -34,6 +34,11 @@ namespace verse_interpreter.lib.Visitors
             return _expressions;
         }
 
+        public void Clean()
+        {
+            _expressions = new List<List<ExpressionResult>>();
+        }
+
         public override List<List<ExpressionResult>> VisitTerm([Antlr4.Runtime.Misc.NotNull] Verse.TermContext context)
         {
             return base.VisitTerm(context);

@@ -4,12 +4,9 @@ options {tokenVocab=VerseLexer;}
 verse_text: ( program ) * EOF;
 
 declaration : ID ':' type 
-            | ID ':=' (INT | expression) 
-            | ID ':=' string_rule
+            | ID ':=' (INT |(expression NEWLINE) | constructor_body | string_rule) 
+            | ID '='  (INT | (expression NEWLINE) | constructor_body | string_rule)
             ;
-
-constructors : type_constructor
-             ;
 
 program : function_definition program
         | declaration program
@@ -18,17 +15,15 @@ program : function_definition program
         | type_header program
         | type_member_access program
         | type_member_definition program
-        | constructors program
         | (NEWLINE | NEWLINE NEWLINE) program
         | program ';' program
         | declaration
         | function_call
-        | expression
         | type_header
         | type_member_access
         | type_member_definition
         | function_definition
-        | constructors
+        | expression
         ;
 
 block : declaration
@@ -37,6 +32,7 @@ block : declaration
       | declaration
       | function_call
       | expression 
+      | if_block
       ;
 
 body : inline_body
@@ -75,7 +71,7 @@ param_call_item : (INT | ID | function_call | expression)
 
 // Type definition
 
-type_constructor : ID ':=' ID '('')'
+constructor_body : INSTANCE ID '('')'
                  ;
 
 type_header : DATA ID '=' ID NEWLINE '{' type_body NEWLINE '}'
@@ -97,7 +93,7 @@ string_rule : SEARCH_TYPE
             ;
 // Conditionals
 
-if_block    : 'if' '(' comp_expression ')' 'then' block 'else' block ;
+if_block    : 'if' '(' comp_expression ')' 'then' body 'else' body ;
 
 comp_expression
     : comp_term
@@ -145,6 +141,6 @@ primary
     | '(' expression ')'
     ;
 
-type : (INTTYPE | STRINGTYPE ) ;
+type : (INTTYPE | STRINGTYPE | ID ) ;
 comparsion_op : ('>' | '<' | '|' | '=' )   ; 
 operator : ('*' | '/' |'-'|'+'| '>' | '|');

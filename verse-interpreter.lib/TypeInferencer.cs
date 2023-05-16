@@ -11,6 +11,13 @@ namespace verse_interpreter.lib
     // EXAM_UPDATED
     public class TypeInferencer
     {
+        private ApplicationState _state;
+
+        public TypeInferencer(ApplicationState applicationState)
+        {
+            _state = applicationState;
+        }
+
         public DeclarationResult InferGivenType(DeclarationResult declarationResult)
         {
             if (declarationResult == null)
@@ -30,30 +37,12 @@ namespace verse_interpreter.lib
                     declarationResult.TypeName = "string";
                 }
             }
+            if (!_state.Types.ContainsKey(declarationResult.TypeName) && !_state.WellKnownTypes.Contains(declarationResult.TypeName))
+            {
+                throw new InvalidOperationException("The given type is unknown!");
+            }
 
             return declarationResult;
-        }
-
-        public DeclarationResult InferGivenType(Verse.DeclarationContext context)
-        {
-            DeclarationResult result = new DeclarationResult();
-
-            result.Name = context.ID().GetText();
-            var unparsedInt = context.INT();
-            var unparsedString = context.string_rule();
-
-            if(unparsedInt != null)
-            {
-                result.Value = unparsedInt.GetText();
-                result.TypeName = "int";
-            }
-            if(unparsedString != null)
-            {
-                result.Value = unparsedString.GetText();
-                result.TypeName = "string";
-            }
-
-            return result;
         }
     }
 }

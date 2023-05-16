@@ -24,29 +24,26 @@ namespace verse_interpreter.lib.Visitors
         private DeclarationVisitor _declarationVisitor;
         private ExpressionVisitor _expressionVisitor;
         private TypeDefinitionVisitor _typeDefinitionVisitor;
-        private TypeInferencer _inferencer;
-        private TypeConstructorVisitor _typeConstructorVisitor;
+        private IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> _arithmeticEvaluator;
 
         public MainVisitor(ApplicationState applictationState,
                            FunctionDeclarationVisitor functionDeclarationVisitor,
                            DeclarationVisitor declarationVisitor,
                            ExpressionVisitor expressionVisitor,
                            TypeDefinitionVisitor typeDefinitionVisitor,
-                           TypeConstructorVisitor typeConstructorVisitor,
-                           TypeInferencer typeInferencer) : base(applictationState)
+                           IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> arithmeticEvaluator) : base(applictationState)
         {
             _functionDeclarationVisitor = functionDeclarationVisitor;
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
             _typeDefinitionVisitor = typeDefinitionVisitor;
-            _inferencer = typeInferencer;
-            _typeConstructorVisitor = typeConstructorVisitor;
+            _arithmeticEvaluator = arithmeticEvaluator;
         }
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
             var declaredVariable = context.Accept(_declarationVisitor);
-            ApplicationState.CurrentScope.AddScopedVariable(1, _inferencer.InferGivenType(declaredVariable));
+            ApplicationState.CurrentScope.AddScopedVariable(1, declaredVariable);
             return null!;
         }
 
@@ -59,7 +56,8 @@ namespace verse_interpreter.lib.Visitors
         public override object VisitExpression([NotNull] Verse.ExpressionContext context)
         {
             var res = _expressionVisitor.Visit(context);
-
+            _expressionVisitor.Clean();
+            PrintResult(_arithmeticEvaluator.Evaluate(res).ResultValue.ToString());
             return null!;
         }
 
@@ -67,12 +65,6 @@ namespace verse_interpreter.lib.Visitors
         {
             var novelType = _typeDefinitionVisitor.Visit(context);
             this.ApplicationState.Types.Add(novelType.Name, novelType);
-            return null!;
-        }
-
-        public override object VisitConstructors([NotNull] Verse.ConstructorsContext context)
-        {
-            _typeConstructorVisitor.Visit(context);
             return null!;
         }
 

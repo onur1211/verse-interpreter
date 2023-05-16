@@ -14,11 +14,11 @@ namespace verse_interpreter.lib
         private LookupManager _lookupManager;
 
         public string Name { get; set; }
-        public string ConstructurName { get; set; }
+        public string ConstructorName { get; set; }
         public DynamicType()
         {
             Name = "undefinied";
-            ConstructurName = "undefined";
+            ConstructorName = "undefined";
             _lookupManager = new LookupManager(new LookupTable<int?>(), new LookupTable<string>());
         }
 

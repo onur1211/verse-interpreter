@@ -15,17 +15,10 @@ namespace verse_interpreter.lib.Visitors
         {
         }
 
-        public override object VisitType_constructor([NotNull] Verse.Type_constructorContext context)
+        public override object VisitConstructor_body([NotNull] Verse.Constructor_bodyContext context)
         {
-            var identifiers = context.ID();
-            var variableName = identifiers[0];
-            var constructorName = identifiers[1].GetText();
-            if (!ApplicationState.Types.ContainsKey(constructorName))
-            {
-                throw new InvalidOperationException("The specified type doesnt exist!");
-            }
-
-            return base.VisitType_constructor(context);
+            context.ID();
+            return base.VisitConstructor_body(context);
         }
     }
 }

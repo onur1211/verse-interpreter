@@ -27,7 +27,7 @@ namespace verse_interpreter.lib.Visitors
             _dynamicType = new DynamicType();
             var identfiers = context.ID();
             _dynamicType.Name = identfiers[0].GetText();
-            _dynamicType.ConstructurName = identfiers[1].GetText();
+            _dynamicType.ConstructorName = identfiers[1].GetText();
             base.VisitType_header(context);
 
             return _dynamicType;
