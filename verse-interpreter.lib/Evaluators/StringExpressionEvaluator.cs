@@ -23,33 +23,47 @@ namespace verse_interpreter.lib.Evaluators
             foreach (var subString in input)
             {
                 for (int i = 0; i < subString.Count; i++)
-                {
-                    try
+                {                        
+                    // Binary operation using the first and third element as operands
+                    if (!string.IsNullOrEmpty(subString[i].Operator) && subString[i].Operator == "+" &&
+                        concatinatedString.Length == 0)
                     {
-                        if(subString[i].Operator != null && OperatorLookUp.IsOperator(subString[i].Operator) && i + 1 == subString.Count - 1)
-                        {
-                            concatinatedString.Append(FetchValueFromLookUp(subString[i + 1].ValueIdentifier).First().Replace('\"', ' '));
-                            continue;
-                        }
-                        if (subString[i].Operator != null && OperatorLookUp.IsOperator(subString[i].Operator))
-                        {
-                            concatinatedString.Append(FetchValueFromLookUp(subString[i - 1].ValueIdentifier).First().Replace('\"', ' '));
-                            concatinatedString.Append(FetchValueFromLookUp(subString[i + 1].ValueIdentifier).First().Replace('\"', ' '));
-                            i += 1;
-                        }
-                    } catch (Exception ex)
-                    {
-                        throw new InvalidOperationException("An error occured with the specified input. Check the operators!");
+                        concatinatedString.Append(Add(subString[i - 1], subString[i + 1]));
+                        continue;
                     }
-
+                    // In all other cases simply add the next element to the existing chain
+                    if (!string.IsNullOrEmpty(subString[i].Operator) && subString[i].Operator == "+")
+                    {
+                        var addedString = Add(concatinatedString.ToString(), subString[i + 1]);
+                        concatinatedString = new StringBuilder(addedString);
+                    }
                 }
             }
             return concatinatedString.ToString();
         }
 
-        private List<string> FetchValueFromLookUp(string identifier)
+        private string GetValue(ExpressionResult expressionResult)
         {
-            return _applicationState.Scopes[_applicationState.CurrentScopeLevel].LookupManager.GetVariableStrings(identifier);
+
+            if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
+            {
+                return _applicationState.CurrentScope.LookupManager.GetVariableStrings(expressionResult.ValueIdentifier).First().Replace("\"", "");
+            }
+
+            return null;
+        }
+
+        private string Add(ExpressionResult firstExpressionResult, ExpressionResult secondExpressionResult)
+        {
+            var firstValue = GetValue(firstExpressionResult);
+            var secondValue = GetValue(secondExpressionResult);
+
+            return firstValue + secondValue;
+        }
+
+        private string Add(string expression, ExpressionResult expressionResult)
+        {
+            return expression + GetValue(expressionResult);
         }
     }
 }

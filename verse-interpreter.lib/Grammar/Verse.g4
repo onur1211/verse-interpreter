@@ -85,11 +85,11 @@ type_member_access : ID'.'ID
                    ;
 
 // Strings
-string_rule : '"' ~'"'* '"'
+string_rule : SEARCH_TYPE
             ;
 // Conditionals
 
-if_block    : 'if' '(' comp_expression ')' 'then' 'else' ;
+if_block    : 'if' '(' comp_expression ')' 'then' 'else'  ;
 
 comp_expression
     : comp_term

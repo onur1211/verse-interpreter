@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluators;
+using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
 using Z.Expressions;
 
@@ -25,8 +26,6 @@ namespace verse_interpreter.lib.Visitors
         private TypeDefinitionVisitor _typeDefinitionVisitor;
         private TypeInferencer _inferencer;
         private TypeConstructorVisitor _typeConstructorVisitor;
-        private IEvaluator<int, List<List<ExpressionResult>>> _arithmeticEvaluator;
-        private IEvaluator<string, List<List<ExpressionResult>>> _stringEvaluator;
 
         public MainVisitor(ApplicationState applictationState,
                            FunctionDeclarationVisitor functionDeclarationVisitor,
@@ -34,18 +33,14 @@ namespace verse_interpreter.lib.Visitors
                            ExpressionVisitor expressionVisitor,
                            TypeDefinitionVisitor typeDefinitionVisitor,
                            TypeConstructorVisitor typeConstructorVisitor,
-                           TypeInferencer typeInferencer,
-                           IEvaluator<int, List<List<ExpressionResult>>> arithmeticEvaluator,
-                           IEvaluator<string, List<List<ExpressionResult>>> stringEvaluator) : base(applictationState)
+                           TypeInferencer typeInferencer) : base(applictationState)
         {
             _functionDeclarationVisitor = functionDeclarationVisitor;
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
-            _typeDefinitionVisitor = typeDefinitionVisitor; 
+            _typeDefinitionVisitor = typeDefinitionVisitor;
             _inferencer = typeInferencer;
             _typeConstructorVisitor = typeConstructorVisitor;
-            _arithmeticEvaluator = arithmeticEvaluator;
-            _stringEvaluator = stringEvaluator;
         }
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
@@ -63,23 +58,15 @@ namespace verse_interpreter.lib.Visitors
 
         public override object VisitExpression([NotNull] Verse.ExpressionContext context)
         {
-            _expressionVisitor.ExpressionParsedSucessfully += (sender, args) =>
-            {
-                // The first printed result is the correct one.
-                string result = HandleEvaluation(args.Expressions);
-                this.PrintResult(result);
-            };
+            var res = _expressionVisitor.Visit(context);
 
-            _expressionVisitor.Visit(context);
             return null!;
         }
 
         public override object VisitType_header([NotNull] Verse.Type_headerContext context)
         {
-            ApplicationState.CurrentScopeLevel += 1;
             var novelType = _typeDefinitionVisitor.Visit(context);
             this.ApplicationState.Types.Add(novelType.Name, novelType);
-
             return null!;
         }
 
@@ -95,27 +82,6 @@ namespace verse_interpreter.lib.Visitors
             Console.WriteLine("VERSE CODE RESULT: ");
             Console.ResetColor();
             Console.WriteLine(result);
-        }
-
-        // EXAM_UPDATED
-        private string HandleEvaluation(List<List<ExpressionResult>> expressionResults)
-        {
-            foreach(var expressionResult in expressionResults)
-            {
-                foreach(var res in expressionResult)
-                {
-                    if(res.ValueIdentifier != null )
-                    {
-                        var test = ApplicationState.Scopes[1].LookupManager.GetVariableStrings(res.ValueIdentifier).Count;
-                        var test2 = ApplicationState.Scopes[1].LookupManager.GetVariableInts(res.ValueIdentifier).Count;
-
-                        return (test == test2)? throw new InvalidOperationException("Cant mix types!") : 
-                            (test > test2)? _stringEvaluator.Evaluate(expressionResults) : _arithmeticEvaluator.Evaluate(expressionResults).ToString();
-                    } 
-                }
-            }
-
-            return null;
         }
     }
 }

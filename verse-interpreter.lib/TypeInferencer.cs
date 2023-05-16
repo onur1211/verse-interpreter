@@ -13,8 +13,6 @@ namespace verse_interpreter.lib
     {
         public DeclarationResult InferGivenType(DeclarationResult declarationResult)
         {
-            string typeName;
-
             if (declarationResult == null)
             {
                 throw new ArgumentNullException("The specified input object is null!");
