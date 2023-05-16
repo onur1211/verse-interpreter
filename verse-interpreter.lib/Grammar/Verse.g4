@@ -39,17 +39,7 @@ block : declaration
       | expression 
       ;
 
-// Functions
-
-function_call : ID '(' param_call_item ')'
-              | ID '(' ')' 
-              ;
-
-function_definition : ID function_param ':' type ':=' function_body
-                    | ID function_param ':' type ':=' '{' function_body NEWLINE?'}'
-                    ;
-                     
-function_body : inline_body
+body : inline_body
               | NEWLINE spaced_body
               ;
               
@@ -60,6 +50,16 @@ inline_body : block ';' inline_body
 spaced_body : INDENT block
             | INDENT block NEWLINE spaced_body
             ;
+
+// Functions
+
+function_call : ID '(' param_call_item ')'
+              | ID '(' ')' 
+              ;
+
+function_definition : ID function_param ':' type ':=' body
+                    | ID function_param ':' type ':=' '{' body NEWLINE?'}'
+                    ;
                      
 function_param : '(' ')'
                | '(' param_def_item ')'
@@ -97,7 +97,7 @@ string_rule : SEARCH_TYPE
             ;
 // Conditionals
 
-if_block    : 'if' '(' comp_expression ')' 'then' 'else'  ;
+if_block    : 'if' '(' comp_expression ')' 'then' block 'else' block ;
 
 comp_expression
     : comp_term
