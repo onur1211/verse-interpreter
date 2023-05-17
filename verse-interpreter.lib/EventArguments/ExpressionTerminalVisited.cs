@@ -1,6 +1,6 @@
 ﻿using verse_interpreter.lib.Data.ResultObjects;
 
-namespace verse_interpreter.lib.Visitors
+namespace verse_interpreter.lib.EventArguments
 {
     public class ExpressionTerminalVisited : EventArgs
     {

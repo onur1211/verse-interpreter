@@ -4,23 +4,24 @@ options {tokenVocab=VerseLexer;}
 verse_text: ( program ) * EOF;
 
 declaration : ID ':' type 
-            | ID ':=' (INT |(expression NEWLINE) | constructor_body | string_rule) 
-            | ID '='  (INT | (expression NEWLINE) | constructor_body | string_rule)
+            | ID ':=' (value_definition | constructor_body) 
+            | ID '='  (value_definition | constructor_body)
             ;
+
+value_definition : (INT |(expression NEWLINE) | constructor_body | string_rule)
+                 ;
 
 program : function_definition program
         | declaration program
         | function_definition program
         | function_call program
         | type_header program
-        | type_member_access program
         | type_member_definition program
         | (NEWLINE | NEWLINE NEWLINE) program
         | program ';' program
         | declaration
         | function_call
         | type_header
-        | type_member_access
         | type_member_definition
         | function_definition
         | expression
@@ -31,7 +32,6 @@ block : declaration
       | expression
       | declaration
       | function_call
-      | expression 
       | if_block
       ;
 
@@ -81,7 +81,7 @@ type_body : NEWLINE INDENT declaration
           | NEWLINE INDENT declaration type_body
           ;
    
-type_member_definition : type_member_access '=' (string_rule | INT)
+type_member_definition : type_member_access '=' value_definition
                        ;
 
           

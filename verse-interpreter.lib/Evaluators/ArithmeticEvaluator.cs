@@ -66,6 +66,12 @@ namespace verse_interpreter.lib.Evaluators
             List<ExpressionResult> results = new List<ExpressionResult>();
             foreach (var expressionResult in input)
             {
+                // Pfusch, müss ma fixen wenn LookupTable geupdated wurde!
+                if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier) && expressionResult.ValueIdentifier.Split('.').Count() >= 2)
+                {
+
+                }
+
                 if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
                 {
                     // Lookup the variable value and substitute it in the expression

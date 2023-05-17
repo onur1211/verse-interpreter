@@ -9,16 +9,22 @@ using verse_interpreter.lib.Grammar;
 namespace verse_interpreter.lib.Visitors
 {
     // EXAM_UPDATED
-    public class TypeConstructorVisitor : AbstractVerseVisitor<object>
+    public class TypeConstructorVisitor : AbstractVerseVisitor<DynamicType>
     {
         public TypeConstructorVisitor(ApplicationState applicationState) : base(applicationState)
         {
         }
 
-        public override object VisitConstructor_body([NotNull] Verse.Constructor_bodyContext context)
+        public override DynamicType VisitConstructor_body([NotNull] Verse.Constructor_bodyContext context)
         {
-            context.ID();
-            return base.VisitConstructor_body(context);
+            var constructorName = context.ID().GetText();
+            if(!ApplicationState.Types.Any(x => x.Value.ConstructorName == constructorName))
+            {
+                throw new InvalidOperationException($"The specified constructor \"{constructorName}\" is unkown!");
+            }
+
+            var fetchedType = ApplicationState.Types[constructorName];
+            return fetchedType.GetInstance();
         }
     }
 }

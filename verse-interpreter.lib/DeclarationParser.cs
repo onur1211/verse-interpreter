@@ -16,21 +16,15 @@ namespace verse_interpreter.lib
     {
         private ApplicationState _state;
         private TypeInferencer _inferencer;
-        private ExpressionVisitor _expressionVisitor;
-        private readonly IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> _arithmeticEvaluator;
-        private readonly IEvaluator<string, List<List<ExpressionResult>>> _stringEvaluator;
+        private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
 
         public DeclarationParser(ApplicationState applicationState,
                                  TypeInferencer typeInferencer,
-                                 ExpressionVisitor expressionVisitor,
-                                 IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> arithmeticEvaluator,
-                                 IEvaluator<string, List<List<ExpressionResult>>> stringEvaluator)
+                                 ValueDefinitionVisitor valueDefinitionVisitor)
         {
             _state = applicationState;
             _inferencer = typeInferencer;
-            _expressionVisitor = expressionVisitor;
-            _arithmeticEvaluator = arithmeticEvaluator;
-            _stringEvaluator = stringEvaluator;
+            _valueDefinitionVisitor = valueDefinitionVisitor;
         }
 
         public DeclarationResult ParseDeclaration(Verse.DeclarationContext context)
@@ -49,6 +43,11 @@ namespace verse_interpreter.lib
         {
             string name = context.ID().GetText();
             string type = context.type().GetText();
+
+            if (!(_state.Types.ContainsKey(name) || _state.WellKnownTypes.Contains(type)))
+            {
+                throw new InvalidOperationException($"The specified type \"{type}\" does not exist!");
+            }
 
             return new DeclarationResult()
             {
@@ -76,33 +75,8 @@ namespace verse_interpreter.lib
 
         private DeclarationResult ParseValueAssignment(Verse.DeclarationContext context)
         {
-            DeclarationResult declarationResult = new DeclarationResult();
+            DeclarationResult declarationResult = _valueDefinitionVisitor.Visit(context);
             declarationResult.Name = context.ID().GetText();
-
-            var maybeConstructor = context.constructor_body();
-            var maybeInt = context.INT();
-            var maybeExpression = context.expression();
-            var maybeString = context.string_rule();
-
-            if (maybeConstructor != null)
-            {
-
-            }
-            if (maybeInt != null)
-            {
-                declarationResult.Value = maybeInt.GetText();
-            }
-            if (maybeExpression != null)
-            {
-                var expression = _expressionVisitor.Visit(maybeExpression);
-                _expressionVisitor.Clean();
-                var value = _arithmeticEvaluator.Evaluate(expression).ResultValue.ToString();
-                declarationResult.Value = value== null? "false?" : value;
-            }
-            if (maybeString != null)
-            {
-                declarationResult.Value = maybeString.SEARCH_TYPE().GetText().Replace("\"", "");
-            }
 
             return declarationResult;
         }

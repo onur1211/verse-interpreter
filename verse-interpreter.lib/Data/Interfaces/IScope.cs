@@ -15,6 +15,8 @@ namespace verse_interpreter.lib.Data
 
         ILookupTable<int?> IntLookupTable { get; }
 
+        ILookupTable<DynamicType> InstancesLookupTable { get;  }
+
         LookupManager LookupManager { get; }
 
         int Level { get; set; }

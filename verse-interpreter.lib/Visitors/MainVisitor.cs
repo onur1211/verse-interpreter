@@ -14,30 +14,28 @@ using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
+using verse_interpreter.lib.Wrapper;
 using Z.Expressions;
 
 namespace verse_interpreter.lib.Visitors
 {
     public class MainVisitor : AbstractVerseVisitor<object>
     {
-        private FunctionDeclarationVisitor _functionDeclarationVisitor;
         private DeclarationVisitor _declarationVisitor;
         private ExpressionVisitor _expressionVisitor;
-        private TypeDefinitionVisitor _typeDefinitionVisitor;
-        private IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> _arithmeticEvaluator;
+        private readonly TypeHandlingWrapper _typeHandlingWrapper;
+        private readonly EvaluatorWrapper _baseEvaluator;
 
         public MainVisitor(ApplicationState applictationState,
-                           FunctionDeclarationVisitor functionDeclarationVisitor,
                            DeclarationVisitor declarationVisitor,
                            ExpressionVisitor expressionVisitor,
-                           TypeDefinitionVisitor typeDefinitionVisitor,
-                           IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> arithmeticEvaluator) : base(applictationState)
+                           TypeHandlingWrapper typeHandlingWrapper,
+                           EvaluatorWrapper baseEvaluator) : base(applictationState)
         {
-            _functionDeclarationVisitor = functionDeclarationVisitor;
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
-            _typeDefinitionVisitor = typeDefinitionVisitor;
-            _arithmeticEvaluator = arithmeticEvaluator;
+            _typeHandlingWrapper = typeHandlingWrapper;
+            _baseEvaluator = baseEvaluator;
         }
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
@@ -47,24 +45,31 @@ namespace verse_interpreter.lib.Visitors
             return null!;
         }
 
-        public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
-        {
-            var result = context.Accept(_functionDeclarationVisitor);
-            return null!;
-        }
-
         public override object VisitExpression([NotNull] Verse.ExpressionContext context)
         {
             var res = _expressionVisitor.Visit(context);
-            _expressionVisitor.Clean();
-            PrintResult(_arithmeticEvaluator.Evaluate(res).ResultValue.ToString());
+            PrintResult(_baseEvaluator.ArithmeticEvaluator.Evaluate(res).ResultValue.ToString()!);
             return null!;
         }
 
+        //public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
+        //{
+        //    var result = context.Accept(_functionDeclarationVisitor);
+        //    return null!;
+        //}
+
+        // Type Related
+
         public override object VisitType_header([NotNull] Verse.Type_headerContext context)
         {
-            var novelType = _typeDefinitionVisitor.Visit(context);
+            var novelType = _typeHandlingWrapper.TypeDefinitionVisitor.Visit(context);
             this.ApplicationState.Types.Add(novelType.Name, novelType);
+            return null!;
+        }
+
+        public override object VisitType_member_definition([NotNull] Verse.Type_member_definitionContext context)
+        {
+            this._typeHandlingWrapper.TypeMemberVisitor.Visit(context);
             return null!;
         }
 
