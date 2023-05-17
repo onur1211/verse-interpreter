@@ -16,7 +16,7 @@ namespace verse_interpreter.lib
     public class EvaluatorWrapper
     {
         public EvaluatorWrapper(IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> arithmeticEvaluator,
-                            IEvaluator<string, List<List<ExpressionResult>>> stringEvaluator)
+                                IEvaluator<string, List<List<ExpressionResult>>> stringEvaluator)
         {
             ArithmeticEvaluator = arithmeticEvaluator;
             StringEvaluator = stringEvaluator;

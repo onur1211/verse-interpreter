@@ -31,6 +31,8 @@ namespace verse_interpreter.lib
 
         public void Run(string[] args)
         {
+            Test();
+            Test1<int>("test");
             _services = BuildService();
             ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 
@@ -65,6 +67,20 @@ namespace verse_interpreter.lib
                 .BuildServiceProvider();
 
             return services;
+        }
+
+        Dictionary<Type, object> keyValuePairs = new Dictionary<Type, object>();
+
+        private void Test()
+        {
+            keyValuePairs.Add(typeof(int), new Dictionary<string, int>());
+            var res = (Dictionary<string, int>)keyValuePairs[typeof(int)];
+            res.Add("test", 25);
+        }
+
+        private void Test1<T>(string variableName)
+        {
+
         }
     }
 }

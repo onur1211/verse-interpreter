@@ -37,6 +37,7 @@ namespace verse_interpreter.lib
                 BuildParseTree = true
             };
             _parser.AddErrorListener(_listener);
+
             return _parser.program();
         }
     }

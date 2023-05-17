@@ -113,7 +113,7 @@ namespace verse_interpreter.lib.Lookup
             // If false then the variable does not exist (which means it was never declared).
             if (!this.stringLookupTable.Table.ContainsKey(variableName))
             {
-                return new List<string>();
+                throw new InvalidOperationException($"The specified variable with the name \"{variableName}\" is not declared yet!");
             }
 
             // Get the values of the variable and return it.
@@ -133,7 +133,7 @@ namespace verse_interpreter.lib.Lookup
             // If false then the variable does not exist (which means it was never declared).
             if (!this.intLookupTable.Table.ContainsKey(variableName))
             {
-                return new List<int?>();
+                throw new InvalidOperationException($"The specified variable with the name \"{variableName}\" is not declared yet!"); 
             }
 
             // Get the values of the variable and return it.
@@ -151,7 +151,7 @@ namespace verse_interpreter.lib.Lookup
 
             if (!this.typeTable.Table.ContainsKey(variableName))
             {
-                throw new ArgumentNullException();
+                throw new InvalidOperationException($"The specified variable with the name \"{variableName}\" is not declared yet!");
             }
 
             return this.typeTable.Table[variableName].First();

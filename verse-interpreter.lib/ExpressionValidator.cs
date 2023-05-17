@@ -34,7 +34,7 @@ namespace verse_interpreter.lib
                 {
                 }
             }
-            return false;
+            throw new NotImplementedException();
         }
     }
 }
