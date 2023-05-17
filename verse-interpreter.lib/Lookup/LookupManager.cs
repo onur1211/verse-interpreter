@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,8 @@ namespace verse_interpreter.lib.Lookup
             this.stringLookupTable = stringTable;
             this.typeTable = typeTable;
         }
+
+
 
         public void Add(DeclarationResult declarationResult)
         {

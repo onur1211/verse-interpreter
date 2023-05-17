@@ -1,10 +1,2 @@
-﻿data Person = Person 
-{
-    name:string
-    age:int
-}
-
-x := instance Person()
-x.age = 45
-
-x.age + 69
+﻿x := (1|7|2)
+x+1
