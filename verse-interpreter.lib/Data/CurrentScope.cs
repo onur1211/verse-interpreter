@@ -17,6 +17,8 @@ namespace verse_interpreter.lib.Data
 
         public ILookupTable<string> StringLookupTable {get; private set;}
 
+        public ILookupTable<DynamicType> InstancesLookupTable { get; private set; }
+
         public ILookupTable<int?> IntLookupTable { get; private set; }
 
         public int Level { get { return _level; } set { _level = value; } }
@@ -25,7 +27,8 @@ namespace verse_interpreter.lib.Data
         {
             IntLookupTable = new LookupTable<int?>();
             StringLookupTable = new LookupTable<string>();
-            LookupManager = new LookupManager(IntLookupTable, StringLookupTable);
+            InstancesLookupTable = new LookupTable<DynamicType>();
+            LookupManager = new LookupManager(IntLookupTable, StringLookupTable, InstancesLookupTable);
             SubScope = new Dictionary<int, IScope<int>>();
             _level = level;
         }

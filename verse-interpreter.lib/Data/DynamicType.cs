@@ -14,17 +14,31 @@ namespace verse_interpreter.lib
         private LookupManager _lookupManager;
 
         public string Name { get; set; }
-        public string ConstructurName { get; set; }
+        public string ConstructorName { get; set; }
         public DynamicType()
         {
             Name = "undefinied";
-            ConstructurName = "undefined";
-            _lookupManager = new LookupManager(new LookupTable<int?>(), new LookupTable<string>());
+            ConstructorName = "undefined";
+            _lookupManager = new LookupManager(new LookupTable<int?>(), new LookupTable<string>(), new LookupTable<DynamicType>());
         }
+
+        private DynamicType(LookupManager lookupManager, string name, string constructorName)
+        {
+            _lookupManager = lookupManager;
+            Name = name;
+            ConstructorName = constructorName;
+        }
+
+        public LookupManager LookupManager { get { return _lookupManager; } }
 
         public void AddScopedVariable(DeclarationResult result)
         {
             _lookupManager.Add(result);
+        }
+
+        public DynamicType GetInstance()
+        {
+            return new DynamicType(_lookupManager, Name, ConstructorName);
         }
     }
 }

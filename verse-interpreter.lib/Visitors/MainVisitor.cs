@@ -14,65 +14,62 @@ using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
+using verse_interpreter.lib.Wrapper;
 using Z.Expressions;
 
 namespace verse_interpreter.lib.Visitors
 {
     public class MainVisitor : AbstractVerseVisitor<object>
     {
-        private FunctionDeclarationVisitor _functionDeclarationVisitor;
         private DeclarationVisitor _declarationVisitor;
         private ExpressionVisitor _expressionVisitor;
-        private TypeDefinitionVisitor _typeDefinitionVisitor;
-        private TypeInferencer _inferencer;
-        private TypeConstructorVisitor _typeConstructorVisitor;
+        private readonly TypeHandlingWrapper _typeHandlingWrapper;
+        private readonly EvaluatorWrapper _baseEvaluator;
 
         public MainVisitor(ApplicationState applictationState,
-                           FunctionDeclarationVisitor functionDeclarationVisitor,
                            DeclarationVisitor declarationVisitor,
                            ExpressionVisitor expressionVisitor,
-                           TypeDefinitionVisitor typeDefinitionVisitor,
-                           TypeConstructorVisitor typeConstructorVisitor,
-                           TypeInferencer typeInferencer) : base(applictationState)
+                           TypeHandlingWrapper typeHandlingWrapper,
+                           EvaluatorWrapper baseEvaluator) : base(applictationState)
         {
-            _functionDeclarationVisitor = functionDeclarationVisitor;
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
-            _typeDefinitionVisitor = typeDefinitionVisitor;
-            _inferencer = typeInferencer;
-            _typeConstructorVisitor = typeConstructorVisitor;
+            _typeHandlingWrapper = typeHandlingWrapper;
+            _baseEvaluator = baseEvaluator;
         }
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
             var declaredVariable = context.Accept(_declarationVisitor);
-            ApplicationState.CurrentScope.AddScopedVariable(1, _inferencer.InferGivenType(declaredVariable));
-            return null!;
-        }
-
-        public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
-        {
-            var result = context.Accept(_functionDeclarationVisitor);
+            ApplicationState.CurrentScope.AddScopedVariable(1, declaredVariable);
             return null!;
         }
 
         public override object VisitExpression([NotNull] Verse.ExpressionContext context)
         {
             var res = _expressionVisitor.Visit(context);
-
+            PrintResult(_baseEvaluator.ArithmeticEvaluator.Evaluate(res).ResultValue.ToString()!);
             return null!;
         }
 
+        //public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
+        //{
+        //    var result = context.Accept(_functionDeclarationVisitor);
+        //    return null!;
+        //}
+
+        // Type Related
+
         public override object VisitType_header([NotNull] Verse.Type_headerContext context)
         {
-            var novelType = _typeDefinitionVisitor.Visit(context);
+            var novelType = _typeHandlingWrapper.TypeDefinitionVisitor.Visit(context);
             this.ApplicationState.Types.Add(novelType.Name, novelType);
             return null!;
         }
 
-        public override object VisitConstructors([NotNull] Verse.ConstructorsContext context)
+        public override object VisitType_member_definition([NotNull] Verse.Type_member_definitionContext context)
         {
-            _typeConstructorVisitor.Visit(context);
+            this._typeHandlingWrapper.TypeMemberVisitor.Visit(context);
             return null!;
         }
 

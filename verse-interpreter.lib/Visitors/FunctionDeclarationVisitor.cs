@@ -16,11 +16,6 @@ namespace verse_interpreter.lib.Visitors
             this.declarationVisitor = declarationVisitor;
         }
 
-        public override FunctionDeclarationResult VisitFunction_body([NotNull] Verse.Function_bodyContext context)
-        {
-            throw new NotImplementedException();
-        }
-
         public override FunctionDeclarationResult VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
         {
             this.ApplicationState.CurrentScopeLevel += 1;

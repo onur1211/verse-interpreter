@@ -4,31 +4,27 @@ options {tokenVocab=VerseLexer;}
 verse_text: ( program ) * EOF;
 
 declaration : ID ':' type 
-            | ID ':=' (INT | expression) 
-            | ID ':=' string_rule
+            | ID ':=' (value_definition | constructor_body) 
+            | ID '='  (value_definition | constructor_body)
             ;
 
-constructors : type_constructor
-             ;
+value_definition : (INT |(expression NEWLINE) | constructor_body | string_rule)
+                 ;
 
 program : function_definition program
         | declaration program
         | function_definition program
         | function_call program
         | type_header program
-        | type_member_access program
         | type_member_definition program
-        | constructors program
         | (NEWLINE | NEWLINE NEWLINE) program
         | program ';' program
         | declaration
         | function_call
-        | expression
         | type_header
-        | type_member_access
         | type_member_definition
         | function_definition
-        | constructors
+        | expression
         ;
 
 block : declaration
@@ -36,20 +32,10 @@ block : declaration
       | expression
       | declaration
       | function_call
-      | expression 
+      | if_block
       ;
 
-// Functions
-
-function_call : ID '(' param_call_item ')'
-              | ID '(' ')' 
-              ;
-
-function_definition : ID function_param ':' type ':=' function_body
-                    | ID function_param ':' type ':=' '{' function_body NEWLINE?'}'
-                    ;
-                     
-function_body : inline_body
+body : inline_body
               | NEWLINE spaced_body
               ;
               
@@ -60,6 +46,16 @@ inline_body : block ';' inline_body
 spaced_body : INDENT block
             | INDENT block NEWLINE spaced_body
             ;
+
+// Functions
+
+function_call : ID '(' param_call_item ')'
+              | ID '(' ')' 
+              ;
+
+function_definition : ID function_param ':' type ':=' body
+                    | ID function_param ':' type ':=' '{' body NEWLINE?'}'
+                    ;
                      
 function_param : '(' ')'
                | '(' param_def_item ')'
@@ -75,7 +71,7 @@ param_call_item : (INT | ID | function_call | expression)
 
 // Type definition
 
-type_constructor : ID ':=' ID '('')'
+constructor_body : INSTANCE ID '('')'
                  ;
 
 type_header : DATA ID '=' ID NEWLINE '{' type_body NEWLINE '}'
@@ -85,7 +81,7 @@ type_body : NEWLINE INDENT declaration
           | NEWLINE INDENT declaration type_body
           ;
    
-type_member_definition : type_member_access '=' (string_rule | INT)
+type_member_definition : type_member_access '=' value_definition
                        ;
 
           
@@ -97,7 +93,7 @@ string_rule : SEARCH_TYPE
             ;
 // Conditionals
 
-if_block    : 'if' '(' comp_expression ')' 'then' 'else'  ;
+if_block    : 'if' '(' comp_expression ')' 'then' body 'else' body ;
 
 comp_expression
     : comp_term
@@ -145,6 +141,6 @@ primary
     | '(' expression ')'
     ;
 
-type : (INTTYPE | STRINGTYPE ) ;
+type : (INTTYPE | STRINGTYPE | ID ) ;
 comparsion_op : ('>' | '<' | '|' | '=' )   ; 
 operator : ('*' | '/' |'-'|'+'| '>' | '|');

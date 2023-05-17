@@ -1,2 +1,10 @@
-﻿fac(x:int):int =
-    fac(x-1)*x
+﻿data Person = Person 
+{
+    name:string
+    age:int
+}
+
+x := instance Person()
+x.age = 45
+
+x.age + 69

@@ -10,8 +10,15 @@ namespace verse_interpreter.lib.Data
     {
         public string Value { get; set; } = null!;
 
+        public DynamicType? DynamicType { get; set; } = null!;
+
         public string Name { get; set; } = null!;
 
         public string TypeName { get; set; } = null!;
+
+        public DeclarationResult()
+        {
+            TypeName = "undefined";
+        }
     }
 }

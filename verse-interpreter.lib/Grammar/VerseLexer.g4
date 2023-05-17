@@ -37,6 +37,7 @@ THEN: 'then';
 ELSE: 'else';
 FST: 'fst';
 ARRAY: 'array';
+INSTANCE: 'instance';
 
 INDENT: '    ';
 INT : [0-9]+ ;

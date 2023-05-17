@@ -1,9 +1,5 @@
-﻿using Antlr4.Runtime.Misc;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
-using System.Text;
-using verse_interpreter.lib.Data.ResultObjects;
-using verse_interpreter.lib.Evaluators;
+﻿using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib.Visitors
@@ -32,6 +28,11 @@ namespace verse_interpreter.lib.Visitors
             VisitChildren(context);
 
             return _expressions;
+        }
+
+        public void Clean()
+        {
+            _expressions = new List<List<ExpressionResult>>();
         }
 
         public override List<List<ExpressionResult>> VisitTerm([Antlr4.Runtime.Misc.NotNull] Verse.TermContext context)
@@ -64,6 +65,7 @@ namespace verse_interpreter.lib.Visitors
             string identifier = string.Empty;
             var fetchedValue = context.INT();
             var fetchedIdentifier = context.ID();
+            var fetchedMemberAccess = context.type_member_access();
 
             if (fetchedValue != null)
             {
@@ -72,6 +74,10 @@ namespace verse_interpreter.lib.Visitors
             if (fetchedIdentifier != null)
             {
                 identifier = fetchedIdentifier.GetText();
+            }
+            if (fetchedMemberAccess != null)
+            {
+                identifier = fetchedMemberAccess.GetText();
             }
 
             var expressionResult = new ExpressionResult()

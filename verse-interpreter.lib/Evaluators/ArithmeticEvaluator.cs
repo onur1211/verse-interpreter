@@ -45,7 +45,11 @@ namespace verse_interpreter.lib.Evaluators
                     // Merge two expression blocks
                     lastExpression = MergeTwoExpressionBlocks(lastExpression, expression);
                 }
-                Console.WriteLine($"{lastExpression.StringRepresentation} | {input.IndexOf(expression)}");
+                if(exp.Count > 3)
+                {
+                    lastExpression = BuildSimpleComposedExpression(lastExpression, expression);
+                }
+                //Console.WriteLine($"{lastExpression.StringRepresentation} | {input.IndexOf(expression)}");
             }
 
             // If the result value of the last expression is not set, evaluate the string representation
@@ -62,6 +66,12 @@ namespace verse_interpreter.lib.Evaluators
             List<ExpressionResult> results = new List<ExpressionResult>();
             foreach (var expressionResult in input)
             {
+                // Pfusch, müss ma fixen wenn LookupTable geupdated wurde!
+                if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier) && expressionResult.ValueIdentifier.Split('.').Count() >= 2)
+                {
+
+                }
+
                 if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
                 {
                     // Lookup the variable value and substitute it in the expression
@@ -135,6 +145,27 @@ namespace verse_interpreter.lib.Evaluators
             return new ArithmeticExpression()
             {
                 StringRepresentation = $"({evaluation}){expressionResults[0].Operator}"
+            };
+        }
+
+        private ArithmeticExpression BuildSimpleComposedExpression(ArithmeticExpression lastEpxression, List<ExpressionResult> expressionResults)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach(var expressionResult in expressionResults)
+            {
+                if (!string.IsNullOrEmpty(expressionResult.Operator))
+                {
+                    builder.Append(expressionResult.Operator);
+                }
+                else
+                {
+                    builder.Append(expressionResult.IntegerValue);
+                }
+            }
+
+            return new ArithmeticExpression()
+            {
+                StringRepresentation = builder.ToString()
             };
         }
     }

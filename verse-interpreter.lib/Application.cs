@@ -11,9 +11,8 @@ using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.IO;
-using verse_interpreter.lib.Lexer;
-using verse_interpreter.lib.Lookup;
 using verse_interpreter.lib.Visitors;
+using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib
 {
@@ -58,6 +57,11 @@ namespace verse_interpreter.lib
                 .AddTransient<IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
                 .AddTransient<IEvaluator<string, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
                 .AddTransient<ExpressionValidator>()
+                .AddTransient<DeclarationParser>()
+                .AddTransient<TypeMemberVisitor>()
+                .AddTransient<ValueDefinitionVisitor>()
+                .AddTransient<EvaluatorWrapper>()
+                .AddTransient<TypeHandlingWrapper>()
                 .BuildServiceProvider();
 
             return services;
