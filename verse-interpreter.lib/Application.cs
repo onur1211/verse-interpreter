@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.DataVisitors;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Evaluators;
@@ -62,6 +63,7 @@ namespace verse_interpreter.lib
                 .AddTransient<TypeMemberVisitor>()
                 .AddTransient<ValueDefinitionVisitor>()
                 .AddTransient<EvaluatorWrapper>()
+                .AddTransient<VariableVisitor>()
                 .AddTransient<TypeHandlingWrapper>()
                 .BuildServiceProvider();
 

@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data.DataVisitors;
 using verse_interpreter.lib.Data.Interfaces;
 
 namespace verse_interpreter.lib.Data
 {
-    public abstract class Variable
+    public abstract class Variable : IVariableVisitable
     {
         public Variable(string name, string type) 
         {
@@ -19,6 +20,10 @@ namespace verse_interpreter.lib.Data
 
         public string Type { get; set; } = null!;
 
-        public abstract T Accept<T>(IVariableVisitor variableVisitor);
+        public abstract DynamicType AcceptDynamicType(IVariableVisitor visitor);
+
+        public abstract int? AcceptInt(IVariableVisitor visitor);
+
+        public abstract string AcceptString(IVariableVisitor visitor);
     }
 }

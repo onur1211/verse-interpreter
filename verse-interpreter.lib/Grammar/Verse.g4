@@ -8,7 +8,7 @@ declaration : ID ':' type
             | ID '='  (value_definition | constructor_body)
             ;
 
-value_definition : (INT |(expression NEWLINE) | constructor_body | string_rule)
+value_definition : (INT | expression | constructor_body | string_rule | choice_rule)
                  ;
 
 program : function_definition program
@@ -85,12 +85,23 @@ type_member_definition : type_member_access '=' value_definition
                        ;
 
           
-type_member_access : ID'.'ID
+type_member_access : type_member_access '.' ID
+                   | ID'.'ID
                    ;
 
 // Strings
 string_rule : SEARCH_TYPE
             ;
+
+// Choice
+choice_value : (INT | ID ) ;
+
+choice_rule : choice_value '|' choice_value
+            | choice_value '|' choice_rule
+            | '('choice_rule ')'
+            ;
+
+            
 // Conditionals
 
 if_block    : 'if' '(' comp_expression ')' 'then' body 'else' body ;
@@ -119,8 +130,12 @@ comp_primary
 
 // Math expression rules
 expression
-    : term
-    | expression operator term 
+    : binary_expression
+    ;
+
+binary_expression
+    : term operator term
+    | binary_expression operator term
     ;
 
 term
@@ -143,4 +158,4 @@ primary
 
 type : (INTTYPE | STRINGTYPE | ID ) ;
 comparsion_op : ('>' | '<' | '|' | '=' )   ; 
-operator : ('*' | '/' |'-'|'+'| '>' | '|');
+operator : ('*' | '/' |'-'|'+'| '>');

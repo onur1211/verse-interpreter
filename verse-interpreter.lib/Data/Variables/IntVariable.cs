@@ -7,7 +7,7 @@ using verse_interpreter.lib.Data.Interfaces;
 
 namespace verse_interpreter.lib.Data.Variables
 {
-    public class IntVariable : Variable, IVariableVisitable<int?>
+    public class IntVariable : Variable
     {
         public IntVariable(string name, string type, int? value) : base(name, type)
         {
@@ -16,12 +16,17 @@ namespace verse_interpreter.lib.Data.Variables
 
         public int? Value { get; set; }
 
-        public int? Accept(IVariableVisitor visitor)
+        public override DynamicType AcceptDynamicType(IVariableVisitor visitor)
         {
-            return visitor.Visit(this);
+            throw new NotImplementedException();
         }
 
-        public override T Accept<T>(IVariableVisitor variableVisitor)
+        public override int? AcceptInt(IVariableVisitor visitor)
+        {
+            return Value;
+        }
+
+        public override string AcceptString(IVariableVisitor visitor)
         {
             throw new NotImplementedException();
         }
