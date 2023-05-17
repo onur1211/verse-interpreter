@@ -5,4 +5,7 @@
 }
 
 x := instance Person()
-x.age = 45
+
+y:=5;
+z:=10;
+y+z
