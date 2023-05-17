@@ -13,213 +13,55 @@ namespace verse_interpreter.lib.Lookup
 {
     public class LookupManager
     {
-        private ILookupTable<int?> intLookupTable;
+        private ILookupTable<Variable> lookupTable;
 
-        private ILookupTable<string> stringLookupTable;
-
-        private readonly ILookupTable<DynamicType> typeTable;
-
-        private Dictionary<string, Action<DeclarationResult>> addCommands;
-
-        private Dictionary<string, Action<string, DeclarationResult>> updateCommands;
-
-        public LookupManager(ILookupTable<int?> intTable,
-                             ILookupTable<string> stringTable,
-                             ILookupTable<DynamicType> typeTable)
+        public LookupManager()
         {
-            this.intLookupTable = intTable;
-            this.stringLookupTable = stringTable;
-            this.typeTable = typeTable;
-            this.addCommands = new Dictionary<string, Action<DeclarationResult>>();
-            this.updateCommands = new Dictionary<string, Action<string, DeclarationResult>>();
-            this.SetAddCommands();
-            this.SetUpdateCommands();
+            this.lookupTable = new LookupTable<Variable>();
         }
 
-        public void Add(DeclarationResult declarationResult)
+        public void AddVariable(Variable variable)
         {
             // Check if variable is already in a lookup table (which means the variable was already declared once).
             // If true then throw exception.
-            if (this.intLookupTable.Table.ContainsKey(declarationResult.Name) 
-               || this.stringLookupTable.Table.ContainsKey(declarationResult.Name)
-               || this.typeTable.Table.ContainsKey(declarationResult.Name))
+            if (this.lookupTable.Table.ContainsKey(variable.Name))
             {
-                throw new VariableAlreadyExistException(declarationResult.Name);
+                throw new VariableAlreadyExistException(variable.Name);
             }
 
-            foreach (var command in this.addCommands) 
-            {
-                if (declarationResult.TypeName == command.Key)
-                {
-                    command.Value.Invoke(declarationResult);
-                }
-            }
+            this.lookupTable.Table.Add(variable.Name, variable);
         }
 
-        public void UpdateVariable(string variableName, DeclarationResult declarationResult)
+        public void UpdateVariable(Variable variable)
+        {
+            if (!IsVariable(variable.Name))
+            {
+                throw new VariableDoesNotExistException(variable.Name);
+            }
+
+            this.lookupTable.Table[variable.Name] = variable;
+        }
+
+        public Variable GetVariable(string variableName) 
         {
             if (!IsVariable(variableName))
             {
                 throw new VariableDoesNotExistException(variableName);
             }
 
-            foreach (var command in this.updateCommands)
-            {
-                if (declarationResult.TypeName == command.Key)
-                {
-                    command.Value.Invoke(variableName, declarationResult);
-                }
-            }
+            return this.lookupTable.Table[variableName];
         }
 
-        public List<string> GetVariableStrings(string variableName)
+        public bool IsVariable(string variableName)
         {
             if (string.IsNullOrEmpty(variableName))
-            {
-                throw new ArgumentNullException();
-            }
-
-            // Check if variable is in lookup.
-            // If false then the variable does not exist (which means it was never declared).
-            if (!this.stringLookupTable.Table.ContainsKey(variableName))
-            {
-                throw new VariableDoesNotExistException(variableName);
-            }
-
-            // Get the values of the variable and return it.
-            List<string> values;
-            this.stringLookupTable.Table.TryGetValue(variableName, out values!);
-            return values!;
-        }
-
-        public List<int?> GetVariableInts(string variableName)
-        {
-            if (string.IsNullOrEmpty(variableName))
-            {
-                throw new ArgumentNullException();
-            }
-
-            // Check if variable is in lookup.
-            // If false then the variable does not exist (which means it was never declared).
-            if (!this.intLookupTable.Table.ContainsKey(variableName))
-            {
-                throw new VariableDoesNotExistException(variableName);
-            }
-
-            // Get the values of the variable and return it.
-            List<int?> values;
-            this.intLookupTable.Table.TryGetValue(variableName, out values!);
-            return values!;
-        }
-
-        public DynamicType GetInstanceVariable(string variableName)
-        {
-            if (string.IsNullOrEmpty(variableName))
-            {
-                throw new ArgumentNullException();
-            }
-
-            if (!this.typeTable.Table.ContainsKey(variableName))
-            {
-                throw new VariableDoesNotExistException(variableName);
-            }
-
-            return this.typeTable.Table[variableName].First();
-        }
-
-        public bool IsVariable(string name)
-        {
-            if (string.IsNullOrEmpty(name))
             {
                 return false;
             }
             else
             {
-                return this.intLookupTable.Table.ContainsKey(name) 
-                    || this.stringLookupTable.Table.ContainsKey(name)
-                    || this.typeTable.Table.ContainsKey(name);
+                return this.lookupTable.Table.ContainsKey(variableName);
             }
-        }
-
-        private void SetAddCommands()
-        {
-            Action<DeclarationResult> addInt = new Action<DeclarationResult>(AddInt);
-            Action<DeclarationResult> addString = new Action<DeclarationResult>(AddString);
-            Action<DeclarationResult> addDynamic = new Action<DeclarationResult>(AddDynamic);
-
-            this.addCommands.Add("int", addInt);
-            this.addCommands.Add("string", addString);
-            this.addCommands.Add("dynamic", addDynamic);
-        }
-
-        private void SetUpdateCommands()
-        {
-            Action<string, DeclarationResult> updateInt = new Action<string, DeclarationResult>(UpdateInt);
-            Action<string, DeclarationResult> updateString = new Action<string, DeclarationResult>(UpdateString);
-            Action<string, DeclarationResult> updateDynamic = new Action<string, DeclarationResult>(UpdateDynamic);
-
-            this.updateCommands.Add("int", updateInt);
-            this.updateCommands.Add("string", updateString);
-            this.updateCommands.Add("dynamic", updateDynamic);
-        }
-
-        private void AddInt(DeclarationResult declarationResult)
-        {
-            List<int?> intValues = new List<int?>();
-            int parsedValue;
-
-            bool hasValues = int.TryParse(declarationResult.Value, out parsedValue);
-            
-            if (hasValues)
-            {
-                this.intLookupTable.Table.Add(declarationResult.Name, intValues);
-                intValues.Add(parsedValue);
-                return;
-            }
-
-            this.intLookupTable.Table.Add(declarationResult.Name, null);
-        }
-
-        private void AddString(DeclarationResult declarationResult) 
-        {
-            List<string> stringValues = new List<string>();
-            stringValues.Add(declarationResult.Value);
-            this.stringLookupTable.Table.Add(declarationResult.Name, stringValues);
-        }
-
-        private void AddDynamic(DeclarationResult declarationResult) 
-        {
-            this.typeTable.Table.Add(declarationResult.Name, new() { declarationResult.DynamicType });
-        }
-
-        private void UpdateInt(string variableName, DeclarationResult declarationResult)
-        {
-            int parsedValue;
-            bool hasValues = int.TryParse(declarationResult.Value, out parsedValue);
-            
-            if (!hasValues)
-            {
-                return;
-            }
-
-            this.intLookupTable.Table.Remove(variableName);
-            this.intLookupTable.Table.Add(variableName, new() { parsedValue });
-        }
-
-        private void UpdateString(string variableName, DeclarationResult declarationResult) 
-        {
-            this.stringLookupTable.Table.Remove(variableName);
-            this.stringLookupTable.Table.Add(variableName, new() { declarationResult.Value });
-        }
-
-        private void UpdateDynamic(string variableName, DeclarationResult declarationResult)
-        {
-            if (declarationResult.DynamicType == null) 
-            {
-                return;
-            }
-
-            throw new NotImplementedException();
         }
     }
 }

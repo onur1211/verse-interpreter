@@ -52,14 +52,6 @@ namespace verse_interpreter.lib.Visitors
             return null!;
         }
 
-        //public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
-        //{
-        //    var result = context.Accept(_functionDeclarationVisitor);
-        //    return null!;
-        //}
-
-        // Type Related
-
         public override object VisitType_header([NotNull] Verse.Type_headerContext context)
         {
             var novelType = _typeHandlingWrapper.TypeDefinitionVisitor.Visit(context);

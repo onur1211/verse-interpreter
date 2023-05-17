@@ -8,7 +8,6 @@ using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib
 {
-    // EXAM_UPDATED
     public class DynamicType
     {
         private LookupManager _lookupManager;
@@ -21,7 +20,7 @@ namespace verse_interpreter.lib
         {
             Name = "undefinied";
             ConstructorName = "undefined";
-            _lookupManager = new LookupManager(new LookupTable<int?>(), new LookupTable<string>(), new LookupTable<DynamicType>());
+            _lookupManager = new LookupManager();
         }
 
         private DynamicType(LookupManager lookupManager, string name, string constructorName)
@@ -33,9 +32,9 @@ namespace verse_interpreter.lib
 
         public LookupManager LookupManager { get { return _lookupManager; } }
 
-        public void AddScopedVariable(DeclarationResult result)
+        public void AddScopedVariable(Variable variable)
         {
-            _lookupManager.Add(result);
+            _lookupManager.AddVariable(variable);
         }
 
         public DynamicType GetInstance()

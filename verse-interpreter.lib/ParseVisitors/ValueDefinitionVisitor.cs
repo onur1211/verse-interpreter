@@ -46,7 +46,7 @@ namespace verse_interpreter.lib.Visitors
             if (maybeConstructor != null)
             {
                 var typeInstance = maybeConstructor.Accept(_constructorVisitor);
-                declarationResult.TypeName = typeInstance.Name;
+                declarationResult.TypeName = "dynamic";
                 declarationResult.DynamicType = typeInstance;
             }
 

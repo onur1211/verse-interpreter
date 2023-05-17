@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace verse_interpreter.lib.Lookup
+namespace verse_interpreter.lib.Data.Interfaces
 {
-    public interface ILookupTable<T>
+    public interface IVariableVisitable<T>
     {
-        public Dictionary<string, T> Table { get; set; }
+        T Accept(IVariableVisitor visitor);
     }
 }

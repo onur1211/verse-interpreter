@@ -48,7 +48,8 @@ namespace verse_interpreter.lib.Visitors
         public override FunctionDeclarationResult VisitParam_def_item([NotNull] Verse.Param_def_itemContext context)
         {
             FunctionDeclarationResult functionDeclarationResult = new();
-            List<DeclarationResult> children = new List<DeclarationResult>();
+            List<Variable> children = new List<Variable>();
+            
             foreach (var child in context.children)
             {
                 // Adds all the parameters in the current node

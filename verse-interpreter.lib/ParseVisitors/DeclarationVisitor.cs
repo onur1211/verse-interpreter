@@ -1,10 +1,11 @@
 ﻿using Antlr4.Runtime.Tree;
+using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib.Visitors
 {
-    public class DeclarationVisitor : AbstractVerseVisitor<DeclarationResult>
+    public class DeclarationVisitor : AbstractVerseVisitor<Variable>
     {
        private DeclarationParser _parser;
 
@@ -14,9 +15,9 @@ namespace verse_interpreter.lib.Visitors
           _parser = declarationParser;
         }
 
-        public override DeclarationResult VisitDeclaration([Antlr4.Runtime.Misc.NotNull] Verse.DeclarationContext context)
+        public override Variable VisitDeclaration([Antlr4.Runtime.Misc.NotNull] Verse.DeclarationContext context)
         {
-            return _parser.ParseDeclaration(context);
+            return VariableConverter.Convert(_parser.ParseDeclaration(context));
         }
     }
 }
