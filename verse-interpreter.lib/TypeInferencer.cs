@@ -9,7 +9,6 @@ using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib
 {
-    // EXAM_UPDATED
     public class TypeInferencer
     {
         private ApplicationState _state;

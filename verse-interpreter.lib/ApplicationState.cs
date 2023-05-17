@@ -10,12 +10,12 @@ namespace verse_interpreter.lib
 {
     public class ApplicationState
     {
-        public Dictionary<int, IScope<int>> Scopes { get; set; }
+        public Dictionary<int, IScope<Variable>> Scopes { get; set; }
         public Dictionary<string, DynamicType> Types { get; set; }
 
         public ApplicationState()
         {
-            Scopes = new Dictionary<int, IScope<int>>
+            Scopes = new Dictionary<int, IScope<Variable>>
             {
                 { 1, new CurrentScope(1) }
             };
@@ -26,7 +26,7 @@ namespace verse_interpreter.lib
 
             WellKnownTypes = new List<string>()
             {
-                "int", "string"
+                "int", "string", "dynamic"
             };
         }
 
@@ -34,6 +34,6 @@ namespace verse_interpreter.lib
 
         public int CurrentScopeLevel { get; set; }  
 
-        public IScope<int> CurrentScope { get { return Scopes[CurrentScopeLevel]; } }
+        public IScope<Variable> CurrentScope { get { return Scopes[CurrentScopeLevel]; } }
     }
 }

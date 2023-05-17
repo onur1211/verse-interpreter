@@ -8,6 +8,6 @@ namespace verse_interpreter.lib.Lookup
 {
     public interface ILookupTable<T>
     {
-        public Dictionary<string, List<T>> Table { get; set; }
+        public Dictionary<string, T> Table { get; set; }
     }
 }
