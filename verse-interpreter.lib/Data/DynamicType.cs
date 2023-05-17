@@ -14,7 +14,9 @@ namespace verse_interpreter.lib
         private LookupManager _lookupManager;
 
         public string Name { get; set; }
+
         public string ConstructorName { get; set; }
+
         public DynamicType()
         {
             Name = "undefinied";

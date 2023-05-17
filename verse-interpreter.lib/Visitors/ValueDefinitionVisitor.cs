@@ -49,10 +49,12 @@ namespace verse_interpreter.lib.Visitors
                 declarationResult.TypeName = typeInstance.Name;
                 declarationResult.DynamicType = typeInstance;
             }
+
             if (maybeInt != null)
             {
                 declarationResult.Value = maybeInt.GetText();
             }
+
             if (maybeExpression != null)
             {
                 var expression = _expressionVisitor.Visit(maybeExpression);
@@ -60,10 +62,12 @@ namespace verse_interpreter.lib.Visitors
                 var value = _baseEvaluator.ArithmeticEvaluator.Evaluate(expression).ResultValue.ToString();
                 declarationResult.Value = value == null ? "false?" : value;
             }
+
             if (maybeString != null)
             {
                 declarationResult.Value = maybeString.SEARCH_TYPE().GetText().Replace("\"", "");
             }
+
             return _typeInferencer.InferGivenType(declarationResult);
         }
     }

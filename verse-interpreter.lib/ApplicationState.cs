@@ -19,8 +19,11 @@ namespace verse_interpreter.lib
             {
                 { 1, new CurrentScope(1) }
             };
+
             Types = new Dictionary<string, DynamicType>();
+
             CurrentScopeLevel = 1;
+
             WellKnownTypes = new List<string>()
             {
                 "int", "string"
