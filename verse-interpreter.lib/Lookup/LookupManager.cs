@@ -60,7 +60,7 @@ namespace verse_interpreter.lib.Lookup
         {
             if (!IsVariable(variableName))
             {
-                throw new InvalidOperationException("The specified variable does not exist in this scope!");
+                throw new VariableDoesNotExistException(variableName);
             }
 
             foreach (var command in this.updateCommands)
@@ -83,7 +83,7 @@ namespace verse_interpreter.lib.Lookup
             // If false then the variable does not exist (which means it was never declared).
             if (!this.stringLookupTable.Table.ContainsKey(variableName))
             {
-                return new List<string>();
+                throw new VariableDoesNotExistException(variableName);
             }
 
             // Get the values of the variable and return it.
@@ -103,7 +103,7 @@ namespace verse_interpreter.lib.Lookup
             // If false then the variable does not exist (which means it was never declared).
             if (!this.intLookupTable.Table.ContainsKey(variableName))
             {
-                return new List<int?>();
+                throw new VariableDoesNotExistException(variableName);
             }
 
             // Get the values of the variable and return it.
