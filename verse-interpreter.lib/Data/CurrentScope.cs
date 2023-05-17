@@ -7,35 +7,26 @@ using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib.Data
 {
-    public class CurrentScope : IScope<int>
+    public class CurrentScope : IScope<Variable>
     {
         private int _level;
 
-        public Dictionary<int, IScope<int>> SubScope { get; private set; }
+        public Dictionary<int, IScope<Variable>> SubScope { get; private set; }
 
         public LookupManager LookupManager { get; private set; }
-
-        public ILookupTable<string> StringLookupTable {get; private set;}
-
-        public ILookupTable<DynamicType> InstancesLookupTable { get; private set; }
-
-        public ILookupTable<int?> IntLookupTable { get; private set; }
 
         public int Level { get { return _level; } set { _level = value; } }
 
         public CurrentScope(int level)
         {
-            IntLookupTable = new LookupTable<int?>();
-            StringLookupTable = new LookupTable<string>();
-            InstancesLookupTable = new LookupTable<DynamicType>();
-            LookupManager = new LookupManager(IntLookupTable, StringLookupTable, InstancesLookupTable);
-            SubScope = new Dictionary<int, IScope<int>>();
+            LookupManager = new LookupManager();
+            SubScope = new Dictionary<int, IScope<Variable>>();
             _level = level;
         }
 
-        public void AddScopedVariable(int scopeId, DeclarationResult variable)
+        public void AddScopedVariable(int scopeId, Variable variable)
         {
-            this.LookupManager.Add(variable);
+            this.LookupManager.AddVariable(variable);
         }
     }
 }

@@ -9,18 +9,12 @@ namespace verse_interpreter.lib.Data
 {
     public interface IScope<T>
     {
-        Dictionary<int, IScope<T>> SubScope { get;  }
-
-        ILookupTable<string> StringLookupTable{ get; }
-
-        ILookupTable<int?> IntLookupTable { get; }
-
-        ILookupTable<DynamicType> InstancesLookupTable { get;  }
+        Dictionary<int, IScope<T>> SubScope { get; }
 
         LookupManager LookupManager { get; }
 
         int Level { get; set; }
 
-        void AddScopedVariable(int scopeId, DeclarationResult variable);
+        void AddScopedVariable(int scopeId, Variable variable);
     }
 }

@@ -25,8 +25,9 @@ namespace verse_interpreter.lib.Visitors
         {
             var identfier = context.type_member_access().Accept(this);
             var value = context.value_definition().Accept(_valueDefinitionVisitor);
-            var instance = _applicationState.CurrentScope.LookupManager.GetInstanceVariable(identfier.VariableName);
-            instance.LookupManager.UpdateVariable(identfier.PropertyName, value);
+            //var instance = _applicationState.CurrentScope.LookupManager.GetInstanceVariable(identfier.VariableName);
+            throw new NotImplementedException();
+            //instance.LookupManager.UpdateVariable(identfier.PropertyName, value);
             return base.VisitType_member_definition(context);
         }
 

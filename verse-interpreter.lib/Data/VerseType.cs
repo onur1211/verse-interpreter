@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace verse_interpreter.lib.Lookup
+namespace verse_interpreter.lib.Data
 {
-    public interface ILookupTable<T>
+    public enum VerseType
     {
-        public Dictionary<string, T> Table { get; set; }
+        Int,
+        String,
+        Dynamic,
+        Undefined
     }
 }

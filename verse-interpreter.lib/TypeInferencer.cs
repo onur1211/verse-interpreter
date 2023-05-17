@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib
 {
-    // EXAM_UPDATED
     public class TypeInferencer
     {
         private ApplicationState _state;
@@ -44,9 +44,10 @@ namespace verse_interpreter.lib
                     declarationResult.TypeName = "string";
                 }
             }
+
             if (!_state.Types.ContainsKey(declarationResult.TypeName) && !_state.WellKnownTypes.Contains(declarationResult.TypeName))
             {
-                throw new InvalidOperationException("The given type is unknown!");
+                throw new UnknownTypeException(declarationResult.TypeName);
             }
 
             return declarationResult;

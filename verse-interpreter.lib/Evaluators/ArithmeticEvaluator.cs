@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.DataVisitors;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Factories;
 
@@ -13,9 +14,12 @@ namespace verse_interpreter.lib.Evaluators
     {
         private ApplicationState _state;
 
-        public ArithmeticEvaluator(ApplicationState applicationState)
+        private readonly VariableVisitor _variableVisitor;
+
+        public ArithmeticEvaluator(ApplicationState applicationState, VariableVisitor variableVisitor)
         {
             _state = applicationState;
+            _variableVisitor = variableVisitor;
         }
 
         public ArithmeticExpression Evaluate(List<List<ExpressionResult>> input)
@@ -64,6 +68,7 @@ namespace verse_interpreter.lib.Evaluators
         private List<ExpressionResult> SubstituteValues(List<ExpressionResult> input)
         {
             List<ExpressionResult> results = new List<ExpressionResult>();
+
             foreach (var expressionResult in input)
             {
                 // Pfusch, müss ma fixen wenn LookupTable geupdated wurde!
@@ -75,8 +80,8 @@ namespace verse_interpreter.lib.Evaluators
                 if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
                 {
                     // Lookup the variable value and substitute it in the expression
-                    var result = _state.CurrentScope.LookupManager.GetVariableInts(expressionResult.ValueIdentifier).First();
-                    expressionResult.IntegerValue = result.Value;
+                    int? result = _state.CurrentScope.LookupManager.GetVariable(expressionResult.ValueIdentifier).AcceptInt(this._variableVisitor);
+                    expressionResult.IntegerValue = result;
                     expressionResult.ValueIdentifier = string.Empty;
                     results.Add(expressionResult);
                 }

@@ -10,9 +10,9 @@ namespace verse_interpreter.lib.Lookup
     {
         public LookupTable() 
         {
-            this.Table = new Dictionary<string, List<T>>();
+            this.Table = new Dictionary<string, T>();
         }
 
-        public Dictionary<string, List<T>> Table { get; set; }
+        public Dictionary<string, T> Table { get; set; }
     }
 }

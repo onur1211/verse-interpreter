@@ -4,10 +4,10 @@
     {
         public FunctionDeclarationResult()
         {
-            VariableDeclarations = new List<DeclarationResult>();
+            VariableDeclarations = new List<Variable>();
         }
 
-        public List<DeclarationResult> VariableDeclarations { get; private set; }
+        public List<Variable> VariableDeclarations { get; private set; }
 
         public string FunctionName { get; set; }
 

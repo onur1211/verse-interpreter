@@ -46,13 +46,15 @@ namespace verse_interpreter.lib.Visitors
             if (maybeConstructor != null)
             {
                 var typeInstance = maybeConstructor.Accept(_constructorVisitor);
-                declarationResult.TypeName = typeInstance.Name;
+                declarationResult.TypeName = "dynamic";
                 declarationResult.DynamicType = typeInstance;
             }
+
             if (maybeInt != null)
             {
                 declarationResult.Value = maybeInt.GetText();
             }
+
             if (maybeExpression != null)
             {
                 var expression = _expressionVisitor.Visit(maybeExpression);
@@ -60,10 +62,12 @@ namespace verse_interpreter.lib.Visitors
                 var value = _baseEvaluator.ArithmeticEvaluator.Evaluate(expression).ResultValue.ToString();
                 declarationResult.Value = value == null ? "false?" : value;
             }
+
             if (maybeString != null)
             {
                 declarationResult.Value = maybeString.SEARCH_TYPE().GetText().Replace("\"", "");
             }
+
             return _typeInferencer.InferGivenType(declarationResult);
         }
     }
