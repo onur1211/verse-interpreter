@@ -27,6 +27,7 @@ namespace verse_interpreter.lib.Visitors
             _dynamicType = new DynamicType();
             var identfiers = context.ID();
 
+            // Fetches the name of the class and it's constructor
             _dynamicType.Name = identfiers[0].GetText();
             _dynamicType.ConstructorName = identfiers[1].GetText();
 
@@ -37,6 +38,7 @@ namespace verse_interpreter.lib.Visitors
 
         public override DynamicType VisitType_body([NotNull] Verse.Type_bodyContext context)
         {
+            // Gets all the variables and adds it to the classes scope
             var res = context.declaration().Accept(this._declarationVisitor);
             _dynamicType.AddScopedVariable(res);
             return this.VisitChildren(context);

@@ -18,6 +18,13 @@ namespace verse_interpreter.lib
             _state = applicationState;
         }
 
+        /// <summary>
+        /// Tries to infer the type by checking if the value is castable to an integer and if the given type is actually known in the current application state.
+        /// </summary>
+        /// <param name="declarationResult"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public DeclarationResult InferGivenType(DeclarationResult declarationResult)
         {
             if (declarationResult == null)

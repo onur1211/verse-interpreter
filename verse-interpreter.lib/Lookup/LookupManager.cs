@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime;
 using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -19,7 +20,6 @@ namespace verse_interpreter.lib.Lookup
         {
             this.lookupTable = new LookupTable<Variable>();
         }
-
         public void AddVariable(Variable variable)
         {
             // Check if variable is already in a lookup table (which means the variable was already declared once).
@@ -52,15 +52,15 @@ namespace verse_interpreter.lib.Lookup
             return this.lookupTable.Table[variableName];
         }
 
-        public bool IsVariable(string variableName)
+        public bool IsVariable(string name)
         {
-            if (string.IsNullOrEmpty(variableName))
+            if (string.IsNullOrEmpty(name))
             {
                 return false;
             }
             else
             {
-                return this.lookupTable.Table.ContainsKey(variableName);
+                return this.lookupTable.Table.ContainsKey(name);
             }
         }
     }

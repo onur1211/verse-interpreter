@@ -44,7 +44,7 @@ namespace verse_interpreter.lib
             string name = context.ID().GetText();
             string type = context.type().GetText();
 
-            if (!(_state.Types.ContainsKey(name) || _state.WellKnownTypes.Contains(type)))
+            if (!(_state.Types.ContainsKey(type) || _state.WellKnownTypes.Contains(type)))
             {
                 throw new InvalidOperationException($"The specified type \"{type}\" does not exist!");
             }
@@ -73,6 +73,11 @@ namespace verse_interpreter.lib
             return ParseValueAssignment(context);
         }
 
+        /// <summary>
+        /// Calls a <paramref type="ValueDefinitionVisitor"/> which fetches the values out of the parse tree.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         private DeclarationResult ParseValueAssignment(Verse.DeclarationContext context)
         {
             DeclarationResult declarationResult = _valueDefinitionVisitor.Visit(context);

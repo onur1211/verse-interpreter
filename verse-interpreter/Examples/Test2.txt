@@ -3,3 +3,6 @@
     width:int
     height:int
 }
+
+x := instance Triangle()
+x.width = 25

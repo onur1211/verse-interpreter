@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
@@ -17,11 +18,23 @@ namespace verse_interpreter.lib.Converter
             // object oriented programming sucks
             return declarationResult.TypeName switch
             {
-                "int" => new IntVariable(declarationResult.Name, declarationResult.TypeName, int.Parse(declarationResult.Value)),
+                "int" => HandleIntVariables(declarationResult),
                 "string" => new StringVariable(declarationResult.Name, declarationResult.TypeName, declarationResult.Value),
                 "dynamic" => new DynamicVariable(declarationResult.Name, declarationResult.TypeName, declarationResult.DynamicType!),
                 _ => throw new UnknownTypeException(declarationResult.TypeName),
             };
+        }
+
+        private static IntVariable HandleIntVariables(DeclarationResult declarationResult)
+        {
+            if(declarationResult.Value ==  null)
+            {
+                return new IntVariable(declarationResult.Name, declarationResult.TypeName, null);
+            }
+            else
+            {
+                return new IntVariable(declarationResult.Name, declarationResult.TypeName, int.Parse(declarationResult.Value));
+            }
         }
     }
 }

@@ -80,7 +80,7 @@ namespace verse_interpreter.lib.Evaluators
                 if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
                 {
                     // Lookup the variable value and substitute it in the expression
-                    int result = _state.CurrentScope.LookupManager.GetVariable(expressionResult.ValueIdentifier).Accept<int>(this._variableVisitor);
+                    int? result = _state.CurrentScope.LookupManager.GetVariable(expressionResult.ValueIdentifier).AcceptInt(this._variableVisitor);
                     expressionResult.IntegerValue = result;
                     expressionResult.ValueIdentifier = string.Empty;
                     results.Add(expressionResult);
