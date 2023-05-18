@@ -54,8 +54,9 @@ spaced_body : INDENT block
 // Arrays/Tuples
 array_literal : '(' array_elements ')' ;
 
-array_elements : value_definition (',' value_definition)* 
-               | 
+
+array_elements : value_definition (',' array_elements)*
+               | declaration (',' array_elements)*
                ;
 
 

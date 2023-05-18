@@ -16,7 +16,6 @@ namespace verse_interpreter.lib.Visitors
 {
     public class ValueDefinitionVisitor : AbstractVerseVisitor<DeclarationResult>
     {
-        private readonly ApplicationState _applicationState;
         private readonly TypeInferencer _typeInferencer;
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly TypeConstructorVisitor _constructorVisitor;
@@ -28,7 +27,6 @@ namespace verse_interpreter.lib.Visitors
                                       TypeConstructorVisitor constructorVisitor,
                                       EvaluatorWrapper evaluator) : base(applicationState)
         {
-            _applicationState = applicationState;
             _typeInferencer = typeInferencer;
             _expressionVisitor = expressionVisitor;
             _constructorVisitor = constructorVisitor;
@@ -82,31 +80,45 @@ namespace verse_interpreter.lib.Visitors
         {
             List<DeclarationResult> declarationResult = new List<DeclarationResult>();
 
-            var valueDefinitionContext = context.array_elements().value_definition();
+            // Check the children of this context recursive.
+            // For variable declarations like y:int
+            var valueDefinitionContext = context.array_elements();
 
-            foreach (var valueDef in valueDefinitionContext)
+            if (valueDefinitionContext.value_definition() != null)
             {
-                declarationResult.Add(valueDef.Accept(this));
+                var result = this.Visit(valueDefinitionContext.value_definition());
+
+                //foreach (var valueDef in valueDefinitionContext.value_definition())
+                //{
+                //    declarationResult.Add(valueDef.Accept(this));
+                //}
+
+                List<Variable> variables = new List<Variable>();
+                string name = string.Empty;
+
+                foreach (var decResult in declarationResult)
+                {
+                    name = decResult.Name;
+                    variables.Add(VariableConverter.Convert(decResult));
+                }
+
+                CollectionVariable collectionVariable = new CollectionVariable(name, "collection", variables.ToArray());
+
+                DeclarationResult finalResult = new DeclarationResult();
+                finalResult.Name = name;
+                finalResult.CollectionVariable = collectionVariable;
+
+                finalResult = _typeInferencer.InferGivenType(finalResult);
+
+                return finalResult;
             }
 
-            List<Variable> variables = new List<Variable>();
-            string name = string.Empty;
-
-            foreach (var decResult in declarationResult)
+            if (valueDefinitionContext.declaration() != null)
             {
-                name = decResult.Name;
-                variables.Add(VariableConverter.Convert(decResult));
+
             }
 
-            CollectionVariable collectionVariable = new CollectionVariable(name, "collection", variables.ToArray());
-
-            DeclarationResult finalResult = new DeclarationResult();
-            finalResult.Name = name;
-            finalResult.CollectionVariable = collectionVariable;
-
-            finalResult = _typeInferencer.InferGivenType(finalResult);
-
-            return finalResult;
+            throw new NotImplementedException();
         }
     }
 }
