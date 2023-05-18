@@ -34,6 +34,7 @@ namespace verse_interpreter.lib.Lookup
             }
 
             this.lookupTable.Table.Add(variable.Name, variable);
+            this.FireVariableBound(variable);
         }
 
         public void UpdateVariable(Variable variable)

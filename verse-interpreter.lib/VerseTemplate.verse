@@ -1,8 +1,11 @@
 ﻿x:int
 y:int
 z:int
-x + y + (5 - 2 + w) + z
+t:string
+x + w
 x = 5
-z = x + y
+z = x + y + 2 + t
 y = 7
-w := 5
+w:int
+t = "Ich bin ein toller string!"
+w = 25
