@@ -41,7 +41,7 @@ namespace verse_interpreter.lib.Visitors
             var expression = _baseEvaluator.ArithmeticEvaluator.Evaluate(res);
             if (expression.PostponedExpression == null)
             {
-                PrintResult(expression.ResultValue.ToString());
+                PrintResult(expression.ResultValue.ToString()!);
             }
             else
             {

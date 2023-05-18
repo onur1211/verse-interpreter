@@ -44,6 +44,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             _associatedArithmeticExpressions.Add(identfier, expression);
         }
 
+        /// <summary>
+        /// After a variable is bound, this callback checks if the expressions are ready to be evaluated or not by calling them 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
         public void HandleVariableBound(object sender, VariableBoundEventArgs eventArgs)
         {
             foreach(var element in _arithmeticExpressions)

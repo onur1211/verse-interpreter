@@ -1,11 +1,9 @@
-x:int
-y:int
-z:int
-t:string
-x + w
-x = 5
-z = x + y + 2 + t
-y = 7
-w:int
-t = "Ich bin ein toller string!"
-w = 25
+data Person = Person 
+{
+    age:int
+}
+
+x := instance Person()
+x.age = 25
+
+x.age - 20
