@@ -20,6 +20,7 @@ namespace verse_interpreter.lib.Lookup
         {
             this.lookupTable = new LookupTable<Variable>();
         }
+
         public void AddVariable(Variable variable)
         {
             // Check if variable is already in a lookup table (which means the variable was already declared once).

@@ -3,13 +3,16 @@ options {tokenVocab=VerseLexer;}
 
 verse_text: ( program ) * EOF;
 
-declaration : ID ':' type 
-            | ID ':=' (value_definition | constructor_body) 
+declaration : ID ':' type
+            | ID ':=' (value_definition | constructor_body)
             | ID '='  (value_definition | constructor_body)
+            | ID ':=' array_literal
+            | ID '=' array_literal
             ;
 
-value_definition : (INT | expression | constructor_body | string_rule | choice_rule)
+value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal)
                  ;
+                 
 
 program : function_definition program
         | declaration program
@@ -46,6 +49,13 @@ inline_body : block ';' inline_body
 spaced_body : INDENT block
             | INDENT block NEWLINE spaced_body
             ;
+
+
+// Arrays/Tuples
+array_literal : '(' array_elements ')' ;
+
+array_elements : value_definition (',' value_definition)* ;
+
 
 // Functions
 
