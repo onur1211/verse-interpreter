@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data.ResultObjects;
+﻿using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Factories;
 
@@ -11,14 +6,11 @@ namespace verse_interpreter.lib
 {
     public class ExpressionValidator
     {
-        private IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> _arithmeticEvaluator;
-        private IEvaluator<string, List<List<ExpressionResult>>> _stringEvaluator;
+        private readonly ApplicationState _applicationState;
 
-        public ExpressionValidator(IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> arithmeticEvaluator,
-                                   IEvaluator<string, List<List<ExpressionResult>>> stringEvaluator)
+        public ExpressionValidator(ApplicationState applicationState)
         {
-            _arithmeticEvaluator = arithmeticEvaluator;
-            _stringEvaluator = stringEvaluator;
+            _applicationState = applicationState;
         }
 
         /// <summary>
@@ -28,13 +20,44 @@ namespace verse_interpreter.lib
         /// <returns></returns>
         public bool IsTypeConformityGiven(List<List<ExpressionResult>> expressions)
         {
+            string typeName = string.Empty;
             foreach (var expression in expressions)
             {
-                foreach(var exp in expression)
+                foreach (var exp in expression)
                 {
+                    if (!string.IsNullOrEmpty(exp.ValueIdentifier) && typeName == string.Empty)
+                    {
+                        typeName = _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Type;
+                    }
+                    if (!string.IsNullOrEmpty(exp.ValueIdentifier) && _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Type != typeName)
+                    {
+                        return false;
+                    }
                 }
             }
-            throw new NotImplementedException();
+
+            return true;
+        }
+
+        public string GetExpressionType(List<List<ExpressionResult>> expressions)
+        {
+            if (!IsTypeConformityGiven(expressions))
+            {
+                throw new InvalidTypeCombinationException("The specified type contains multiple differently typed values");
+            }
+
+            foreach (var expression in expressions)
+            {
+                foreach (var exp in expression)
+                {
+                    if (!string.IsNullOrEmpty(exp.ValueIdentifier))
+                    {
+                        return _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Type;
+                    }
+                }
+            }
+
+            throw new InvalidTypeCombinationException("The specified type contains multiple differently typed values");
         }
     }
 }

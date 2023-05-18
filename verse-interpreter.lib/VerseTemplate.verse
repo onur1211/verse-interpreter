@@ -1,11 +1,8 @@
-﻿data Person = Person 
-{
-    name:string
-    age:int
-}
-
-x := instance Person()
-x.age = 65
-x.name = "Markus Safar"
-
-x.age + 25
+﻿x:int
+y:int
+z:int
+x + y + (5 - 2 + w) + z
+x = 5
+z = x + y
+y = 7
+w := 5

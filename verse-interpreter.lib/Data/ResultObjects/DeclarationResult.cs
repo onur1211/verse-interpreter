@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data.Expressions;
+using verse_interpreter.lib.Data.Interfaces;
+using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Factories;
 
 namespace verse_interpreter.lib.Data
 {
@@ -15,6 +19,8 @@ namespace verse_interpreter.lib.Data
         public string Name { get; set; } = null!;
 
         public string TypeName { get; set; } = null!;
+
+        public List<List<ExpressionResult>>? ExpressionResults { get; set; } = null!;
 
         public DeclarationResult()
         {

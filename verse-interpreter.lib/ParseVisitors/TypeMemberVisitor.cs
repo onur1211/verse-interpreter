@@ -47,20 +47,26 @@ namespace verse_interpreter.lib.Visitors
 
         private TypeMemberAccessResult FetchChildrenRecursivly(string[] children, TypeMemberAccessResult finalResult)
         {
+            // Can't happen I think
             if (children.Length == 0)
                 return finalResult;
+            // Only the property itself is accessed
             if (children.Length == 2)
             {
                 finalResult.VariableName = children[0];
                 finalResult.PropertyName = children[1];
                 return finalResult;
             }
+            // only the variable itself is accessed
             if (children.Length == 1)
             {
                 finalResult.VariableName = children[0];
                 return finalResult;
             }
 
+            // If there is a property access of a child object within a class then go recursivly deeper to build the actual access object
+            // Example: x.neighbour.age
+            // Where neighbour is of type "Person"
             finalResult.VariableName = children[0];
             finalResult.PropertyName = children[1];
             finalResult.ChildResult = FetchChildrenRecursivly(children.Skip(2).ToArray(), new TypeMemberAccessResult());

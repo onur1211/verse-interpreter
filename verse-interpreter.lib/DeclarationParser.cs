@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Headers;
 using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
@@ -17,14 +13,23 @@ namespace verse_interpreter.lib
         private ApplicationState _state;
         private TypeInferencer _inferencer;
         private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
+        private readonly BackpropagationEventSystem _backPropagator;
+        private readonly EvaluatorWrapper _evaluator;
+        private readonly ExpressionValidator _validator;
 
         public DeclarationParser(ApplicationState applicationState,
                                  TypeInferencer typeInferencer,
-                                 ValueDefinitionVisitor valueDefinitionVisitor)
+                                 ValueDefinitionVisitor valueDefinitionVisitor,
+                                 BackpropagationEventSystem backPropagator,
+                                 EvaluatorWrapper evaluator,
+                                 ExpressionValidator validator)
         {
             _state = applicationState;
             _inferencer = typeInferencer;
             _valueDefinitionVisitor = valueDefinitionVisitor;
+            _backPropagator = backPropagator;
+            _evaluator = evaluator;
+            _validator = validator;
         }
 
         public DeclarationResult ParseDeclaration(Verse.DeclarationContext context)
@@ -82,6 +87,37 @@ namespace verse_interpreter.lib
         {
             DeclarationResult declarationResult = _valueDefinitionVisitor.Visit(context);
             declarationResult.Name = context.ID().GetText();
+            declarationResult = HandleExpressionAsValue(declarationResult);
+
+            return declarationResult;
+        }
+
+        private DeclarationResult HandleExpressionAsValue(DeclarationResult declarationResult)
+        {
+            if (declarationResult.ExpressionResults == null)
+            {
+                return declarationResult;
+            }
+            var expressionType = _validator.GetExpressionType(declarationResult.ExpressionResults);
+            ArithmeticExpression expression = new ArithmeticExpression();
+            switch (expressionType)
+            {
+                case "string":
+                      _evaluator.StringEvaluator.Evaluate(declarationResult.ExpressionResults);
+                    throw new NotImplementedException();
+                case "int":
+                    expression = _evaluator.ArithmeticEvaluator.Evaluate(declarationResult.ExpressionResults);
+                    break;
+            }
+
+            if(expression.PostponedExpression != null)
+            {
+                _backPropagator.AddExpression(declarationResult.Name, expression);
+            }
+            else
+            {
+                declarationResult.Value = expression.ResultValue.ToString();
+            }
 
             return declarationResult;
         }
