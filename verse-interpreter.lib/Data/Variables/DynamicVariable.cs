@@ -17,6 +17,11 @@ namespace verse_interpreter.lib.Data.Variables
 
         public DynamicType Value { get; set; }
 
+        public override Variable[] AcceptCollection(IVariableVisitor visitor)
+        {
+            throw new NotImplementedException();
+        }
+
         public override DynamicType AcceptDynamicType(IVariableVisitor visitor)
         {
             return Value;
