@@ -64,5 +64,30 @@ namespace verse_interpreter.lib
 
             return services;
         }
+
+        private void RunWithErrorHandling(string[] args)
+        {
+            var inputCode = _reader.ReadFileToEnd("../../../../verse-interpreter.lib/VerseTemplate.verse");
+
+            try
+            {
+                _services = BuildService();
+                ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+                var parseTree = generator.GenerateParseTree(inputCode);
+                var mainVisitor = _services.GetRequiredService<MainVisitor>();
+                mainVisitor.VisitProgram(parseTree);
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Error: " + ex.Message);
+                Console.WriteLine();
+                Console.WriteLine("Code: ");
+                Console.Write(inputCode);
+                Console.ResetColor();
+            }
+
+            Console.ReadKey();
+        }
     }
 }

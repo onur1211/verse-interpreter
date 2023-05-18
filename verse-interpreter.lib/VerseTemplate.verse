@@ -1,4 +1,4 @@
-﻿x:int
+x:int
 y:int
 z:int
 t:string
