@@ -83,6 +83,11 @@ namespace verse_interpreter.lib
             DeclarationResult declarationResult = _valueDefinitionVisitor.Visit(context);
             declarationResult.Name = context.ID().GetText();
 
+            if (declarationResult.CollectionVariable != null) 
+            {
+                declarationResult.CollectionVariable.Name = declarationResult.Name;
+            }
+
             return declarationResult;
         }
     }

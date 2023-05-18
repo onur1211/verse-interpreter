@@ -12,7 +12,7 @@ namespace verse_interpreter.lib.Data
     {
         public CollectionVariable(string name, string type, Variable[] values) : base(name, type)
         {
-            this.CheckValueTypes(values);
+            this.Type = type;
             this.Values = values;
         }
 

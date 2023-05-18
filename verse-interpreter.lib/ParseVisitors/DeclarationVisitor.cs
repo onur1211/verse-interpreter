@@ -7,12 +7,12 @@ namespace verse_interpreter.lib.Visitors
 {
     public class DeclarationVisitor : AbstractVerseVisitor<Variable>
     {
-       private DeclarationParser _parser;
+        private DeclarationParser _parser;
 
         public DeclarationVisitor(ApplicationState applicationState,
-                                  DeclarationParser declarationParser): base(applicationState)
+                                  DeclarationParser declarationParser) : base(applicationState)
         {
-          _parser = declarationParser;
+            _parser = declarationParser;
         }
 
         public override Variable VisitDeclaration([Antlr4.Runtime.Misc.NotNull] Verse.DeclarationContext context)

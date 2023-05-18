@@ -40,6 +40,7 @@ namespace verse_interpreter.lib
             var parseTree = generator.GenerateParseTree(inputCode);
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
             mainVisitor.VisitProgram(parseTree);
+            var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
 
             Console.ReadKey();
         }

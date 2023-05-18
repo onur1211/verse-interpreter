@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluators;
@@ -39,6 +40,7 @@ namespace verse_interpreter.lib.Visitors
             DeclarationResult declarationResult = new DeclarationResult();
 
             var maybeInt = context.INT();
+            var maybeArrayLiteral = context.array_literal();
             var maybeExpression = context.expression();
             var maybeString = context.string_rule();
             var maybeConstructor = context.constructor_body();
@@ -55,6 +57,11 @@ namespace verse_interpreter.lib.Visitors
                 declarationResult.Value = maybeInt.GetText();
             }
 
+            if (maybeArrayLiteral != null)
+            {
+                declarationResult = maybeArrayLiteral.Accept(this);
+            }
+
             if (maybeExpression != null)
             {
                 var expression = _expressionVisitor.Visit(maybeExpression);
@@ -69,6 +76,37 @@ namespace verse_interpreter.lib.Visitors
             }
 
             return _typeInferencer.InferGivenType(declarationResult);
+        }
+
+        public override DeclarationResult VisitArray_literal([NotNull] Verse.Array_literalContext context)
+        {
+            List<DeclarationResult> declarationResult = new List<DeclarationResult>();
+
+            var valueDefinitionContext = context.array_elements().value_definition();
+
+            foreach (var valueDef in valueDefinitionContext)
+            {
+                declarationResult.Add(valueDef.Accept(this));
+            }
+
+            List<Variable> variables = new List<Variable>();
+            string name = string.Empty;
+
+            foreach (var decResult in declarationResult)
+            {
+                name = decResult.Name;
+                variables.Add(VariableConverter.Convert(decResult));
+            }
+
+            CollectionVariable collectionVariable = new CollectionVariable(name, "collection", variables.ToArray());
+
+            DeclarationResult finalResult = new DeclarationResult();
+            finalResult.Name = name;
+            finalResult.CollectionVariable = collectionVariable;
+
+            finalResult = _typeInferencer.InferGivenType(finalResult);
+
+            return finalResult;
         }
     }
 }

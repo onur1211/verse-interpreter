@@ -5,7 +5,7 @@ verse_text: ( program ) * EOF;
 
 declaration : ID ':' type
             | ID ':=' (value_definition | constructor_body)
-            | ID '='  (value_definition | constructor_body)
+            | ID '=' (value_definition | constructor_body)
             | ID ':=' array_literal
             | ID '=' array_literal
             ;
@@ -54,7 +54,9 @@ spaced_body : INDENT block
 // Arrays/Tuples
 array_literal : '(' array_elements ')' ;
 
-array_elements : value_definition (',' value_definition)* ;
+array_elements : value_definition (',' value_definition)* 
+               | 
+               ;
 
 
 // Functions

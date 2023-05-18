@@ -35,6 +35,7 @@ namespace verse_interpreter.lib
             if (declarationResult.TypeName == "undefined")
             {
                 var isInt = int.TryParse(declarationResult.Value, out _);
+
                 if (isInt)
                 {
                     declarationResult.TypeName = "int";
@@ -42,6 +43,11 @@ namespace verse_interpreter.lib
                 else
                 {
                     declarationResult.TypeName = "string";
+                }
+
+                if (declarationResult.CollectionVariable != null) 
+                {
+                    declarationResult.TypeName = "collection";
                 }
             }
 
