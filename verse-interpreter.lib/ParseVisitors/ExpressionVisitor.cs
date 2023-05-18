@@ -8,8 +8,7 @@ namespace verse_interpreter.lib.Visitors
     {
         private List<List<ExpressionResult>> _expressions;
 
-        public ExpressionVisitor(ApplicationState applicationState,
-                                 ExpressionValidator expressionValidator) : base(applicationState)
+        public ExpressionVisitor(ApplicationState applicationState) : base(applicationState)
         {
             _expressions = new List<List<ExpressionResult>>();
             ExpressionTerminalVisited += TerminalNodeVisitedCallback;

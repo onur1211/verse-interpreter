@@ -1,21 +1,7 @@
-﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Net.Mime;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data.ResultObjects;
-using verse_interpreter.lib.Evaluators;
-using verse_interpreter.lib.Factories;
+﻿using Antlr4.Runtime.Misc;
+using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Wrapper;
-using Z.Expressions;
 
 namespace verse_interpreter.lib.Visitors
 {
@@ -25,17 +11,21 @@ namespace verse_interpreter.lib.Visitors
         private ExpressionVisitor _expressionVisitor;
         private readonly TypeHandlingWrapper _typeHandlingWrapper;
         private readonly EvaluatorWrapper _baseEvaluator;
+        private readonly BackpropagationEventSystem _backPropagator;
 
         public MainVisitor(ApplicationState applictationState,
                            DeclarationVisitor declarationVisitor,
                            ExpressionVisitor expressionVisitor,
                            TypeHandlingWrapper typeHandlingWrapper,
-                           EvaluatorWrapper baseEvaluator) : base(applictationState)
+                           EvaluatorWrapper baseEvaluator,
+                           BackpropagationEventSystem backPropagator) : base(applictationState)
         {
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
             _typeHandlingWrapper = typeHandlingWrapper;
             _baseEvaluator = baseEvaluator;
+            _backPropagator = backPropagator;
+            ApplicationState.CurrentScope.LookupManager.VariableBound += _backPropagator.HandleVariableBound!;
         }
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
@@ -48,7 +38,15 @@ namespace verse_interpreter.lib.Visitors
         public override object VisitExpression([NotNull] Verse.ExpressionContext context)
         {
             var res = _expressionVisitor.Visit(context);
-            PrintResult(_baseEvaluator.ArithmeticEvaluator.Evaluate(res).ResultValue.ToString()!);
+            var expression = _baseEvaluator.ArithmeticEvaluator.Evaluate(res);
+            if (expression.PostponedExpression == null)
+            {
+                PrintResult(expression.ResultValue.ToString());
+            }
+            else
+            {
+                _backPropagator.AddExpression(expression);
+            }
             return null!;
         }
 

@@ -31,5 +31,10 @@ namespace verse_interpreter.lib.Data.Variables
         {
             throw new NotImplementedException();
         }
+
+        public override bool HasValue()
+        {
+            return Value != null;
+        }
     }
 }

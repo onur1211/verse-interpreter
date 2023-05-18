@@ -32,4 +32,8 @@
 		<PackageReference Include="Z.Expressions.Eval" Version="5.0.3" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Data\ExpressionVisitors\" />
+	</ItemGroup>
+
 </Project>

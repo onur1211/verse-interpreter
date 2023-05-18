@@ -17,7 +17,7 @@ namespace verse_interpreter.lib.Visitors
 
         public override Variable VisitDeclaration([Antlr4.Runtime.Misc.NotNull] Verse.DeclarationContext context)
         {
-            return VariableConverter.Convert(_parser.ParseDeclaration(context));
+            return VariableConverter.Convert(_parser.ParseDeclaration(context), ApplicationState);
         }
     }
 }

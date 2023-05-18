@@ -1,5 +1,6 @@
 ﻿namespace verse_interpreter.lib.Data.ResultObjects
 {
+    [Serializable]
     public class ExpressionResult
     {
         public Nullable<int> IntegerValue { get; set; }
