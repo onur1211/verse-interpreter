@@ -42,7 +42,7 @@ namespace verse_interpreter.lib.Lookup
             this.lookupTable.Table[variable.Name] = variable;
         }
 
-        public Variable GetVariable(string variableName) 
+        public Variable GetVariable(string variableName)
         {
             if (!IsVariable(variableName))
             {
@@ -50,6 +50,16 @@ namespace verse_interpreter.lib.Lookup
             }
 
             return this.lookupTable.Table[variableName];
+        }
+
+        public Variable GetMemberVariable(DynamicType instance, string variableName, string propertyName)
+        {
+            if (!IsVariable(variableName))
+            {
+                throw new VariableDoesNotExistException(variableName);
+            }
+
+            return instance.LookupManager.lookupTable.Table[propertyName];
         }
 
         public bool IsVariable(string name)

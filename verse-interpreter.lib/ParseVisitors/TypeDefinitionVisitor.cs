@@ -30,7 +30,8 @@ namespace verse_interpreter.lib.Visitors
             // Fetches the name of the class and it's constructor
             _dynamicType.Name = identfiers[0].GetText();
             _dynamicType.ConstructorName = identfiers[1].GetText();
-
+            
+            //ApplicationState.Types.Add(_dynamicType.Name, _dynamicType);
             base.VisitType_header(context);
 
             return _dynamicType;

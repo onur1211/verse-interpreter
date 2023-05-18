@@ -49,7 +49,7 @@ namespace verse_interpreter.lib.Evaluators
                     // Merge two expression blocks
                     lastExpression = MergeTwoExpressionBlocks(lastExpression, expression);
                 }
-                if(exp.Count > 3)
+                if (exp.Count > 3)
                 {
                     lastExpression = BuildSimpleComposedExpression(lastExpression, expression);
                 }
@@ -72,15 +72,20 @@ namespace verse_interpreter.lib.Evaluators
             foreach (var expressionResult in input)
             {
                 // Pfusch, müss ma fixen wenn LookupTable geupdated wurde!
-                if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier) && expressionResult.ValueIdentifier.Split('.').Count() >= 2)
+                if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier) && expressionResult.ValueIdentifier.Contains('.'))
                 {
-
+                    var identfieres = expressionResult.ValueIdentifier.Split('.');
+                    var instanceVariable = _state.CurrentScope.LookupManager.GetVariable(identfieres[0]).AcceptDynamicType(_variableVisitor);
+                    var result = _state.CurrentScope.LookupManager.GetMemberVariable(instanceVariable, identfieres[0], identfieres[1]).AcceptInt(_variableVisitor);
+                    expressionResult.IntegerValue = result;
+                    expressionResult.ValueIdentifier = string.Empty;
+                    results.Add(expressionResult);
                 }
 
                 if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
                 {
                     // Lookup the variable value and substitute it in the expression
-                    int? result = _state.CurrentScope.LookupManager.GetVariable(expressionResult.ValueIdentifier).AcceptInt(this._variableVisitor);
+                    int? result = _state.CurrentScope.LookupManager.GetVariable(expressionResult.ValueIdentifier).AcceptInt(_variableVisitor);
                     expressionResult.IntegerValue = result;
                     expressionResult.ValueIdentifier = string.Empty;
                     results.Add(expressionResult);
@@ -156,7 +161,7 @@ namespace verse_interpreter.lib.Evaluators
         private ArithmeticExpression BuildSimpleComposedExpression(ArithmeticExpression lastEpxression, List<ExpressionResult> expressionResults)
         {
             StringBuilder builder = new StringBuilder();
-            foreach(var expressionResult in expressionResults)
+            foreach (var expressionResult in expressionResults)
             {
                 if (!string.IsNullOrEmpty(expressionResult.Operator))
                 {
