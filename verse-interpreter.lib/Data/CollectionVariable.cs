@@ -40,6 +40,9 @@ namespace verse_interpreter.lib.Data
 
         private void CheckValueTypes(Variable[] variables)
         {
+            // Check the type of each variable in the array to
+            // ensure that only variables of the same type are in
+            // the collection.
             foreach (var variable in variables) 
             {
                 if (variable.Type != this.Type) 
