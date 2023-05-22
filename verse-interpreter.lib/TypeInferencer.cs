@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Exceptions;
-using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib
 {
     public class TypeInferencer
     {
         private ApplicationState _state;
+        private readonly ExpressionValidator _expressionValidator;
 
-        public TypeInferencer(ApplicationState applicationState)
+        public TypeInferencer(ApplicationState applicationState,
+                              ExpressionValidator expressionValidator)
         {
             _state = applicationState;
+            _expressionValidator = expressionValidator;
         }
 
         /// <summary>
@@ -31,6 +28,7 @@ namespace verse_interpreter.lib
             {
                 throw new ArgumentNullException("The specified input object is null!");
             }
+
 
             if (declarationResult.TypeName == "undefined")
             {
@@ -56,7 +54,17 @@ namespace verse_interpreter.lib
                 throw new UnknownTypeException(declarationResult.TypeName);
             }
 
+            if (declarationResult.ExpressionResults != null)
+            {
+                declarationResult.TypeName = HandleExpressions(declarationResult);
+            }
+
             return declarationResult;
+        }
+
+        private string HandleExpressions(DeclarationResult declarationResult)
+        {
+            return _expressionValidator.GetExpressionType(declarationResult.ExpressionResults);
         }
     }
 }

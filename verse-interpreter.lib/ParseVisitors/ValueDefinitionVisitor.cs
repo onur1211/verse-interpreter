@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Factories;
@@ -30,7 +31,6 @@ namespace verse_interpreter.lib.Visitors
                                       TypeInferencer typeInferencer,
                                       ExpressionVisitor expressionVisitor,
                                       TypeConstructorVisitor constructorVisitor,
-                                      CollectionParser collectionParser,
                                       EvaluatorWrapper evaluator) : base(applicationState)
         {
             _typeInferencer = typeInferencer;
@@ -53,7 +53,7 @@ namespace verse_interpreter.lib.Visitors
             if (maybeConstructor != null)
             {
                 var typeInstance = maybeConstructor.Accept(_constructorVisitor);
-                declarationResult.TypeName = "dynamic";
+                declarationResult.TypeName = typeInstance.Name;
                 declarationResult.DynamicType = typeInstance;
             }
 
@@ -71,8 +71,8 @@ namespace verse_interpreter.lib.Visitors
             {
                 var expression = _expressionVisitor.Visit(maybeExpression);
                 _expressionVisitor.Clean();
-                var value = _baseEvaluator.ArithmeticEvaluator.Evaluate(expression).ResultValue.ToString();
-                declarationResult.Value = value == null ? "false?" : value;
+                
+                declarationResult.ExpressionResults = expression;
             }
 
             if (maybeString != null)

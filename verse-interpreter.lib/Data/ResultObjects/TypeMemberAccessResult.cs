@@ -2,14 +2,27 @@
 {
     public class TypeMemberAccessResult
     {
-        public string PropertyName { get; }
+        public string PropertyName { get; set; }
 
-        public string VariableName { get; }
+        public string VariableName { get; set; }
+
+        public TypeMemberAccessResult? ChildResult { get; set; }
 
         public TypeMemberAccessResult(string variableName, string propertyName)
         {
             VariableName = variableName;
             PropertyName = propertyName;
+        }
+
+        public TypeMemberAccessResult(string variableName, string propertyName, TypeMemberAccessResult child)
+        {
+            VariableName = variableName;
+            PropertyName = propertyName;
+            ChildResult = child;
+        }
+
+        public TypeMemberAccessResult()
+        {
         }
     }
 }

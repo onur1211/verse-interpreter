@@ -68,5 +68,10 @@ namespace verse_interpreter.lib.Evaluators
         {
             return expression + GetValue(expressionResult);
         }
+
+        public bool AreVariablesBoundToValue(List<List<ExpressionResult>> input)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

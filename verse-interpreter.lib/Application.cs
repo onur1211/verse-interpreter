@@ -1,15 +1,9 @@
 ﻿using Antlr4.Runtime;
-using Antlr4.Runtime.Tree;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.DataVisitors;
 using verse_interpreter.lib.Data.ResultObjects;
-using verse_interpreter.lib.Data.Variables;
+using verse_interpreter.lib.Evaluation.EvaluationManagement;
+using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.IO;
@@ -50,6 +44,7 @@ namespace verse_interpreter.lib
         {
             var services = new ServiceCollection()
                 .AddSingleton<ApplicationState>()
+                .AddSingleton<BackpropagationEventSystem>()
                 .AddTransient<DeclarationVisitor>()
                 .AddTransient<ExpressionVisitor>()
                 .AddTransient<FunctionDeclarationVisitor>()

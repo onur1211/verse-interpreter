@@ -20,6 +20,7 @@ program : function_definition program
         | function_call program
         | type_header program
         | type_member_definition program
+        | expression program
         | (NEWLINE | NEWLINE NEWLINE) program
         | program ';' program
         | declaration

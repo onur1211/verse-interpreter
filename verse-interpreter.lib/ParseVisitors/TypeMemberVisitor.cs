@@ -28,7 +28,10 @@ namespace verse_interpreter.lib.Visitors
         public override TypeMemberAccessResult VisitType_member_definition([NotNull] Verse.Type_member_definitionContext context)
         {
             var identfier = context.type_member_access().Accept(this);
-            var value = Converter.VariableConverter.Convert(context.value_definition().Accept(_valueDefinitionVisitor));
+
+            var value = Converter.VariableConverter.Convert(context.value_definition().Accept(_valueDefinitionVisitor), _applicationState);
+            value.Name = identfier.PropertyName;
+
             var instance = _applicationState.CurrentScope.LookupManager.GetVariable(identfier.VariableName).AcceptDynamicType(_variableVisitor);
             instance.LookupManager.UpdateVariable(value);
             return base.VisitType_member_definition(context);
@@ -36,9 +39,39 @@ namespace verse_interpreter.lib.Visitors
 
         public override TypeMemberAccessResult VisitType_member_access([NotNull] Verse.Type_member_accessContext context)
         {
+            TypeMemberAccessResult accessResult = new TypeMemberAccessResult();
             var propertyIdentfier = context.GetText().Split('.');
 
-            return new TypeMemberAccessResult(propertyIdentfier[0], propertyIdentfier[1]);
+            return FetchChildrenRecursivly(propertyIdentfier, accessResult);
+        }
+
+        private TypeMemberAccessResult FetchChildrenRecursivly(string[] children, TypeMemberAccessResult finalResult)
+        {
+            // Can't happen I think
+            if (children.Length == 0)
+                return finalResult;
+            // Only the property itself is accessed
+            if (children.Length == 2)
+            {
+                finalResult.VariableName = children[0];
+                finalResult.PropertyName = children[1];
+                return finalResult;
+            }
+            // only the variable itself is accessed
+            if (children.Length == 1)
+            {
+                finalResult.VariableName = children[0];
+                return finalResult;
+            }
+
+            // If there is a property access of a child object within a class then go recursivly deeper to build the actual access object
+            // Example: x.neighbour.age
+            // Where neighbour is of type "Person"
+            finalResult.VariableName = children[0];
+            finalResult.PropertyName = children[1];
+            finalResult.ChildResult = FetchChildrenRecursivly(children.Skip(2).ToArray(), new TypeMemberAccessResult());
+
+            return finalResult;
         }
     }
 }
