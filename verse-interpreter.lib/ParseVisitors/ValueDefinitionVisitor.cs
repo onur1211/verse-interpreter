@@ -9,8 +9,10 @@ using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluators;
+using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
+using verse_interpreter.lib.Parser;
 
 namespace verse_interpreter.lib.Visitors
 {
@@ -19,17 +21,22 @@ namespace verse_interpreter.lib.Visitors
         private readonly TypeInferencer _typeInferencer;
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly TypeConstructorVisitor _constructorVisitor;
+        private readonly CollectionParser _collectionParser;
         private readonly EvaluatorWrapper _baseEvaluator;
+
+        public event EventHandler<DeclarationInArrayFoundEventArgs> DeclarationInArrayFound;
 
         public ValueDefinitionVisitor(ApplicationState applicationState,
                                       TypeInferencer typeInferencer,
                                       ExpressionVisitor expressionVisitor,
                                       TypeConstructorVisitor constructorVisitor,
+                                      CollectionParser collectionParser,
                                       EvaluatorWrapper evaluator) : base(applicationState)
         {
             _typeInferencer = typeInferencer;
             _expressionVisitor = expressionVisitor;
             _constructorVisitor = constructorVisitor;
+            _collectionParser = collectionParser;
             _baseEvaluator = evaluator;
         }
 
@@ -78,47 +85,33 @@ namespace verse_interpreter.lib.Visitors
 
         public override DeclarationResult VisitArray_literal([NotNull] Verse.Array_literalContext context)
         {
-            List<DeclarationResult> declarationResult = new List<DeclarationResult>();
+            List<Variable> variables = new List<Variable>();
+            var result = _collectionParser.GetParameters(context.array_elements());
 
-            // Check the children of this context recursive.
-            // For variable declarations like y:int
-            var valueDefinitionContext = context.array_elements();
-
-            if (valueDefinitionContext.value_definition() != null)
+            foreach (var valueDef in result.ValueElements)
             {
-                var result = this.Visit(valueDefinitionContext.value_definition());
-
-                //foreach (var valueDef in valueDefinitionContext.value_definition())
-                //{
-                //    declarationResult.Add(valueDef.Accept(this));
-                //}
-
-                List<Variable> variables = new List<Variable>();
-                string name = string.Empty;
-
-                foreach (var decResult in declarationResult)
-                {
-                    name = decResult.Name;
-                    variables.Add(VariableConverter.Convert(decResult));
-                }
-
-                CollectionVariable collectionVariable = new CollectionVariable(name, "collection", variables.ToArray());
-
-                DeclarationResult finalResult = new DeclarationResult();
-                finalResult.Name = name;
-                finalResult.CollectionVariable = collectionVariable;
-
-                finalResult = _typeInferencer.InferGivenType(finalResult);
-
-                return finalResult;
+                var variableResult = VariableConverter.Convert(valueDef.Accept(this));
+                variables.Add(variableResult);
             }
 
-            if (valueDefinitionContext.declaration() != null)
+            foreach (var declDef in result.DeclarationElements)
             {
-
+                this.FireDeclarationInArrayFoundEvent(this, declDef);
             }
+            
+            DeclarationResult declarationResult = new DeclarationResult();
+            declarationResult.TypeName = "collection";
+            declarationResult.CollectionVariable = new CollectionVariable(declarationResult.Name, "collection", variables);
 
-            throw new NotImplementedException();
+            return declarationResult;
+        }
+
+        protected virtual void FireDeclarationInArrayFoundEvent(object sender, Verse.DeclarationContext declarationContext)
+        {
+            if (this.DeclarationInArrayFound != null) 
+            {
+                this.DeclarationInArrayFound(sender, new DeclarationInArrayFoundEventArgs(declarationContext));
+            }
         }
     }
 }

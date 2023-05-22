@@ -15,6 +15,6 @@ namespace verse_interpreter.lib.Data.Interfaces
 
         DynamicType Visit(DynamicVariable variable);
 
-        Variable[] Visit(CollectionVariable variable);
+        List<Variable> Visit(CollectionVariable variable);
     }
 }

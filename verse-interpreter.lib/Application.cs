@@ -13,6 +13,7 @@ using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.IO;
+using verse_interpreter.lib.Parser;
 using verse_interpreter.lib.Visitors;
 using verse_interpreter.lib.Wrapper;
 
@@ -63,6 +64,7 @@ namespace verse_interpreter.lib
                 .AddTransient<DeclarationParser>()
                 .AddTransient<TypeMemberVisitor>()
                 .AddTransient<ValueDefinitionVisitor>()
+                .AddTransient<CollectionParser>()
                 .AddTransient<EvaluatorWrapper>()
                 .AddTransient<VariableVisitor>()
                 .AddTransient<TypeHandlingWrapper>()

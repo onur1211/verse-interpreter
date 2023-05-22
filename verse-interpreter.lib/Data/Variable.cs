@@ -20,7 +20,7 @@ namespace verse_interpreter.lib.Data
 
         public string Type { get; set; } = null!;
 
-        public abstract Variable[] AcceptCollection(IVariableVisitor visitor);
+        public abstract List<Variable> AcceptCollection(IVariableVisitor visitor);
 
         public abstract DynamicType AcceptDynamicType(IVariableVisitor visitor);
 

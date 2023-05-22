@@ -25,7 +25,7 @@ namespace verse_interpreter.lib.Data.DataVisitors
             return variable.Value;
         }
 
-        public Variable[] Visit(CollectionVariable variable)
+        public List<Variable> Visit(CollectionVariable variable)
         {
             return variable.Values;
         }

@@ -10,15 +10,15 @@ namespace verse_interpreter.lib.Data
 {
     public class CollectionVariable : Variable
     {
-        public CollectionVariable(string name, string type, Variable[] values) : base(name, type)
+        public CollectionVariable(string name, string type, List<Variable> values) : base(name, type)
         {
             this.Type = type;
             this.Values = values;
         }
 
-        public Variable[] Values { get; set; }
+        public List<Variable> Values { get; set; }
 
-        public override Variable[] AcceptCollection(IVariableVisitor visitor)
+        public override List<Variable> AcceptCollection(IVariableVisitor visitor)
         {
             return this.Values;
         }
@@ -36,20 +36,6 @@ namespace verse_interpreter.lib.Data
         public override string AcceptString(IVariableVisitor visitor)
         {
             throw new NotImplementedException();
-        }
-
-        private void CheckValueTypes(Variable[] variables)
-        {
-            // Check the type of each variable in the array to
-            // ensure that only variables of the same type are in
-            // the collection.
-            foreach (var variable in variables) 
-            {
-                if (variable.Type != this.Type) 
-                {
-                    throw new InvalidTypeException(variable.Type);
-                }
-            }
         }
     }
 }
