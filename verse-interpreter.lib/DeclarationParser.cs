@@ -28,7 +28,9 @@ namespace verse_interpreter.lib
             _inferencer = typeInferencer;
             _valueDefinitionVisitor = valueDefinitionVisitor;
             _valueDefinitionVisitor.DeclarationInArrayFound += _valueDefinitionVisitor_DeclarationInArrayFound;
-
+            _backPropagator= backPropagator;
+            _evaluator = evaluator;
+            _validator = validator;
         }
 
         private void _valueDefinitionVisitor_DeclarationInArrayFound(object? sender, EventArguments.DeclarationInArrayFoundEventArgs e)
@@ -79,6 +81,7 @@ namespace verse_interpreter.lib
         private DeclarationResult ParseAssignValueToExistingVariable(Verse.DeclarationContext context)
         {
             var variableName = context.ID().GetText();
+
             if (!_state.CurrentScope.LookupManager.IsVariable(variableName))
             {
                 throw new InvalidOperationException($"Invalid usage of out of scope variable {nameof(variableName)}");
@@ -96,6 +99,12 @@ namespace verse_interpreter.lib
         {
             DeclarationResult declarationResult = _valueDefinitionVisitor.Visit(context);
             declarationResult.Name = context.ID().GetText();
+            
+            if (declarationResult.CollectionVariable != null) 
+            {
+                declarationResult.CollectionVariable.Name = declarationResult.Name;
+            }
+
             declarationResult = HandleExpressionAsValue(declarationResult);
 
             return declarationResult;
