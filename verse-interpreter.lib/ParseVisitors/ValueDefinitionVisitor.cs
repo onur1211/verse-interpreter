@@ -23,7 +23,6 @@ namespace verse_interpreter.lib.Visitors
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly TypeConstructorVisitor _constructorVisitor;
         private readonly CollectionParser _collectionParser;
-        private readonly EvaluatorWrapper _baseEvaluator;
 
         public event EventHandler<DeclarationInArrayFoundEventArgs> DeclarationInArrayFound;
 
@@ -31,13 +30,12 @@ namespace verse_interpreter.lib.Visitors
                                       TypeInferencer typeInferencer,
                                       ExpressionVisitor expressionVisitor,
                                       TypeConstructorVisitor constructorVisitor,
-                                      EvaluatorWrapper evaluator) : base(applicationState)
+                                      CollectionParser collectionParser) : base(applicationState)
         {
             _typeInferencer = typeInferencer;
             _expressionVisitor = expressionVisitor;
             _constructorVisitor = constructorVisitor;
             _collectionParser = collectionParser;
-            _baseEvaluator = evaluator;
         }
 
         public override DeclarationResult VisitValue_definition([NotNull] Verse.Value_definitionContext context)
@@ -64,7 +62,7 @@ namespace verse_interpreter.lib.Visitors
 
             if (maybeArrayLiteral != null)
             {
-                declarationResult = maybeArrayLiteral.Accept(this);
+                declarationResult = this.VisitArray_literal(maybeArrayLiteral);
             }
 
             if (maybeExpression != null)
@@ -90,7 +88,7 @@ namespace verse_interpreter.lib.Visitors
 
             foreach (var valueDef in result.ValueElements)
             {
-                var variableResult = VariableConverter.Convert(valueDef.Accept(this));
+                var variableResult = VariableConverter.Convert(valueDef.Accept(this), this.ApplicationState);
                 variables.Add(variableResult);
             }
 

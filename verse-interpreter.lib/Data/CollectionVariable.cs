@@ -37,5 +37,10 @@ namespace verse_interpreter.lib.Data
         {
             throw new NotImplementedException();
         }
+
+        public override bool HasValue()
+        {
+            return this.Values.Count > 0;
+        }
     }
 }

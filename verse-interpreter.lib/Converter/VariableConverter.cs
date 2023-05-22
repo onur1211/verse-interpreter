@@ -21,6 +21,7 @@ namespace verse_interpreter.lib.Converter
             {
                 "int" => HandleIntVariables(declarationResult),
                 "string" => new StringVariable(declarationResult.Name, declarationResult.TypeName, declarationResult.Value),
+                "collection" => declarationResult.CollectionVariable!,
                 _ => HandleDynamicType(declarationResult, state)
             };
         }
