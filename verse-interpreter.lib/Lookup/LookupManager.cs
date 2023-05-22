@@ -33,12 +33,15 @@ namespace verse_interpreter.lib.Lookup
                 this.valueLessVariables.Add(variable.Name);
             }
 
+            // Add variable to table.
             this.lookupTable.Table.Add(variable.Name, variable);
             this.FireVariableBound(variable);
         }
 
         public void UpdateVariable(Variable variable)
         {
+            // Check if variable is in the lookupn table.
+            // If false then throw exception.
             if (!IsVariable(variable.Name))
             {
                 throw new VariableDoesNotExistException(variable.Name);
@@ -51,16 +54,20 @@ namespace verse_interpreter.lib.Lookup
                 return;
             }
 
+            // Replace old entry with new one.
             this.lookupTable.Table[variable.Name] = variable;
         }
 
         public Variable GetVariable(string variableName)
         {
+            // Check if variable is in the lookupn table.
+            // If false then throw exception.
             if (!IsVariable(variableName))
             {
                 throw new VariableDoesNotExistException(variableName);
             }
 
+            // Return the variable from the table.
             return this.lookupTable.Table[variableName];
         }
 

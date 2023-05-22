@@ -4,21 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data.Interfaces;
+using verse_interpreter.lib.Exceptions;
 
-namespace verse_interpreter.lib.Data.Variables
+namespace verse_interpreter.lib.Data
 {
-    public class IntVariable : Variable
+    public class CollectionVariable : Variable
     {
-        public IntVariable(string name, string type, int? value) : base(name, type)
+        public CollectionVariable(string name, string type, List<Variable> values) : base(name, type)
         {
-            this.Value = value;
+            this.Type = type;
+            this.Values = values;
         }
 
-        public int? Value { get; set; }
+        public List<Variable> Values { get; set; }
 
         public override List<Variable> AcceptCollection(IVariableVisitor visitor)
         {
-            throw new NotImplementedException();
+            return this.Values;
         }
 
         public override DynamicType AcceptDynamicType(IVariableVisitor visitor)
@@ -28,7 +30,7 @@ namespace verse_interpreter.lib.Data.Variables
 
         public override int? AcceptInt(IVariableVisitor visitor)
         {
-            return Value;
+            throw new NotImplementedException();
         }
 
         public override string AcceptString(IVariableVisitor visitor)
@@ -38,7 +40,7 @@ namespace verse_interpreter.lib.Data.Variables
 
         public override bool HasValue()
         {
-            return Value != null;
+            return this.Values.Count > 0;
         }
     }
 }

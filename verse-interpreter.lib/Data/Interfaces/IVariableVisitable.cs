@@ -14,5 +14,7 @@ namespace verse_interpreter.lib.Data.Interfaces
         int? AcceptInt(IVariableVisitor visitor);
 
         DynamicType AcceptDynamicType(IVariableVisitor visitor);
+
+        List<Variable> AcceptCollection(IVariableVisitor visitor);
     }
 }

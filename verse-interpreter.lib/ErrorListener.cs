@@ -13,10 +13,5 @@ namespace verse_interpreter.lib
             Console.WriteLine($"Unexpected token \"{offendingSymbol}\" located at Line{line}:{charPositionInLine}");
             base.SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
         }
-
-        public override void ReportAmbiguity([NotNull] Parser recognizer, [NotNull] DFA dfa, int startIndex, int stopIndex, bool exact, [Nullable] BitSet ambigAlts, [NotNull] ATNConfigSet configs)
-        {
-            base.ReportAmbiguity(recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs);
-        }
     }
 }

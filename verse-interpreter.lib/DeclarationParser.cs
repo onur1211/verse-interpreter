@@ -27,9 +27,18 @@ namespace verse_interpreter.lib
             _state = applicationState;
             _inferencer = typeInferencer;
             _valueDefinitionVisitor = valueDefinitionVisitor;
-            _backPropagator = backPropagator;
-            _evaluator = evaluator;
-            _validator = validator;
+            _valueDefinitionVisitor.DeclarationInArrayFound += _valueDefinitionVisitor_DeclarationInArrayFound;
+
+        }
+
+        private void _valueDefinitionVisitor_DeclarationInArrayFound(object? sender, EventArguments.DeclarationInArrayFoundEventArgs e)
+        {
+            var result = this.ParseDeclaration(e.declarationContext);
+
+            if (result != null) 
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public DeclarationResult ParseDeclaration(Verse.DeclarationContext context)
@@ -117,6 +126,11 @@ namespace verse_interpreter.lib
             else
             {
                 declarationResult.Value = expression.ResultValue.ToString();
+            }
+
+            if (declarationResult.CollectionVariable != null) 
+            {
+                declarationResult.CollectionVariable.Name = declarationResult.Name;
             }
 
             return declarationResult;

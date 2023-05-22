@@ -1,4 +1,11 @@
-﻿using verse_interpreter.lib.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Exceptions;
 
@@ -14,6 +21,7 @@ namespace verse_interpreter.lib.Converter
             {
                 "int" => HandleIntVariables(declarationResult),
                 "string" => new StringVariable(declarationResult.Name, declarationResult.TypeName, declarationResult.Value),
+                "collection" => declarationResult.CollectionVariable!,
                 _ => HandleDynamicType(declarationResult, state)
             };
         }

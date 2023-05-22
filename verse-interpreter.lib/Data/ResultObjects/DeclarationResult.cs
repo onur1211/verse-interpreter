@@ -16,6 +16,8 @@ namespace verse_interpreter.lib.Data
 
         public DynamicType? DynamicType { get; set; } = null!;
 
+        public CollectionVariable? CollectionVariable { get; set; } = null!;
+
         public string Name { get; set; } = null!;
 
         public string TypeName { get; set; } = null!;

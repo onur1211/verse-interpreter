@@ -20,7 +20,7 @@ namespace verse_interpreter.lib
 
             WellKnownTypes = new List<string>()
             {
-                "int", "string", "dynamic"
+                "int", "string", "dynamic", "collection"
             };
         }
 
