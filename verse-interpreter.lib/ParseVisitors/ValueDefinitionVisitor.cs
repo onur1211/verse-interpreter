@@ -86,15 +86,21 @@ namespace verse_interpreter.lib.Visitors
             List<Variable> variables = new List<Variable>();
             var result = _collectionParser.GetParameters(context.array_elements());
 
-            foreach (var valueDef in result.ValueElements)
+            if (result.ValueElements != null)
             {
-                var variableResult = VariableConverter.Convert(valueDef.Accept(this), this.ApplicationState);
-                variables.Add(variableResult);
+                foreach (var valueDef in result.ValueElements)
+                {
+                    var variableResult = VariableConverter.Convert(valueDef.Accept(this), this.ApplicationState);
+                    variables.Add(variableResult);
+                }
             }
 
-            foreach (var declDef in result.DeclarationElements)
+            if (result.DeclarationElements != null)
             {
-                this.FireDeclarationInArrayFoundEvent(this, declDef);
+                foreach (var declDef in result.DeclarationElements)
+                {
+                    this.FireDeclarationInArrayFoundEvent(this, declDef);
+                }
             }
             
             DeclarationResult declarationResult = new DeclarationResult();
