@@ -10,7 +10,8 @@ declaration : ID ':' type
             | ID '=' array_literal
             ;
 
-value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal)
+value_definition : (INT | expression | constructor_body | string_rule | choice_rule 
+                   | array_literal | array_index)
                  ;
                  
 
@@ -29,6 +30,7 @@ program : function_definition program
         | type_member_definition
         | function_definition
         | expression
+        | array_index
         ;
 
 block : declaration
@@ -61,6 +63,9 @@ array_literal : '(' array_elements ')'
 array_elements : value_definition (',' array_elements)*
                | declaration (',' array_elements)*
                ;
+
+array_index : ID '[' INT ']'
+            ;
 
 
 // Functions
