@@ -7,6 +7,7 @@ using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.Validators;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
+using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Exceptions;
 
 namespace verse_interpreter.lib
@@ -27,7 +28,7 @@ namespace verse_interpreter.lib
         }
 
         public event EventHandler<ArithmeticExpressionResolvedEventArgs>? ArithmeticExpressionResolved;
-        public event EventHandler<StringExpressionResolved>? StringExpressionResolved;
+        public event EventHandler<StringExpressionResolvedEventArgs>? StringExpressionResolved;
 
 
         public void ExecuteExpression(List<List<ExpressionResult>> expressions)
@@ -38,7 +39,7 @@ namespace verse_interpreter.lib
             }
             var typeName = _expressionValidator.GetExpressionType(expressions);
 
-            switch(typeName)
+            switch (typeName)
             {
                 case "string":
                     HandleStringExpression(expressions);
@@ -56,11 +57,23 @@ namespace verse_interpreter.lib
         private void HandleStringExpression(List<List<ExpressionResult>> expressions)
         {
             var result = _evaluatorWrapper.StringEvaluator.Evaluate(expressions);
+            if (result.PostponedExpression != null)
+            {
+                _propagator.AddExpression(result);
+            }
+
+            this.StringExpressionResolved?.Invoke(this, new StringExpressionResolvedEventArgs(result));
         }
 
         private void HandleArithmeticExpression(List<List<ExpressionResult>> expressions)
         {
             var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
+            if(result.PostponedExpression != null)
+            {
+                _propagator.AddExpression(result);
+            }
+
+            this.ArithmeticExpressionResolved?.Invoke(this, new ArithmeticExpressionResolvedEventArgs(result));
         }
     }
 }

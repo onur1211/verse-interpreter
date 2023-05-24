@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.Validators;
@@ -57,7 +58,7 @@ namespace verse_interpreter.lib
                 .AddTransient<MainVisitor>()
                 .AddTransient<TypeInferencer>()
                 .AddTransient<IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
-                .AddTransient<IEvaluator<string, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
+                .AddTransient<IEvaluator<StringExpression, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
                 .AddTransient<IValidator<List<List<ExpressionResult>>>, ExpressionValidator>()
                 .AddTransient <IValidator<FunctionCallItem>, ParameterValidator>()
                 .AddTransient<ExpressionValidator>()

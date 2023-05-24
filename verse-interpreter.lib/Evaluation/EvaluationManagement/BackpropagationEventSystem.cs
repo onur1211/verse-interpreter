@@ -16,10 +16,10 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
     {
         private readonly ApplicationState _applicationState;
         private List<IExpression<ArithmeticExpression>> _arithmeticExpressions;
-        private List<IExpression<StringExpressionResolved>> _stringExpressions;
+        private List<IExpression<StringExpression>> _stringExpressions;
 
         private Dictionary<string, IExpression<ArithmeticExpression>> _associatedArithmeticExpressions;
-        private Dictionary<string, IExpression<StringExpressionResolved>> _associatedStringExpressions;
+        private Dictionary<string, IExpression<StringExpression>> _associatedStringExpressions;
 
         // Keeps track of Expressions which are not yet ready to execute
         // When they are ready to execute, execute them
@@ -29,10 +29,10 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             _applicationState = applicationState;
 
             _arithmeticExpressions = new List<IExpression<ArithmeticExpression>>();
-            _stringExpressions = new List<IExpression<StringExpressionResolved>>();
+            _stringExpressions = new List<IExpression<StringExpression>>();
 
             _associatedArithmeticExpressions = new Dictionary<string, IExpression<ArithmeticExpression>>();
-            _associatedStringExpressions = new Dictionary<string, IExpression<StringExpressionResolved>>();
+            _associatedStringExpressions = new Dictionary<string, IExpression<StringExpression>>();
         }
 
         public void AddExpression(IExpression<ArithmeticExpression> expression)
@@ -43,6 +43,16 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         public void AddExpression(string identfier, IExpression<ArithmeticExpression> expression)
         {
             _associatedArithmeticExpressions.Add(identfier, expression);
+        }
+
+        public void AddExpression(IExpression<StringExpression> expression)
+        {
+            _stringExpressions.Add(expression);
+        }
+
+        public void AddExpression(string identfier, IExpression<StringExpression> expression)
+        {
+            _associatedStringExpressions.Add(identfier, expression);
         }
 
         /// <summary>
