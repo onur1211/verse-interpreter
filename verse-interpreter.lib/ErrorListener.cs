@@ -10,8 +10,8 @@ namespace verse_interpreter.lib
     {
         public override void SyntaxError([NotNull] IRecognizer recognizer, [Nullable] IToken offendingSymbol, int line, int charPositionInLine, [NotNull] string msg, [Nullable] RecognitionException e)
         {
-            Console.WriteLine($"Unexpected token \"{offendingSymbol}\" located at Line{line}:{charPositionInLine}");
-            base.SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
+            Console.WriteLine($"Unexpected token \"{offendingSymbol.Text}\" located at Line {line}:{charPositionInLine}");
+            //base.SyntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
         }
     }
 }

@@ -31,6 +31,7 @@ namespace verse_interpreter.lib.Visitors
             var parameterResult = functionDeclarationParser.GetDefintionParameters(parameter);
             functionDeclarationResult.Parameters = parameterResult.Parameters;
             functionDeclarationResult.FunctionBody = bodyParser.GetBody(context.body());
+            functionDeclarationResult.LookupManager.AddFunction(functionDeclarationResult);
             return functionDeclarationResult;
         }
     }

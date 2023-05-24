@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.Validators;
-using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Exceptions;
 
-namespace verse_interpreter.lib
+namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 {
     public class GeneralEvaluator
     {
@@ -60,20 +59,22 @@ namespace verse_interpreter.lib
             if (result.PostponedExpression != null)
             {
                 _propagator.AddExpression(result);
+                return;
             }
 
-            this.StringExpressionResolved?.Invoke(this, new StringExpressionResolvedEventArgs(result));
+            StringExpressionResolved?.Invoke(this, new StringExpressionResolvedEventArgs(result));
         }
 
         private void HandleArithmeticExpression(List<List<ExpressionResult>> expressions)
         {
             var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
-            if(result.PostponedExpression != null)
+            if (result.PostponedExpression != null)
             {
                 _propagator.AddExpression(result);
+                return;
             }
 
-            this.ArithmeticExpressionResolved?.Invoke(this, new ArithmeticExpressionResolvedEventArgs(result));
+            ArithmeticExpressionResolved?.Invoke(this, new ArithmeticExpressionResolvedEventArgs(result));
         }
     }
 }

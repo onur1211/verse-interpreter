@@ -72,6 +72,7 @@ namespace verse_interpreter.lib
                 .AddTransient<PrimaryRuleParser>()
                 .AddTransient<FunctionParser>()
                 .AddTransient<FunctionCallPreprocessor>()
+                .AddTransient<GeneralEvaluator>()
                 .AddTransient<BodyParser>()
                 .AddTransient<BlockParser>()
                 .AddTransient<FunctionCallVisitor>()

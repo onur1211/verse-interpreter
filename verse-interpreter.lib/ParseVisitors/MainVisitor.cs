@@ -15,6 +15,7 @@ namespace verse_interpreter.lib.Visitors
         private readonly TypeHandlingWrapper _typeHandlingWrapper;
         private readonly EvaluatorWrapper _baseEvaluator;
         private readonly BackpropagationEventSystem _backPropagator;
+        private readonly GeneralEvaluator _generalEvaluator;
 
         public MainVisitor(ApplicationState applictationState,
                            DeclarationVisitor declarationVisitor,
@@ -22,7 +23,8 @@ namespace verse_interpreter.lib.Visitors
                            FunctionWrapper functionWrapper,
                            TypeHandlingWrapper typeHandlingWrapper,
                            EvaluatorWrapper baseEvaluator,
-                           BackpropagationEventSystem backPropagator) : base(applictationState)
+                           BackpropagationEventSystem backPropagator,
+                           GeneralEvaluator generalEvaluator) : base(applictationState)
         {
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
@@ -30,6 +32,7 @@ namespace verse_interpreter.lib.Visitors
             _typeHandlingWrapper = typeHandlingWrapper;
             _baseEvaluator = baseEvaluator;
             _backPropagator = backPropagator;
+            _generalEvaluator = generalEvaluator;
             ApplicationState.CurrentScope.LookupManager.VariableBound += _backPropagator.HandleVariableBound!;
         }
 
@@ -44,16 +47,21 @@ namespace verse_interpreter.lib.Visitors
         {
             var res = _expressionVisitor.Visit(context);
             _expressionVisitor.Clean();
-            var expression = _baseEvaluator.ArithmeticEvaluator.Evaluate(res);
-            if (expression.PostponedExpression == null)
+
+            if(ApplicationState.CurrentScopeLevel == 1)
             {
-                Printer.PrintResult(expression.ResultValue.ToString()!);
+                _generalEvaluator.ArithmeticExpressionResolved += (x, y) =>
+                {
+                    Printer.PrintResult(y.Result.ResultValue.ToString()!);
+                };
+                _generalEvaluator.StringExpressionResolved += (x, y) =>
+                {
+                    Printer.PrintResult(y.Result.Value);
+                };
             }
-            else
-            {
-                _backPropagator.AddExpression(expression);
-            }
-            return expression;
+
+            _generalEvaluator.ExecuteExpression(res);
+            return null!;
         }
 
         public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
@@ -68,12 +76,21 @@ namespace verse_interpreter.lib.Visitors
             var functionCallItem = _functionWrapper.FunctionCallVisitor.Visit(context);
             _functionWrapper.FunctionCallPreprocessor.BuildExecutableFunction(functionCallItem);
             ApplicationState.CurrentScopeLevel += 1;
-            ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, functionCallItem.Function);
 
-            foreach (var statement in functionCallItem.Function.FunctionBody)
+            ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, functionCallItem.Function);
+            ApplicationState.CurrentScope.AddFunction(functionCallItem.Function);
+
+            _generalEvaluator.ArithmeticExpressionResolved += (x, y) =>
             {
-                var result = statement.Accept(this);
-            }
+                
+            };
+            _generalEvaluator.StringExpressionResolved += (x, y) =>
+            {
+
+            };
+
+            functionCallItem.Function.FunctionBody.ForEach(x => x.Accept(this));
+
             ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
             ApplicationState.CurrentScopeLevel -= 1;
             return null!;
