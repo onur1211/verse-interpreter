@@ -1,2 +1,4 @@
-myArray:=((1,2), ())
-x:=myArray[0]
+x := 1
+y := 2
+
+myArray := (x,y)

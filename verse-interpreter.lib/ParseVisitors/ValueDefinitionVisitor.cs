@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Converter;
@@ -154,6 +155,11 @@ namespace verse_interpreter.lib.Visitors
                 throw new InvalidTypeException(nameof(array));
             }
 
+            return this.GetArrayValueAtIndex(index, array);
+        }
+
+        private DeclarationResult GetArrayValueAtIndex(string index, Variable array)
+        {
             // Get the list of variables in the array and parse the index string to a number
             var variables = array.AcceptCollection(new VariableVisitor());
             int indexNumber = int.Parse(index);
