@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib.Data
@@ -13,8 +14,8 @@ namespace verse_interpreter.lib.Data
 
         LookupManager LookupManager { get; }
 
-        int Level { get; set; }
+        void AddFunction(Function res);
 
-        void AddScopedVariable(int scopeId, Variable variable);
+        void AddScopedVariable(Variable variable); 
     }
 }

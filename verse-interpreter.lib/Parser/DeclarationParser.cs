@@ -1,12 +1,13 @@
 ﻿using System.Net.Http.Headers;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.Validators;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Visitors;
 
-namespace verse_interpreter.lib
+namespace verse_interpreter.lib.Parser
 {
     public class DeclarationParser
     {
@@ -99,11 +100,6 @@ namespace verse_interpreter.lib
         {
             DeclarationResult declarationResult = _valueDefinitionVisitor.Visit(context);
             declarationResult.Name = context.ID().GetText();
-            
-            if (declarationResult.CollectionVariable != null) 
-            {
-                declarationResult.CollectionVariable.Name = declarationResult.Name;
-            }
 
             declarationResult = HandleExpressionAsValue(declarationResult);
 
@@ -121,25 +117,20 @@ namespace verse_interpreter.lib
             switch (expressionType)
             {
                 case "string":
-                      _evaluator.StringEvaluator.Evaluate(declarationResult.ExpressionResults);
+                    _evaluator.StringEvaluator.Evaluate(declarationResult.ExpressionResults);
                     throw new NotImplementedException();
                 case "int":
                     expression = _evaluator.ArithmeticEvaluator.Evaluate(declarationResult.ExpressionResults);
                     break;
             }
 
-            if(expression.PostponedExpression != null)
+            if (expression.PostponedExpression != null)
             {
                 _backPropagator.AddExpression(declarationResult.Name, expression);
             }
             else
             {
                 declarationResult.Value = expression.ResultValue.ToString();
-            }
-
-            if (declarationResult.CollectionVariable != null) 
-            {
-                declarationResult.CollectionVariable.Name = declarationResult.Name;
             }
 
             return declarationResult;

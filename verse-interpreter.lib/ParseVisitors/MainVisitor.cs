@@ -1,14 +1,17 @@
 ﻿using Antlr4.Runtime.Misc;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Grammar;
+using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.Visitors
 {
     public class MainVisitor : AbstractVerseVisitor<object>
     {
-        private DeclarationVisitor _declarationVisitor;
-        private ExpressionVisitor _expressionVisitor;
+        private readonly DeclarationVisitor _declarationVisitor;
+        private readonly ExpressionVisitor _expressionVisitor;
+        private readonly FunctionWrapper _functionWrapper;
         private readonly TypeHandlingWrapper _typeHandlingWrapper;
         private readonly EvaluatorWrapper _baseEvaluator;
         private readonly BackpropagationEventSystem _backPropagator;
@@ -16,37 +19,65 @@ namespace verse_interpreter.lib.Visitors
         public MainVisitor(ApplicationState applictationState,
                            DeclarationVisitor declarationVisitor,
                            ExpressionVisitor expressionVisitor,
+                           FunctionWrapper functionWrapper,
                            TypeHandlingWrapper typeHandlingWrapper,
                            EvaluatorWrapper baseEvaluator,
                            BackpropagationEventSystem backPropagator) : base(applictationState)
         {
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
+            _functionWrapper = functionWrapper;
             _typeHandlingWrapper = typeHandlingWrapper;
             _baseEvaluator = baseEvaluator;
             _backPropagator = backPropagator;
             ApplicationState.CurrentScope.LookupManager.VariableBound += _backPropagator.HandleVariableBound!;
         }
 
+
+
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
             var declaredVariable = context.Accept(_declarationVisitor);
-            ApplicationState.CurrentScope.AddScopedVariable(1, declaredVariable);
+            ApplicationState.CurrentScope.AddScopedVariable(declaredVariable);
             return null!;
         }
 
         public override object VisitExpression([NotNull] Verse.ExpressionContext context)
         {
             var res = _expressionVisitor.Visit(context);
+            _expressionVisitor.Clean();
             var expression = _baseEvaluator.ArithmeticEvaluator.Evaluate(res);
             if (expression.PostponedExpression == null)
             {
-                PrintResult(expression.ResultValue.ToString()!);
+                Printer.PrintResult(expression.ResultValue.ToString()!);
             }
             else
             {
                 _backPropagator.AddExpression(expression);
             }
+            return null!;
+        }
+
+        public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
+        {
+            var res = _functionWrapper.FunctionDeclarationVisitor.Visit(context);
+            ApplicationState.CurrentScope.AddFunction(res);
+            return null!;
+        }
+
+        public override object VisitFunction_call([NotNull] Verse.Function_callContext context)
+        {
+            var functionCallItem = _functionWrapper.FunctionCallVisitor.Visit(context);
+            _functionWrapper.FunctionCallPreprocessor.BuildExecutableFunction(functionCallItem);
+            ApplicationState.CurrentScopeLevel += 1;
+            ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, functionCallItem.Function);
+       
+            foreach (var statement in functionCallItem.Function.FunctionBody)
+            {
+                statement.Accept(this);
+            }
+            ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
+            ApplicationState.CurrentScopeLevel -= 1;
             return null!;
         }
 
@@ -61,14 +92,6 @@ namespace verse_interpreter.lib.Visitors
         {
             this._typeHandlingWrapper.TypeMemberVisitor.Visit(context);
             return null!;
-        }
-
-        private void PrintResult(string result)
-        {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("VERSE CODE RESULT: ");
-            Console.ResetColor();
-            Console.WriteLine(result);
         }
     }
 }

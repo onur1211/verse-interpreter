@@ -1,19 +1,22 @@
 ﻿using System;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Lookup.EventArguments;
 
 namespace verse_interpreter.lib.Lookup
 {
-    public class LookupManager 
+    public class LookupManager
     {
         private ILookupTable<Variable> lookupTable;
-        private List<string> valueLessVariables; 
+        private ILookupTable<Function> lookupFunctions;
+        private List<string> valueLessVariables;
 
         public LookupManager()
         {
             this.lookupTable = new LookupTable<Variable>();
+            this.lookupFunctions = new LookupTable<Function>();
             this.valueLessVariables = new List<string>();
         }
 
@@ -23,7 +26,7 @@ namespace verse_interpreter.lib.Lookup
         {
             // Check if variable is already in a lookup table (which means the variable was already declared once).
             // If true then throw exception.
-            if (IsVariable(variable.Name) &&  this.lookupTable.Table[variable.Name].Type == variable.Type)
+            if (IsVariable(variable.Name) && this.lookupTable.Table[variable.Name].Value.TypeName == variable.Value.TypeName)
             {
                 this.UpdateVariable(variable);
                 return;
@@ -36,6 +39,30 @@ namespace verse_interpreter.lib.Lookup
             // Add variable to table.
             this.lookupTable.Table.Add(variable.Name, variable);
             this.FireVariableBound(variable);
+        }
+
+        public void AddFunction(Function function)
+        {
+            if (function == null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+            if (lookupFunctions.Table.ContainsKey(function.FunctionName))
+            {
+                throw new VariableAlreadyExistException(function.FunctionName);
+            }
+
+            lookupFunctions.Table.Add(function.FunctionName, function);
+        }
+
+        public Function GetFunction(string name)
+        {
+            if (lookupFunctions.Table[name] == null)
+            {
+                throw new UnknownTypeException(name);
+            }
+
+            return lookupFunctions.Table[name].GetInstance();
         }
 
         public void UpdateVariable(Variable variable)
@@ -95,7 +122,7 @@ namespace verse_interpreter.lib.Lookup
 
         public IEnumerable<Variable> GetUnboundVariables()
         {
-            foreach(var element in  this.lookupTable.Table)
+            foreach (var element in this.lookupTable.Table)
             {
                 if (!element.Value.HasValue())
                 {
@@ -106,7 +133,7 @@ namespace verse_interpreter.lib.Lookup
 
         public bool HasValue(string variableName)
         {
-            if(!IsVariable(variableName))
+            if (!IsVariable(variableName))
             {
                 return false;
             }

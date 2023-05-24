@@ -29,19 +29,19 @@ program : function_definition program
         | type_member_definition
         | function_definition
         | expression
+        | if_block
         ;
 
 block : declaration
       | function_call
       | expression
-      | declaration
-      | function_call
       | if_block
       ;
 
 body : inline_body
-              | NEWLINE spaced_body
-              ;
+     | NEWLINE spaced_body
+     | bracket_body
+     ;
               
 inline_body : block ';' inline_body
             | block
@@ -50,7 +50,6 @@ inline_body : block ';' inline_body
 spaced_body : INDENT block
             | INDENT block NEWLINE spaced_body
             ;
-
 
 // Arrays/Tuples
 array_literal : '(' array_elements ')' ;
@@ -61,14 +60,15 @@ array_elements : value_definition (',' array_elements)*
                ;
 
 
+bracket_body : '{' block+ '}';
+
 // Functions
 
 function_call : ID '(' param_call_item ')'
               | ID '(' ')' 
               ;
 
-function_definition : ID function_param ':' type ':=' body
-                    | ID function_param ':' type ':=' '{' body NEWLINE?'}'
+function_definition : ID function_param ':' type '=' body
                     ;
                      
 function_param : '(' ')'
@@ -79,8 +79,8 @@ param_def_item     : declaration
                    | declaration ',' param_def_item
                    ;
                    
-param_call_item : (INT | ID | function_call | expression)
-                | (INT | ID | function_call | expression) ',' param_call_item
+param_call_item : value_definition
+                | value_definition ',' param_call_item
                 ;
 
 // Type definition
@@ -118,7 +118,9 @@ choice_rule : choice_value '|' choice_value
             
 // Conditionals
 
-if_block    : 'if' '(' comp_expression ')' 'then' body 'else' body ;
+if_block    : 'if' '(' comp_expression ')' then_body ;
+
+then_body : (NEWLINE)* 'then' block ;
 
 comp_expression
     : comp_term
@@ -171,6 +173,6 @@ primary
     ;
 
 
-type : (INTTYPE | STRINGTYPE | ID ) ;
+type : (INTTYPE | STRINGTYPE | ID | VOID ) ;
 comparsion_op : ('>' | '<' | '|' | '=' )   ; 
 operator : ('*' | '/' |'-'|'+'| '>');

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.DataVisitors;
 using verse_interpreter.lib.Data.ResultObjects;
 
 namespace verse_interpreter.lib.Evaluators
@@ -12,13 +11,10 @@ namespace verse_interpreter.lib.Evaluators
     public class StringExpressionEvaluator : IEvaluator<string, List<List<ExpressionResult>>>
     {
         private ApplicationState _applicationState;
-        private readonly VariableVisitor _variableVisitor;
 
-        public StringExpressionEvaluator(ApplicationState applicationState,
-                                         VariableVisitor variableVisitor)
+        public StringExpressionEvaluator(ApplicationState applicationState)
         {
             _applicationState = applicationState;
-            _variableVisitor = variableVisitor;
         }
 
         public string Evaluate(List<List<ExpressionResult>> input)
@@ -50,7 +46,7 @@ namespace verse_interpreter.lib.Evaluators
         {
             if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
             {
-                return _applicationState.CurrentScope.LookupManager.GetVariable(expressionResult.ValueIdentifier).AcceptString(_variableVisitor);
+                return _applicationState.CurrentScope.LookupManager.GetVariable(expressionResult.ValueIdentifier).Value.StringValue;
             }
 
             return null;

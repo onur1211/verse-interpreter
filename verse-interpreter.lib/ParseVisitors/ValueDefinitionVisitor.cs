@@ -24,7 +24,7 @@ namespace verse_interpreter.lib.Visitors
         private readonly TypeConstructorVisitor _constructorVisitor;
         private readonly CollectionParser _collectionParser;
 
-        public event EventHandler<DeclarationInArrayFoundEventArgs> DeclarationInArrayFound;
+        public event EventHandler<DeclarationInArrayFoundEventArgs>? DeclarationInArrayFound;
 
         public ValueDefinitionVisitor(ApplicationState applicationState,
                                       TypeInferencer typeInferencer,
@@ -40,6 +40,11 @@ namespace verse_interpreter.lib.Visitors
 
         public override DeclarationResult VisitValue_definition([NotNull] Verse.Value_definitionContext context)
         {
+            return HandleValueAssignment(context);
+        }
+
+        private DeclarationResult HandleValueAssignment([NotNull] Verse.Value_definitionContext context)
+        {
             DeclarationResult declarationResult = new DeclarationResult();
 
             var maybeInt = context.INT();
@@ -53,11 +58,14 @@ namespace verse_interpreter.lib.Visitors
                 var typeInstance = maybeConstructor.Accept(_constructorVisitor);
                 declarationResult.TypeName = typeInstance.Name;
                 declarationResult.DynamicType = typeInstance;
+
+                return _typeInferencer.InferGivenType(declarationResult);
             }
 
             if (maybeInt != null)
             {
                 declarationResult.Value = maybeInt.GetText();
+                return _typeInferencer.InferGivenType(declarationResult);
             }
 
             if (maybeArrayLiteral != null)
@@ -69,15 +77,17 @@ namespace verse_interpreter.lib.Visitors
             {
                 var expression = _expressionVisitor.Visit(maybeExpression);
                 _expressionVisitor.Clean();
-                
+
                 declarationResult.ExpressionResults = expression;
+                return _typeInferencer.InferGivenType(declarationResult);
             }
 
             if (maybeString != null)
             {
                 declarationResult.Value = maybeString.SEARCH_TYPE().GetText().Replace("\"", "");
-            }
+                return _typeInferencer.InferGivenType(declarationResult);
 
+            }
             return _typeInferencer.InferGivenType(declarationResult);
         }
 
@@ -88,7 +98,7 @@ namespace verse_interpreter.lib.Visitors
 
             foreach (var valueDef in result.ValueElements)
             {
-                var variableResult = VariableConverter.Convert(valueDef.Accept(this), this.ApplicationState);
+                var variableResult = VariableConverter.Convert(valueDef.Accept(this));
                 variables.Add(variableResult);
             }
 
@@ -96,20 +106,22 @@ namespace verse_interpreter.lib.Visitors
             {
                 this.FireDeclarationInArrayFoundEvent(this, declDef);
             }
-            
+
             DeclarationResult declarationResult = new DeclarationResult();
             declarationResult.TypeName = "collection";
-            declarationResult.CollectionVariable = new CollectionVariable(declarationResult.Name, "collection", variables);
+            declarationResult.CollectionVariable = new VerseCollection(variables);
 
             return declarationResult;
         }
 
         protected virtual void FireDeclarationInArrayFoundEvent(object sender, Verse.DeclarationContext declarationContext)
         {
-            if (this.DeclarationInArrayFound != null) 
+            if (this.DeclarationInArrayFound != null)
             {
                 this.DeclarationInArrayFound(sender, new DeclarationInArrayFoundEventArgs(declarationContext));
             }
+
+            throw new NotImplementedException();
         }
     }
 }
