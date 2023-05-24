@@ -33,8 +33,6 @@ namespace verse_interpreter.lib.Visitors
             ApplicationState.CurrentScope.LookupManager.VariableBound += _backPropagator.HandleVariableBound!;
         }
 
-
-
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
             var declaredVariable = context.Accept(_declarationVisitor);
@@ -55,7 +53,7 @@ namespace verse_interpreter.lib.Visitors
             {
                 _backPropagator.AddExpression(expression);
             }
-            return null!;
+            return expression;
         }
 
         public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
@@ -71,10 +69,10 @@ namespace verse_interpreter.lib.Visitors
             _functionWrapper.FunctionCallPreprocessor.BuildExecutableFunction(functionCallItem);
             ApplicationState.CurrentScopeLevel += 1;
             ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, functionCallItem.Function);
-       
+
             foreach (var statement in functionCallItem.Function.FunctionBody)
             {
-                statement.Accept(this);
+                var result = statement.Accept(this);
             }
             ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
             ApplicationState.CurrentScopeLevel -= 1;

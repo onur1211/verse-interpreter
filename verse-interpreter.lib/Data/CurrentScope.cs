@@ -14,8 +14,6 @@ namespace verse_interpreter.lib.Data
 
         public int Level { get { return _level; } set { _level = value; } }
 
-        public FunctionLookupManager FunctionLookupManager { get; private set; }
-
         public CurrentScope(int level)
         {
             LookupManager = new LookupManager();

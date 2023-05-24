@@ -1,6 +1,6 @@
 ﻿namespace verse_interpreter.lib.Data.Expressions
 {
-    public class StringExpression
+    public class StringExpressionResolved
     {
     }
 }

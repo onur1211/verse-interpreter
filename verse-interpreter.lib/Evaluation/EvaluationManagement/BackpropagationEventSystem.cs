@@ -16,10 +16,10 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
     {
         private readonly ApplicationState _applicationState;
         private List<IExpression<ArithmeticExpression>> _arithmeticExpressions;
-        private List<IExpression<StringExpression>> _stringExpressions;
+        private List<IExpression<StringExpressionResolved>> _stringExpressions;
 
         private Dictionary<string, IExpression<ArithmeticExpression>> _associatedArithmeticExpressions;
-        private Dictionary<string, IExpression<StringExpression>> _associatedStringExpressions;
+        private Dictionary<string, IExpression<StringExpressionResolved>> _associatedStringExpressions;
 
         // Keeps track of Expressions which are not yet ready to execute
         // When they are ready to execute, execute them
@@ -29,10 +29,10 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             _applicationState = applicationState;
 
             _arithmeticExpressions = new List<IExpression<ArithmeticExpression>>();
-            _stringExpressions = new List<IExpression<StringExpression>>();
+            _stringExpressions = new List<IExpression<StringExpressionResolved>>();
 
             _associatedArithmeticExpressions = new Dictionary<string, IExpression<ArithmeticExpression>>();
-            _associatedStringExpressions = new Dictionary<string, IExpression<StringExpression>>();
+            _associatedStringExpressions = new Dictionary<string, IExpression<StringExpressionResolved>>();
         }
 
         public void AddExpression(IExpression<ArithmeticExpression> expression)

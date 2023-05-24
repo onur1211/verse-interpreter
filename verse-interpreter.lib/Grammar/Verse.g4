@@ -29,6 +29,7 @@ program : function_definition program
         | type_member_definition
         | function_definition
         | expression
+        | array_index
         | if_block
         ;
 
@@ -59,6 +60,8 @@ array_elements : value_definition (',' array_elements)*
                | declaration (',' array_elements)*
                ;
 
+array_index : ID '[' INT ']'
+            ;
 
 bracket_body : '{' block+ '}';
 
@@ -169,6 +172,7 @@ primary
     | INT
     | type_member_access
     | function_call
+    | array_index
     | '(' expression ')'
     ;
 

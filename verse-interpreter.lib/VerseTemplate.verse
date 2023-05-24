@@ -1,1 +1,5 @@
-x := (1, 2, 3, (x:int, 2), 5)
+addThree(x:int, y:int, z:int):int = 
+    x - z + y
+    x + y + z
+
+addThree(2,2,2)

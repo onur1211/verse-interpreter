@@ -12,6 +12,6 @@ namespace verse_interpreter.lib.Data.Interfaces
     {
         void Visit(IExpression<ArithmeticExpression> expression);
 
-        void Visit(IExpression<StringExpression> expression);
+        void Visit(IExpression<StringExpressionResolved> expression);
     }
 }
