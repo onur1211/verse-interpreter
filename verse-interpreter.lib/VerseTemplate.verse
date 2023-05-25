@@ -1,2 +1,5 @@
-x := (1,2,3,4)
-z := x[2]
+add(x:int, y:int):int {
+    x + y
+}
+
+z := add(1,2)

@@ -25,11 +25,13 @@ namespace verse_interpreter.lib.ParseVisitors
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly TypeConstructorVisitor _constructorVisitor;
         private readonly CollectionParser _collectionParser;
+        private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
 
         public event EventHandler<DeclarationInArrayFoundEventArgs>? DeclarationInArrayFound;
 
         public ValueDefinitionVisitor(ApplicationState applicationState,
                                       TypeInferencer typeInferencer,
+                                      Lazy<FunctionCallVisitor> functionVisitor,
                                       ExpressionVisitor expressionVisitor,
                                       TypeConstructorVisitor constructorVisitor,
                                       CollectionParser collectionParser) : base(applicationState)
@@ -38,6 +40,7 @@ namespace verse_interpreter.lib.ParseVisitors
             _expressionVisitor = expressionVisitor;
             _constructorVisitor = constructorVisitor;
             _collectionParser = collectionParser;
+            _functionCallVisitor = functionVisitor;
         }
 
         public override DeclarationResult VisitValue_definition([NotNull] Verse.Value_definitionContext context)
@@ -48,6 +51,7 @@ namespace verse_interpreter.lib.ParseVisitors
         private DeclarationResult HandleValueAssignment([NotNull] Verse.Value_definitionContext context)
         {
             DeclarationResult declarationResult = new DeclarationResult();
+            FunctionCallResult functionCallResult = new FunctionCallResult();
 
             var maybeInt = context.INT();
             var maybeArrayLiteral = context.array_literal();
@@ -89,7 +93,7 @@ namespace verse_interpreter.lib.ParseVisitors
                 var expression = _expressionVisitor.Visit(maybeExpression);
 
                 _expressionVisitor.Clean();
-                
+
                 declarationResult.ExpressionResults = expression;
                 return _typeInferencer.InferGivenType(declarationResult);
             }
@@ -102,7 +106,7 @@ namespace verse_interpreter.lib.ParseVisitors
 
             if (maybeFunctionCall != null)
             {
-
+                functionCallResult = _functionCallVisitor.Value.Visit(maybeFunctionCall);
             }
 
             throw new NotImplementedException();
@@ -162,7 +166,7 @@ namespace verse_interpreter.lib.ParseVisitors
             Variable array = ApplicationState.CurrentScope.LookupManager.GetVariable(name);
 
             // If the array has no value or is null then throw exception
-            if (array == null || !array.HasValue()) 
+            if (array == null || !array.HasValue())
             {
                 throw new ArgumentNullException(nameof(array), "Error: The array has no value.");
             }

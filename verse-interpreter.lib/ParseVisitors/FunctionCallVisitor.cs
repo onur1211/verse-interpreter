@@ -26,6 +26,7 @@ namespace verse_interpreter.lib.ParseVisitors
                                    GeneralEvaluator evaluator,
                                    FunctionCallPreprocessor functionCallPreprocessor,
                                    DeclarationVisitor declarationVisitor,
+                                   Lazy<ValueDefinitionVisitor> valueDefinitionVisitor,
                                    ExpressionVisitor expressionVisitor) : base(applicationState)
         {
             _functionParser = functionParser;

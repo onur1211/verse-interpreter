@@ -9,6 +9,7 @@ using verse_interpreter.lib.Data.Validators;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.Evaluators;
+using verse_interpreter.lib.Extensions;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Parser;
@@ -41,7 +42,7 @@ namespace verse_interpreter.lib
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
             mainVisitor.VisitProgram(parseTree);
             var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-
+            
             Console.ReadKey();
         }
 
@@ -60,7 +61,7 @@ namespace verse_interpreter.lib
                 .AddTransient<IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
                 .AddTransient<IEvaluator<StringExpression, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
                 .AddTransient<IValidator<List<List<ExpressionResult>>>, ExpressionValidator>()
-                .AddTransient <IValidator<FunctionCall>, ParameterValidator>()
+                .AddTransient<IValidator<FunctionCall>, ParameterValidator>()
                 .AddTransient<ExpressionValidator>()
                 .AddTransient<DeclarationParser>()
                 .AddTransient<TypeMemberVisitor>()
@@ -76,6 +77,7 @@ namespace verse_interpreter.lib
                 .AddTransient<BodyParser>()
                 .AddTransient<BlockParser>()
                 .AddTransient<FunctionCallVisitor>()
+                .AddLazyResolution()
                 .BuildServiceProvider();
 
             return services;

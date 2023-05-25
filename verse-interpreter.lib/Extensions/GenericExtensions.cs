@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -19,6 +20,13 @@ namespace verse_interpreter.lib.Extensions
 
                 return (T)formatter.Deserialize(ms);
             }
+        }
+
+        public static IServiceCollection AddLazyResolution(this IServiceCollection services)
+        {
+            return services.AddTransient(
+                typeof(Lazy<>),
+                typeof(LazilyResolved<>));
         }
     }
 }

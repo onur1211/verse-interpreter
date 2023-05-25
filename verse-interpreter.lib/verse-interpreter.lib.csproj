@@ -11,17 +11,21 @@
 
 	<ItemGroup>
 		<Antlr4 Remove="Data\DataObjects\**" />
+		<Antlr4 Remove="Data\DataVisitors\**" />
 		<Antlr4 Remove="Data\ExpressionVisitors\**" />
 		<Compile Remove="Arguments\**" />
 		<Compile Remove="Data\DataObjects\**" />
+		<Compile Remove="Data\DataVisitors\**" />
 		<Compile Remove="Data\ExpressionVisitors\**" />
 		<Compile Remove="Interfaces\**" />
 		<EmbeddedResource Remove="Arguments\**" />
 		<EmbeddedResource Remove="Data\DataObjects\**" />
+		<EmbeddedResource Remove="Data\DataVisitors\**" />
 		<EmbeddedResource Remove="Data\ExpressionVisitors\**" />
 		<EmbeddedResource Remove="Interfaces\**" />
 		<None Remove="Arguments\**" />
 		<None Remove="Data\DataObjects\**" />
+		<None Remove="Data\DataVisitors\**" />
 		<None Remove="Data\ExpressionVisitors\**" />
 		<None Remove="Interfaces\**" />
 	</ItemGroup>
@@ -38,10 +42,6 @@
 		<PackageReference Include="Antlr4.Runtime" Version="4.6.6" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
 		<PackageReference Include="Z.Expressions.Eval" Version="5.0.3" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Data\DataVisitors\" />
 	</ItemGroup>
 
 </Project>
