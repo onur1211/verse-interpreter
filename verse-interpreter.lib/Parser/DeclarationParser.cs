@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Validators;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluators;
@@ -15,30 +16,30 @@ namespace verse_interpreter.lib.Parser
         private TypeInferencer _inferencer;
         private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
         private readonly BackpropagationEventSystem _backPropagator;
-        private readonly EvaluatorWrapper _evaluator;
         private readonly ExpressionValidator _validator;
+        private readonly GeneralEvaluator _generalEvaluator;
 
         public DeclarationParser(ApplicationState applicationState,
                                  TypeInferencer typeInferencer,
                                  ValueDefinitionVisitor valueDefinitionVisitor,
                                  BackpropagationEventSystem backPropagator,
-                                 EvaluatorWrapper evaluator,
-                                 ExpressionValidator validator)
+                                 ExpressionValidator validator,
+                                  GeneralEvaluator generalEvaluator)
         {
             _state = applicationState;
             _inferencer = typeInferencer;
             _valueDefinitionVisitor = valueDefinitionVisitor;
             _valueDefinitionVisitor.DeclarationInArrayFound += _valueDefinitionVisitor_DeclarationInArrayFound;
-            _backPropagator= backPropagator;
-            _evaluator = evaluator;
+            _backPropagator = backPropagator;
             _validator = validator;
+            _generalEvaluator = generalEvaluator;
         }
 
         private void _valueDefinitionVisitor_DeclarationInArrayFound(object? sender, EventArguments.DeclarationInArrayFoundEventArgs e)
         {
             var result = this.ParseDeclaration(e.declarationContext);
 
-            if (result != null) 
+            if (result != null)
             {
                 throw new NotImplementedException();
             }
@@ -112,26 +113,16 @@ namespace verse_interpreter.lib.Parser
             {
                 return declarationResult;
             }
-            var expressionType = _validator.GetExpressionType(declarationResult.ExpressionResults);
-            ArithmeticExpression expression = new ArithmeticExpression();
-            switch (expressionType)
+            _generalEvaluator.ArithmeticExpressionResolved += (sender, args) =>
             {
-                case "string":
-                    _evaluator.StringEvaluator.Evaluate(declarationResult.ExpressionResults);
-                    throw new NotImplementedException();
-                case "int":
-                    expression = _evaluator.ArithmeticEvaluator.Evaluate(declarationResult.ExpressionResults);
-                    break;
-            }
-
-            if (expression.PostponedExpression != null)
+                declarationResult.Value = args.Result.ResultValue.ToString();
+            };
+            _generalEvaluator.StringExpressionResolved += (sender, args) =>
             {
-                _backPropagator.AddExpression(declarationResult.Name, expression);
-            }
-            else
-            {
-                declarationResult.Value = expression.ResultValue.ToString();
-            }
+                declarationResult.Value = args.Result.Value;
+            };
+            _generalEvaluator.ExecuteExpression(declarationResult.ExpressionResults);
+         
 
             return declarationResult;
         }

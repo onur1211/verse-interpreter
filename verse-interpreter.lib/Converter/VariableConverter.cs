@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Exceptions;
 
 namespace verse_interpreter.lib.Converter
 {
@@ -18,7 +19,6 @@ namespace verse_interpreter.lib.Converter
             return declarationResult.TypeName switch
             {
                 "int" => HandleIntVariables(declarationResult),
-                "collection" => HandleCollection(declarationResult),
                 "string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.Value)),
                 _ => HandleDynamicType(declarationResult)
             };
@@ -39,11 +39,6 @@ namespace verse_interpreter.lib.Converter
         private static Variable HandleDynamicType(DeclarationResult declarationResult)
         {
             return new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.DynamicType!));
-        }
-
-        private static Variable HandleCollection(DeclarationResult declarationResult)
-        {
-            return new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable));
         }
     }
 }

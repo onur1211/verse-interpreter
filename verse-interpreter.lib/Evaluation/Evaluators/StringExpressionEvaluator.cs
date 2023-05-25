@@ -64,8 +64,12 @@ namespace verse_interpreter.lib.Evaluators
             {
                 return _applicationState.CurrentScope.LookupManager.GetVariable(expressionResult.ValueIdentifier).Value.StringValue;
             }
+            if(expressionResult.StringValue != null)
+            {
+                return expressionResult.StringValue.Replace("\"", "");
+            }
 
-            return null;
+            throw new NotImplementedException("The given expression contains no, or unkown data!");
         }
 
         private string Add(ExpressionResult firstExpressionResult, ExpressionResult secondExpressionResult)

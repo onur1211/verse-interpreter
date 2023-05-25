@@ -10,13 +10,12 @@ declaration : ID ':' type
             | ID '=' array_literal
             ;
 
-value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal)
+value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call)
                  ;
                  
 
 program : function_definition program
         | declaration program
-        | function_definition program
         | function_call program
         | type_header program
         | type_member_definition program
@@ -48,8 +47,8 @@ inline_body : block ';' inline_body
             | block
             ;
             
-spaced_body : INDENT block
-            | INDENT block NEWLINE spaced_body
+spaced_body : INDENT* block
+            | INDENT* block NEWLINE spaced_body
             ;
 
 // Arrays/Tuples
@@ -71,7 +70,7 @@ function_call : ID '(' param_call_item ')'
               | ID '(' ')' 
               ;
 
-function_definition : ID function_param ':' type '=' body
+function_definition : ID function_param ':' type NEWLINE* '{' NEWLINE* body NEWLINE*'}'
                     ;
                      
 function_param : '(' ')'
@@ -168,11 +167,12 @@ factor
     ;
 
 primary
-    : ID
-    | INT
-    | type_member_access
+    : type_member_access
     | function_call
+    | ID
     | array_index
+    | INT
+    | string_rule
     | '(' expression ')'
     ;
 

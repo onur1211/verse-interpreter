@@ -8,6 +8,7 @@
         public string ValueIdentifier { get; set; }
 
         public string Operator { get; set; }
+        public string StringValue { get; internal set; }
 
         public ExpressionResult()
         {

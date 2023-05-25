@@ -13,6 +13,7 @@ namespace verse_interpreter.lib.Parser
             var fetchedValue = context.INT();
             var fetchedIdentifier = context.ID();
             var fetchedMemberAccess = context.type_member_access();
+            var fetchedString = context.string_rule();
 
             if (fetchedValue != null)
             {
@@ -28,6 +29,11 @@ namespace verse_interpreter.lib.Parser
             if (fetchedMemberAccess != null)
             {
                 result.ValueIdentifier = fetchedMemberAccess.GetText();
+                return result;
+            }
+            if(fetchedString != null)
+            {
+                result.StringValue = fetchedString.GetText();
                 return result;
             }
 

@@ -52,6 +52,7 @@ namespace verse_interpreter.lib.Visitors
             var maybeExpression = context.expression();
             var maybeString = context.string_rule();
             var maybeConstructor = context.constructor_body();
+            var maybeFunctionCall = context.function_call();
 
             if (maybeConstructor != null)
             {
@@ -71,6 +72,7 @@ namespace verse_interpreter.lib.Visitors
             if (maybeArrayLiteral != null)
             {
                 declarationResult = this.VisitArray_literal(maybeArrayLiteral);
+                return _typeInferencer.InferGivenType(declarationResult);
             }
 
             if (maybeExpression != null)
@@ -86,9 +88,14 @@ namespace verse_interpreter.lib.Visitors
             {
                 declarationResult.Value = maybeString.SEARCH_TYPE().GetText().Replace("\"", "");
                 return _typeInferencer.InferGivenType(declarationResult);
+            }
+
+            if (maybeFunctionCall != null)
+            {
 
             }
-            return _typeInferencer.InferGivenType(declarationResult);
+
+            throw new NotImplementedException();
         }
 
         public override DeclarationResult VisitArray_literal([NotNull] Verse.Array_literalContext context)
