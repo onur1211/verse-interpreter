@@ -1,4 +1,5 @@
-﻿using verse_interpreter.lib.Evaluation.EvaluationManagement;
+﻿using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib.Data
@@ -20,9 +21,14 @@ namespace verse_interpreter.lib.Data
             _level = level;
         }
 
-        public void AddScopedVariable(int scopeId, Variable variable)
+        public void AddScopedVariable(Variable variable)
         {
             this.LookupManager.AddVariable(variable);
+        }
+
+        public void AddFunction(Function function)
+        {
+            this.LookupManager.AddFunction(function);
         }
     }
 }

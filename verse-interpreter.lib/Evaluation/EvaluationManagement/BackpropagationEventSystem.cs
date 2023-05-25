@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Interfaces;
-using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Factories;
+using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Lookup.EventArguments;
 
 namespace verse_interpreter.lib.Evaluation.EvaluationManagement
@@ -44,6 +45,16 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             _associatedArithmeticExpressions.Add(identfier, expression);
         }
 
+        public void AddExpression(IExpression<StringExpression> expression)
+        {
+            _stringExpressions.Add(expression);
+        }
+
+        public void AddExpression(string identfier, IExpression<StringExpression> expression)
+        {
+            _associatedStringExpressions.Add(identfier, expression);
+        }
+
         /// <summary>
         /// After a variable is bound, this callback checks if the expressions are ready to be evaluated or not by calling them 
         /// </summary>
@@ -51,12 +62,12 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         /// <param name="eventArgs"></param>
         public void HandleVariableBound(object sender, VariableBoundEventArgs eventArgs)
         {
-            foreach(var element in _arithmeticExpressions)
+            foreach (var element in _arithmeticExpressions)
             {
                 var res = element.PostponedExpression.Invoke();
                 if (res.PostponedExpression == null)
                 {
-                    Console.WriteLine(res.ResultValue);
+                    Printer.PrintResult(res.ResultValue.ToString()!);
                 }
             }
 
@@ -66,7 +77,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 if (evaluatedExpression.PostponedExpression == null)
                 {
                     _associatedArithmeticExpressions.Remove(expression.Key);
-                    _applicationState.CurrentScope.LookupManager.UpdateVariable(new IntVariable(expression.Key, "int", expression.Value.PostponedExpression.Invoke().ResultValue));
+                    _applicationState.CurrentScope.LookupManager.UpdateVariable(new Variable(expression.Key, new("int", expression.Value.PostponedExpression.Invoke().ResultValue)));
                 }
             }
         }

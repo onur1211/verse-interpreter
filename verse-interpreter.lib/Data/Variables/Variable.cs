@@ -1,27 +1,24 @@
-﻿using verse_interpreter.lib.Data.Interfaces;
+
+﻿using System.Threading.Tasks.Sources;
+using verse_interpreter.lib.Data.Interfaces;
 
 namespace verse_interpreter.lib.Data
 {
-    public abstract class Variable : IVariableVisitable
+    public class Variable
     {
-        public Variable(string name, string type) 
+        public Variable(string name, ValueObject value) 
         {
             this.Name = name;
-            this.Type = type;
+            this.Value = value;
         }
 
         public string Name { get; set; } = null!;
 
-        public string Type { get; set; } = null!;
+        public ValueObject Value { get; set; }   
 
-        public abstract List<Variable> AcceptCollection(IVariableVisitor visitor);
-
-        public abstract DynamicType AcceptDynamicType(IVariableVisitor visitor);
-
-        public abstract int? AcceptInt(IVariableVisitor visitor);
-
-        public abstract string AcceptString(IVariableVisitor visitor);
-
-        public abstract bool HasValue();
+        public bool HasValue()
+        {
+            return Value.IntValue != null || Value.StringValue != null || Value.DynamicType != null || Value.CollectionVariables != null;
+        }
     }
 }

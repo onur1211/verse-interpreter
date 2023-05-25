@@ -1,4 +1,4 @@
-﻿using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,7 @@ using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
 
-namespace verse_interpreter.lib.Visitors
+namespace verse_interpreter.lib.ParseVisitors
 {
     public class ValueDefinitionVisitor : AbstractVerseVisitor<DeclarationResult>
     {
@@ -27,7 +27,7 @@ namespace verse_interpreter.lib.Visitors
         private readonly TypeConstructorVisitor _constructorVisitor;
         private readonly CollectionParser _collectionParser;
 
-        public event EventHandler<DeclarationInArrayFoundEventArgs> DeclarationInArrayFound;
+        public event EventHandler<DeclarationInArrayFoundEventArgs>? DeclarationInArrayFound;
 
         public ValueDefinitionVisitor(ApplicationState applicationState,
                                       TypeInferencer typeInferencer,
@@ -43,6 +43,11 @@ namespace verse_interpreter.lib.Visitors
 
         public override DeclarationResult VisitValue_definition([NotNull] Verse.Value_definitionContext context)
         {
+            return HandleValueAssignment(context);
+        }
+
+        private DeclarationResult HandleValueAssignment([NotNull] Verse.Value_definitionContext context)
+        {
             DeclarationResult declarationResult = new DeclarationResult();
 
             var maybeInt = context.INT();
@@ -51,22 +56,27 @@ namespace verse_interpreter.lib.Visitors
             var maybeExpression = context.expression();
             var maybeString = context.string_rule();
             var maybeConstructor = context.constructor_body();
+            var maybeFunctionCall = context.function_call();
 
             if (maybeConstructor != null)
             {
                 var typeInstance = maybeConstructor.Accept(_constructorVisitor);
                 declarationResult.TypeName = typeInstance.Name;
                 declarationResult.DynamicType = typeInstance;
+
+                return _typeInferencer.InferGivenType(declarationResult);
             }
 
             if (maybeInt != null)
             {
                 declarationResult.Value = maybeInt.GetText();
+                return _typeInferencer.InferGivenType(declarationResult);
             }
 
             if (maybeArrayLiteral != null)
             {
                 declarationResult = this.VisitArray_literal(maybeArrayLiteral);
+                return _typeInferencer.InferGivenType(declarationResult);
             }
 
             if (maybeArrayIndex != null)
@@ -77,17 +87,25 @@ namespace verse_interpreter.lib.Visitors
             if (maybeExpression != null)
             {
                 var expression = _expressionVisitor.Visit(maybeExpression);
-                _expressionVisitor.Clean();
 
+                _expressionVisitor.Clean();
+                
                 declarationResult.ExpressionResults = expression;
+                return _typeInferencer.InferGivenType(declarationResult);
             }
 
             if (maybeString != null)
             {
                 declarationResult.Value = maybeString.SEARCH_TYPE().GetText().Replace("\"", "");
+                return _typeInferencer.InferGivenType(declarationResult);
             }
 
-            return _typeInferencer.InferGivenType(declarationResult);
+            if (maybeFunctionCall != null)
+            {
+
+            }
+
+            throw new NotImplementedException();
         }
 
         public override DeclarationResult VisitArray_literal([NotNull] Verse.Array_literalContext context)
@@ -114,7 +132,7 @@ namespace verse_interpreter.lib.Visitors
 
             DeclarationResult declarationResult = new DeclarationResult();
             declarationResult.TypeName = "collection";
-            declarationResult.CollectionVariable = new CollectionVariable(declarationResult.Name, "collection", variables);
+            declarationResult.CollectionVariable = new VerseCollection(variables);
 
             return declarationResult;
         }
@@ -214,6 +232,8 @@ namespace verse_interpreter.lib.Visitors
             {
                 this.DeclarationInArrayFound(sender, new DeclarationInArrayFoundEventArgs(declarationContext));
             }
+
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,43 +1,37 @@
-﻿using System.Net.Http.Headers;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.Validators;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
-using verse_interpreter.lib.Evaluators;
-using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
-using verse_interpreter.lib.Visitors;
+using verse_interpreter.lib.ParseVisitors;
 
-namespace verse_interpreter.lib
+namespace verse_interpreter.lib.Parser
 {
     public class DeclarationParser
     {
-        private ApplicationState _state;
-        private TypeInferencer _inferencer;
+        private readonly ApplicationState _state;
+        private readonly TypeInferencer _inferencer;
         private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
-        private readonly BackpropagationEventSystem _backPropagator;
-        private readonly EvaluatorWrapper _evaluator;
-        private readonly ExpressionValidator _validator;
+        private readonly GeneralEvaluator _generalEvaluator;
 
         public DeclarationParser(ApplicationState applicationState,
                                  TypeInferencer typeInferencer,
                                  ValueDefinitionVisitor valueDefinitionVisitor,
                                  BackpropagationEventSystem backPropagator,
-                                 EvaluatorWrapper evaluator,
-                                 ExpressionValidator validator)
+                                 ExpressionValidator validator,
+                                  GeneralEvaluator generalEvaluator)
         {
             _state = applicationState;
             _inferencer = typeInferencer;
             _valueDefinitionVisitor = valueDefinitionVisitor;
             _valueDefinitionVisitor.DeclarationInArrayFound += _valueDefinitionVisitor_DeclarationInArrayFound;
-            _backPropagator= backPropagator;
-            _evaluator = evaluator;
-            _validator = validator;
+            _generalEvaluator = generalEvaluator;
         }
 
         private void _valueDefinitionVisitor_DeclarationInArrayFound(object? sender, EventArguments.DeclarationInArrayFoundEventArgs e)
         {
             var result = this.ParseDeclaration(e.declarationContext);
 
-            if (result != null) 
+            if (result != null)
             {
                 throw new NotImplementedException();
             }
@@ -99,11 +93,6 @@ namespace verse_interpreter.lib
         {
             DeclarationResult declarationResult = _valueDefinitionVisitor.Visit(context);
             declarationResult.Name = context.ID().GetText();
-            
-            if (declarationResult.CollectionVariable != null) 
-            {
-                declarationResult.CollectionVariable.Name = declarationResult.Name;
-            }
 
             declarationResult = HandleExpressionAsValue(declarationResult);
 
@@ -116,31 +105,16 @@ namespace verse_interpreter.lib
             {
                 return declarationResult;
             }
-            var expressionType = _validator.GetExpressionType(declarationResult.ExpressionResults);
-            ArithmeticExpression expression = new ArithmeticExpression();
-            switch (expressionType)
+            _generalEvaluator.ArithmeticExpressionResolved += (sender, args) =>
             {
-                case "string":
-                      _evaluator.StringEvaluator.Evaluate(declarationResult.ExpressionResults);
-                    throw new NotImplementedException();
-                case "int":
-                    expression = _evaluator.ArithmeticEvaluator.Evaluate(declarationResult.ExpressionResults);
-                    break;
-            }
-
-            if(expression.PostponedExpression != null)
+                declarationResult.Value = args.Result.ResultValue.ToString();
+            };
+            _generalEvaluator.StringExpressionResolved += (sender, args) =>
             {
-                _backPropagator.AddExpression(declarationResult.Name, expression);
-            }
-            else
-            {
-                declarationResult.Value = expression.ResultValue.ToString();
-            }
-
-            if (declarationResult.CollectionVariable != null) 
-            {
-                declarationResult.CollectionVariable.Name = declarationResult.Name;
-            }
+                declarationResult.Value = args.Result.Value;
+            };
+            _generalEvaluator.ExecuteExpression(declarationResult.ExpressionResults);
+         
 
             return declarationResult;
         }

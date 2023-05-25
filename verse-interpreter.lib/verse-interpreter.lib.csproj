@@ -10,11 +10,19 @@
 
 
 	<ItemGroup>
+		<Antlr4 Remove="Data\DataObjects\**" />
+		<Antlr4 Remove="Data\ExpressionVisitors\**" />
 		<Compile Remove="Arguments\**" />
+		<Compile Remove="Data\DataObjects\**" />
+		<Compile Remove="Data\ExpressionVisitors\**" />
 		<Compile Remove="Interfaces\**" />
 		<EmbeddedResource Remove="Arguments\**" />
+		<EmbeddedResource Remove="Data\DataObjects\**" />
+		<EmbeddedResource Remove="Data\ExpressionVisitors\**" />
 		<EmbeddedResource Remove="Interfaces\**" />
 		<None Remove="Arguments\**" />
+		<None Remove="Data\DataObjects\**" />
+		<None Remove="Data\ExpressionVisitors\**" />
 		<None Remove="Interfaces\**" />
 	</ItemGroup>
 
@@ -33,7 +41,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Data\ExpressionVisitors\" />
+	  <Folder Include="Data\DataVisitors\" />
 	</ItemGroup>
 
 </Project>

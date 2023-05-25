@@ -1,13 +1,18 @@
 ﻿using Antlr4.Runtime;
 using Microsoft.Extensions.DependencyInjection;
-using verse_interpreter.lib.Data.DataVisitors;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using verse_interpreter.lib.Data.Expressions;
+using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Data.Validators;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Parser;
+using verse_interpreter.lib.ParseVisitors;
 using verse_interpreter.lib.Visitors;
 using verse_interpreter.lib.Wrapper;
 
@@ -44,25 +49,33 @@ namespace verse_interpreter.lib
         {
             var services = new ServiceCollection()
                 .AddSingleton<ApplicationState>()
-                .AddSingleton<BackpropagationEventSystem>()
+                .AddTransient<BackpropagationEventSystem>()
                 .AddTransient<DeclarationVisitor>()
                 .AddTransient<ExpressionVisitor>()
                 .AddTransient<FunctionDeclarationVisitor>()
-                .AddTransient<FunctionExecutionVisitor>()
                 .AddTransient<TypeDefinitionVisitor>()
                 .AddTransient<TypeConstructorVisitor>()
                 .AddTransient<MainVisitor>()
                 .AddTransient<TypeInferencer>()
                 .AddTransient<IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
-                .AddTransient<IEvaluator<string, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
+                .AddTransient<IEvaluator<StringExpression, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
+                .AddTransient<IValidator<List<List<ExpressionResult>>>, ExpressionValidator>()
+                .AddTransient <IValidator<FunctionCall>, ParameterValidator>()
                 .AddTransient<ExpressionValidator>()
                 .AddTransient<DeclarationParser>()
                 .AddTransient<TypeMemberVisitor>()
                 .AddTransient<ValueDefinitionVisitor>()
                 .AddTransient<CollectionParser>()
                 .AddTransient<EvaluatorWrapper>()
-                .AddTransient<VariableVisitor>()
                 .AddTransient<TypeHandlingWrapper>()
+                .AddTransient<FunctionWrapper>()
+                .AddTransient<PrimaryRuleParser>()
+                .AddTransient<FunctionParser>()
+                .AddTransient<FunctionCallPreprocessor>()
+                .AddTransient<GeneralEvaluator>()
+                .AddTransient<BodyParser>()
+                .AddTransient<BlockParser>()
+                .AddTransient<FunctionCallVisitor>()
                 .BuildServiceProvider();
 
             return services;

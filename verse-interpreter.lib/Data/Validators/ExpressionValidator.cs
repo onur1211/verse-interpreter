@@ -1,10 +1,10 @@
-﻿using verse_interpreter.lib.Data.ResultObjects;
-using verse_interpreter.lib.Evaluators;
-using verse_interpreter.lib.Factories;
+﻿using verse_interpreter.lib.Data.Interfaces;
+using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Exceptions;
 
-namespace verse_interpreter.lib
+namespace verse_interpreter.lib.Data.Validators
 {
-    public class ExpressionValidator
+    public class ExpressionValidator : IValidator<List<List<ExpressionResult>>>
     {
         private readonly ApplicationState _applicationState;
 
@@ -27,9 +27,9 @@ namespace verse_interpreter.lib
                 {
                     if (!string.IsNullOrEmpty(exp.ValueIdentifier) && typeName == string.Empty)
                     {
-                        typeName = _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Type;
+                        typeName = _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value.TypeName;
                     }
-                    if (!string.IsNullOrEmpty(exp.ValueIdentifier) && _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Type != typeName)
+                    if (!string.IsNullOrEmpty(exp.ValueIdentifier) && _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value.TypeName != typeName)
                     {
                         return false;
                     }
@@ -52,7 +52,7 @@ namespace verse_interpreter.lib
                 {
                     if (!string.IsNullOrEmpty(exp.ValueIdentifier))
                     {
-                        return _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Type;
+                        return _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value.TypeName;
                     }
                 }
             }

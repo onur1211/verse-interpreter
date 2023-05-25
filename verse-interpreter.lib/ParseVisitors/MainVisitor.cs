@@ -1,52 +1,79 @@
 ﻿using Antlr4.Runtime.Misc;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Grammar;
+using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Wrapper;
 
-namespace verse_interpreter.lib.Visitors
+namespace verse_interpreter.lib.ParseVisitors
 {
     public class MainVisitor : AbstractVerseVisitor<object>
     {
-        private DeclarationVisitor _declarationVisitor;
-        private ExpressionVisitor _expressionVisitor;
+        private readonly DeclarationVisitor _declarationVisitor;
+        private readonly ExpressionVisitor _expressionVisitor;
+        private readonly FunctionWrapper _functionWrapper;
         private readonly TypeHandlingWrapper _typeHandlingWrapper;
         private readonly EvaluatorWrapper _baseEvaluator;
         private readonly BackpropagationEventSystem _backPropagator;
+        private readonly GeneralEvaluator _generalEvaluator;
 
-        public MainVisitor(ApplicationState applictationState,
+        public MainVisitor(ApplicationState applicationState,
                            DeclarationVisitor declarationVisitor,
                            ExpressionVisitor expressionVisitor,
+                           FunctionWrapper functionWrapper,
                            TypeHandlingWrapper typeHandlingWrapper,
                            EvaluatorWrapper baseEvaluator,
-                           BackpropagationEventSystem backPropagator) : base(applictationState)
+                           BackpropagationEventSystem backPropagator,
+                           GeneralEvaluator generalEvaluator) : base(applicationState)
         {
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
+            _functionWrapper = functionWrapper;
             _typeHandlingWrapper = typeHandlingWrapper;
             _baseEvaluator = baseEvaluator;
             _backPropagator = backPropagator;
+            _generalEvaluator = generalEvaluator;
             ApplicationState.CurrentScope.LookupManager.VariableBound += _backPropagator.HandleVariableBound!;
         }
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
             var declaredVariable = context.Accept(_declarationVisitor);
-            ApplicationState.CurrentScope.AddScopedVariable(1, declaredVariable);
+            ApplicationState.CurrentScope.AddScopedVariable(declaredVariable);
             return null!;
         }
 
         public override object VisitExpression([NotNull] Verse.ExpressionContext context)
         {
             var res = _expressionVisitor.Visit(context);
-            var expression = _baseEvaluator.ArithmeticEvaluator.Evaluate(res);
-            if (expression.PostponedExpression == null)
+            _expressionVisitor.Clean();
+
+            if(ApplicationState.CurrentScopeLevel == 1)
             {
-                PrintResult(expression.ResultValue.ToString()!);
+                _generalEvaluator.ArithmeticExpressionResolved += (x, y) =>
+                {
+                    Printer.PrintResult(y.Result.ResultValue.ToString()!);
+                };
+                _generalEvaluator.StringExpressionResolved += (x, y) =>
+                {
+                    Printer.PrintResult(y.Result.Value);
+                };
             }
-            else
-            {
-                _backPropagator.AddExpression(expression);
-            }
+
+            _generalEvaluator.ExecuteExpression(res);
+            return null!;
+        }
+
+        public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
+        {
+            var res = _functionWrapper.FunctionDeclarationVisitor.Visit(context);
+            ApplicationState.CurrentScope.AddFunction(res);
+            return null!;
+        }
+
+        public override object VisitFunction_call([NotNull] Verse.Function_callContext context)
+        {
+            var result = _functionWrapper.FunctionCallVisitor.Visit(context);
             return null!;
         }
 
@@ -61,14 +88,6 @@ namespace verse_interpreter.lib.Visitors
         {
             this._typeHandlingWrapper.TypeMemberVisitor.Visit(context);
             return null!;
-        }
-
-        private void PrintResult(string result)
-        {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("VERSE CODE RESULT: ");
-            Console.ResetColor();
-            Console.WriteLine(result);
         }
     }
 }

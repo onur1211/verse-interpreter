@@ -1,17 +1,22 @@
 ﻿using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
+using verse_interpreter.lib.Parser;
+using static verse_interpreter.lib.Grammar.Verse;
 
-namespace verse_interpreter.lib.Visitors
+namespace verse_interpreter.lib.ParseVisitors
 {
     public class ExpressionVisitor : AbstractVerseVisitor<List<List<ExpressionResult>>>
     {
         private List<List<ExpressionResult>> _expressions;
+        private readonly PrimaryRuleParser _primaryRuleParser;
 
-        public ExpressionVisitor(ApplicationState applicationState) : base(applicationState)
+        public ExpressionVisitor(ApplicationState applicationState,
+                                 PrimaryRuleParser primaryRuleParser) : base(applicationState)
         {
             _expressions = new List<List<ExpressionResult>>();
             ExpressionTerminalVisited += TerminalNodeVisitedCallback;
+            _primaryRuleParser = primaryRuleParser;
         }
 
         private event EventHandler<ExpressionTerminalVisited> ExpressionTerminalVisited = null!;
@@ -50,40 +55,14 @@ namespace verse_interpreter.lib.Visitors
 
         public override List<List<ExpressionResult>> VisitPrimary([Antlr4.Runtime.Misc.NotNull] Verse.PrimaryContext context)
         {
-            Verse.ExpressionContext? expressionContext = context.expression();
-            // Checks if the there are any subexpressions --> due to brackets for instance
+            var expressionContext = context.expression();
             if (expressionContext != null)
             {
-                VisitExpression(expressionContext);
+                this.VisitExpression(expressionContext);
                 _expressions.Add(new List<ExpressionResult>());
                 return null;
             }
-
-            // Fetches the value / identifer from the current node
-            Nullable<int> value = null;
-            string identifier = string.Empty;
-            var fetchedValue = context.INT();
-            var fetchedIdentifier = context.ID();
-            var fetchedMemberAccess = context.type_member_access();
-
-            if (fetchedValue != null)
-            {
-                value = Convert.ToInt32(fetchedValue.ToString());
-            }
-            if (fetchedIdentifier != null)
-            {
-                identifier = fetchedIdentifier.GetText();
-            }
-            if (fetchedMemberAccess != null)
-            {
-                identifier = fetchedMemberAccess.GetText();
-            }
-
-            var expressionResult = new ExpressionResult()
-            {
-                IntegerValue = value,
-                ValueIdentifier = identifier,
-            };
+            var expressionResult = _primaryRuleParser.ParsePrimary(context);    
             // When the instance is finalized the event is triggered to append it to the final result set
             this.ExpressionTerminalVisited?.Invoke(this, new ExpressionTerminalVisited(expressionResult));
             return base.VisitChildren(context);

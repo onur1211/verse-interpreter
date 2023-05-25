@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace verse_interpreter.lib
+namespace verse_interpreter.lib.Exceptions
 {
     [Serializable]
     internal class InvalidTypeCombinationException : Exception

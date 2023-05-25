@@ -10,14 +10,13 @@ declaration : ID ':' type
             | ID '=' array_literal
             ;
 
-value_definition : (INT | expression | constructor_body | string_rule | choice_rule 
-                   | array_literal | array_index)
+
+value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index)
                  ;
                  
 
 program : function_definition program
         | declaration program
-        | function_definition program
         | function_call program
         | type_header program
         | type_member_definition program
@@ -31,28 +30,27 @@ program : function_definition program
         | function_definition
         | expression
         | array_index
+        | if_block
         ;
 
 block : declaration
       | function_call
       | expression
-      | declaration
-      | function_call
       | if_block
       ;
 
 body : inline_body
-              | NEWLINE spaced_body
-              ;
+     | NEWLINE spaced_body
+     | bracket_body
+     ;
               
 inline_body : block ';' inline_body
             | block
             ;
             
-spaced_body : INDENT block
-            | INDENT block NEWLINE spaced_body
+spaced_body : INDENT* block
+            | INDENT* block NEWLINE spaced_body
             ;
-
 
 // Arrays/Tuples
 array_literal : '(' array_elements ')'
@@ -66,7 +64,8 @@ array_elements : value_definition (',' array_elements)*
 
 array_index : ID '[' INT ']'
             ;
-
+            
+bracket_body : '{' block+ '}';
 
 // Functions
 
@@ -74,8 +73,7 @@ function_call : ID '(' param_call_item ')'
               | ID '(' ')' 
               ;
 
-function_definition : ID function_param ':' type ':=' body
-                    | ID function_param ':' type ':=' '{' body NEWLINE?'}'
+function_definition : ID function_param ':' type NEWLINE* '{' NEWLINE* body NEWLINE*'}'
                     ;
                      
 function_param : '(' ')'
@@ -86,8 +84,8 @@ param_def_item     : declaration
                    | declaration ',' param_def_item
                    ;
                    
-param_call_item : (INT | ID | function_call | expression)
-                | (INT | ID | function_call | expression) ',' param_call_item
+param_call_item : (value_definition | ID)
+                | (value_definition | ID) ',' param_call_item
                 ;
 
 // Type definition
@@ -125,7 +123,9 @@ choice_rule : choice_value '|' choice_value
             
 // Conditionals
 
-if_block    : 'if' '(' comp_expression ')' 'then' body 'else' body ;
+if_block    : 'if' '(' comp_expression ')' then_body ;
+
+then_body : (NEWLINE)* 'then' block ;
 
 comp_expression
     : comp_term
@@ -170,14 +170,16 @@ factor
     ;
 
 primary
-    : ID
-    | INT
-    | type_member_access
+    : type_member_access
     | function_call
+    | ID
+    | array_index
+    | INT
+    | string_rule
     | '(' expression ')'
     ;
 
 
-type : (INTTYPE | STRINGTYPE | ID ) ;
+type : (INTTYPE | STRINGTYPE | ID | VOID ) ;
 comparsion_op : ('>' | '<' | '|' | '=' )   ; 
 operator : ('*' | '/' |'-'|'+'| '>');

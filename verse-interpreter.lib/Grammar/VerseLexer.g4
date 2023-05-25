@@ -23,6 +23,7 @@ DOT: '.';
 INTTYPE : 'int';
 STRINGTYPE: 'string';
 DATA : 'data';
+VOID : 'void';
 // Operators
 PLUS : '+' ;
 MINUS : '-' ;
@@ -30,6 +31,7 @@ MUL : '*' ;
 DIV : '/' ;
 LAMBDA : '=>' ;
 CHOICE : '|' ;
+NOVALUE : 'false?';
 
 // Keywords
 IF: 'if';
@@ -38,6 +40,7 @@ ELSE: 'else';
 FST: 'fst';
 ARRAY: 'array';
 INSTANCE: 'instance';
+RETURN : 'return';
 
 INDENT: '    ';
 INT : [0-9]+ ;
