@@ -10,7 +10,8 @@ declaration : ID ':' type
             | ID '=' array_literal
             ;
 
-value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call)
+
+value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index)
                  ;
                  
 
@@ -52,7 +53,9 @@ spaced_body : INDENT* block
             ;
 
 // Arrays/Tuples
-array_literal : '(' array_elements ')' ;
+array_literal : '(' array_elements ')'
+              | '('')'
+              ;
 
 
 array_elements : value_definition (',' array_elements)*
@@ -61,7 +64,7 @@ array_elements : value_definition (',' array_elements)*
 
 array_index : ID '[' INT ']'
             ;
-
+            
 bracket_body : '{' block+ '}';
 
 // Functions

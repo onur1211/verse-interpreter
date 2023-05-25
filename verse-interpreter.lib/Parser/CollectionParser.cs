@@ -13,12 +13,6 @@ namespace verse_interpreter.lib.Parser
         public CollectionParseResult GetParameters(Verse.Array_elementsContext context)
         {
             CollectionParseResult collectionParseResult = new CollectionParseResult();
-
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
             return this.ParseParameterRecursive(context, collectionParseResult);
         }
 
