@@ -1,4 +1,7 @@
-x:string
-x = "Was"
-y:string
-y = x + "wasBruder"
+assignValueFive(x:int, y:int, z:int):int {
+    x = y + z
+}
+x:int
+assignValueFive(x, 5, 5)
+
+x + 5

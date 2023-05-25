@@ -2,8 +2,9 @@
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
+using verse_interpreter.lib.Visitors;
 
-namespace verse_interpreter.lib.Visitors
+namespace verse_interpreter.lib.ParseVisitors
 {
     public class FunctionDeclarationVisitor : AbstractVerseVisitor<Function>{
 

@@ -2,18 +2,22 @@
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Extensions;
 using verse_interpreter.lib.Grammar;
+using verse_interpreter.lib.ParseVisitors;
 
 namespace verse_interpreter.lib.Visitors
 {
     public class FunctionParser
     {
-        private DeclarationVisitor _declarationVisitor;
+        private readonly ApplicationState _applicationState;
+        private readonly DeclarationVisitor _declarationVisitor;
         private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
         private FunctionParameters _result;
 
-        public FunctionParser(DeclarationVisitor declarationVisitor,
+        public FunctionParser(ApplicationState applicationState,
+                              DeclarationVisitor declarationVisitor,
                               ValueDefinitionVisitor valueDefinitionVisitor)
         {
+            _applicationState = applicationState;
             _declarationVisitor = declarationVisitor;
             _valueDefinitionVisitor = valueDefinitionVisitor;
             _result = new FunctionParameters();
@@ -51,10 +55,23 @@ namespace verse_interpreter.lib.Visitors
         {
             if (call_paramContext == null)
             {
-                return; 
+                return;
             }
-            var result = Converter.VariableConverter.Convert(call_paramContext.value_definition().Accept(_valueDefinitionVisitor));
-            _result.Parameters.Add(result);
+
+            Variable variable = null!;
+            var identifier = call_paramContext.ID();
+            var result = call_paramContext.value_definition();
+
+            if (identifier != null)
+            {
+                variable = _applicationState.CurrentScope.LookupManager.GetVariable(identifier.GetText());
+            }
+            if (result != null)
+            {
+                variable = Converter.VariableConverter.Convert(result.Accept(_valueDefinitionVisitor));
+            }
+
+            _result.Parameters.Add(variable!);
             ParseCallParametersRecursivly(call_paramContext.param_call_item());
         }
     }

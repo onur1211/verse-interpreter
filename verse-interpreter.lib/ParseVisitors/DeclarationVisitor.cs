@@ -4,7 +4,7 @@ using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
 
-namespace verse_interpreter.lib.Visitors
+namespace verse_interpreter.lib.ParseVisitors
 {
     public class DeclarationVisitor : AbstractVerseVisitor<Variable>
     {

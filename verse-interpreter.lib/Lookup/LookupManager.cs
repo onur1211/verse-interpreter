@@ -98,6 +98,11 @@ namespace verse_interpreter.lib.Lookup
             return this.lookupTable.Table[variableName];
         }
 
+        public List<Variable> GetAllVariables()
+        {
+            return lookupTable.Table.Values.ToList();
+        }
+
         public Variable GetMemberVariable(DynamicType instance, string variableName, string propertyName)
         {
             if (!IsVariable(variableName))

@@ -8,9 +8,9 @@ using verse_interpreter.lib.ParseVisitors;
 
 namespace verse_interpreter.lib.Data.Validators
 {
-    public class ParameterValidator : IValidator<FunctionCallItem>
+    public class ParameterValidator : IValidator<FunctionCall>
     {
-        public bool IsTypeConformityGiven(FunctionCallItem value)
+        public bool IsTypeConformityGiven(FunctionCall value)
         {
             for (int i = 0; i < value.Function.ParameterCount; i++)
             {

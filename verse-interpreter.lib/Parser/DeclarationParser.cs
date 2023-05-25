@@ -1,22 +1,16 @@
-﻿using System.Net.Http.Headers;
-using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.Expressions;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Validators;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
-using verse_interpreter.lib.Evaluators;
-using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
-using verse_interpreter.lib.Visitors;
+using verse_interpreter.lib.ParseVisitors;
 
 namespace verse_interpreter.lib.Parser
 {
     public class DeclarationParser
     {
-        private ApplicationState _state;
-        private TypeInferencer _inferencer;
+        private readonly ApplicationState _state;
+        private readonly TypeInferencer _inferencer;
         private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
-        private readonly BackpropagationEventSystem _backPropagator;
-        private readonly ExpressionValidator _validator;
         private readonly GeneralEvaluator _generalEvaluator;
 
         public DeclarationParser(ApplicationState applicationState,
@@ -30,8 +24,6 @@ namespace verse_interpreter.lib.Parser
             _inferencer = typeInferencer;
             _valueDefinitionVisitor = valueDefinitionVisitor;
             _valueDefinitionVisitor.DeclarationInArrayFound += _valueDefinitionVisitor_DeclarationInArrayFound;
-            _backPropagator = backPropagator;
-            _validator = validator;
             _generalEvaluator = generalEvaluator;
         }
 

@@ -5,7 +5,7 @@ using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Wrapper;
 
-namespace verse_interpreter.lib.Visitors
+namespace verse_interpreter.lib.ParseVisitors
 {
     public class MainVisitor : AbstractVerseVisitor<object>
     {
@@ -17,14 +17,14 @@ namespace verse_interpreter.lib.Visitors
         private readonly BackpropagationEventSystem _backPropagator;
         private readonly GeneralEvaluator _generalEvaluator;
 
-        public MainVisitor(ApplicationState applictationState,
+        public MainVisitor(ApplicationState applicationState,
                            DeclarationVisitor declarationVisitor,
                            ExpressionVisitor expressionVisitor,
                            FunctionWrapper functionWrapper,
                            TypeHandlingWrapper typeHandlingWrapper,
                            EvaluatorWrapper baseEvaluator,
                            BackpropagationEventSystem backPropagator,
-                           GeneralEvaluator generalEvaluator) : base(applictationState)
+                           GeneralEvaluator generalEvaluator) : base(applicationState)
         {
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
@@ -73,26 +73,7 @@ namespace verse_interpreter.lib.Visitors
 
         public override object VisitFunction_call([NotNull] Verse.Function_callContext context)
         {
-            var functionCallItem = _functionWrapper.FunctionCallVisitor.Visit(context);
-            _functionWrapper.FunctionCallPreprocessor.BuildExecutableFunction(functionCallItem);
-            ApplicationState.CurrentScopeLevel += 1;
-
-            ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, functionCallItem.Function);
-            ApplicationState.CurrentScope.AddFunction(functionCallItem.Function);
-
-            _generalEvaluator.ArithmeticExpressionResolved += (x, y) =>
-            {
-                
-            };
-            _generalEvaluator.StringExpressionResolved += (x, y) =>
-            {
-
-            };
-
-            functionCallItem.Function.FunctionBody.ForEach(x => x.Accept(this));
-
-            ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
-            ApplicationState.CurrentScopeLevel -= 1;
+            var result = _functionWrapper.FunctionCallVisitor.Visit(context);
             return null!;
         }
 

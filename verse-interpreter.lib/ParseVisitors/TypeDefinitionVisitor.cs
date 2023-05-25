@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Grammar;
 
-namespace verse_interpreter.lib.Visitors
+namespace verse_interpreter.lib.ParseVisitors
 {
     // EXAM_UPDATED
     public class TypeDefinitionVisitor : AbstractVerseVisitor<DynamicType>

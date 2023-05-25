@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.ParseVisitors;
 using verse_interpreter.lib.Visitors;
 
 namespace verse_interpreter.lib.Wrapper
@@ -19,12 +20,12 @@ namespace verse_interpreter.lib.Wrapper
 
         public TypeHandlingWrapper(TypeInferencer typeInferencer, 
             TypeConstructorVisitor typeConstructorVisitor, 
-            TypeDefinitionVisitor typeDefintionVisitor,
+            TypeDefinitionVisitor typeDefinitionVisitor,
             TypeMemberVisitor typeMemberVisitor)
         {
             TypeInferencer = typeInferencer;
             TypeConstructorVisitor = typeConstructorVisitor;
-            TypeDefinitionVisitor = typeDefintionVisitor;
+            TypeDefinitionVisitor = typeDefinitionVisitor;
             TypeMemberVisitor = typeMemberVisitor;
         }
     }

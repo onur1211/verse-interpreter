@@ -81,8 +81,8 @@ param_def_item     : declaration
                    | declaration ',' param_def_item
                    ;
                    
-param_call_item : value_definition
-                | value_definition ',' param_call_item
+param_call_item : (value_definition | ID)
+                | (value_definition | ID) ',' param_call_item
                 ;
 
 // Type definition

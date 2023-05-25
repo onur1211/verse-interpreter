@@ -60,7 +60,7 @@ namespace verse_interpreter.lib
                 .AddTransient<IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
                 .AddTransient<IEvaluator<StringExpression, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
                 .AddTransient<IValidator<List<List<ExpressionResult>>>, ExpressionValidator>()
-                .AddTransient <IValidator<FunctionCallItem>, ParameterValidator>()
+                .AddTransient <IValidator<FunctionCall>, ParameterValidator>()
                 .AddTransient<ExpressionValidator>()
                 .AddTransient<DeclarationParser>()
                 .AddTransient<TypeMemberVisitor>()

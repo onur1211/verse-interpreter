@@ -12,14 +12,14 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 {
     public class FunctionCallPreprocessor
     {
-        private readonly IValidator<FunctionCallItem> _functionCallValidator;
+        private readonly IValidator<FunctionCall> _functionCallValidator;
 
-        public FunctionCallPreprocessor(IValidator<FunctionCallItem> functionCallValidator)
+        public FunctionCallPreprocessor(IValidator<FunctionCall> functionCallValidator)
         {
             _functionCallValidator = functionCallValidator;
         }
 
-        public void BuildExecutableFunction(FunctionCallItem item)
+        public void BuildExecutableFunction(FunctionCall item)
         {
             if(!IsArityEqual(item))
             {
@@ -33,12 +33,12 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             BindValues(item);
         }
 
-        private bool IsArityEqual(FunctionCallItem item)
+        private bool IsArityEqual(FunctionCall item)
         {
             return item.Parameters.ParameterCount == item.Function.ParameterCount;
         }
 
-        private void BindValues(FunctionCallItem item)
+        private void BindValues(FunctionCall item)
         {
             for(int i = 0; i < item.Function.ParameterCount; i++)
             {

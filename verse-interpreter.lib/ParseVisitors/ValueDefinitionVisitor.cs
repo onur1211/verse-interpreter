@@ -15,7 +15,7 @@ using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
 
-namespace verse_interpreter.lib.Visitors
+namespace verse_interpreter.lib.ParseVisitors
 {
     public class ValueDefinitionVisitor : AbstractVerseVisitor<DeclarationResult>
     {

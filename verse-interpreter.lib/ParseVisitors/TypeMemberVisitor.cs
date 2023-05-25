@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Grammar;
 
-namespace verse_interpreter.lib.Visitors
+namespace verse_interpreter.lib.ParseVisitors
 {
     public class TypeMemberVisitor : AbstractVerseVisitor<TypeMemberAccessResult>
     {
