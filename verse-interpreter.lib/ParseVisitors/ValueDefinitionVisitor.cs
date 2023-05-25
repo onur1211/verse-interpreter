@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.DataVisitors;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluators;
@@ -82,6 +81,7 @@ namespace verse_interpreter.lib.ParseVisitors
             if (maybeArrayIndex != null)
             {
                 declarationResult = this.VisitArray_index(maybeArrayIndex);
+                return declarationResult;
             }
 
             if (maybeExpression != null)
@@ -117,7 +117,7 @@ namespace verse_interpreter.lib.ParseVisitors
             {
                 foreach (var valueDef in result.ValueElements)
                 {
-                    var variableResult = VariableConverter.Convert(valueDef.Accept(this), this.ApplicationState);
+                    var variableResult = VariableConverter.Convert(valueDef.Accept(this));
                     variables.Add(variableResult);
                 }
             }
@@ -168,7 +168,7 @@ namespace verse_interpreter.lib.ParseVisitors
             }
 
             // If the given variable name is not a collection then throw exception
-            if (array.Type != "collection")
+            if (array.Value.TypeName != "collection")
             {
                 throw new InvalidTypeException(nameof(array));
             }
@@ -179,7 +179,7 @@ namespace verse_interpreter.lib.ParseVisitors
         private DeclarationResult GetArrayValueAtIndex(string index, Variable array)
         {
             // Get the list of variables in the array and parse the index string to a number
-            var variables = array.AcceptCollection(new VariableVisitor());
+            var variables = array.Value.CollectionVariable.Values;
             int indexNumber = int.Parse(index);
 
             // Check if the index is valid
@@ -189,39 +189,10 @@ namespace verse_interpreter.lib.ParseVisitors
             }
 
             // Get the single variable from the list
-            var variable = variables[indexNumber];
-            string value = string.Empty;
-            string typeName = variable.Type;
-            List<Variable> collectionValues = new List<Variable>();
+
             DeclarationResult declarationResult = new DeclarationResult();
-
+            declarationResult.IndexedVariable = variables[indexNumber];
             // Get the value of the variable depending on its variable type
-            switch (variable.Type)
-            {
-                case "int":
-                    value = variable.AcceptInt(new VariableVisitor()).ToString()!;
-                    declarationResult.Value = value;
-                    declarationResult.TypeName = typeName;
-                    break;
-
-                case "string":
-                    value = variable.AcceptString(new VariableVisitor()).ToString()!;
-                    declarationResult.Value = value;
-                    declarationResult.TypeName = typeName;
-                    break;
-
-                case "collection":
-                    collectionValues = variable.AcceptCollection(new VariableVisitor());
-                    declarationResult.CollectionVariable = new CollectionVariable("undefined", typeName, collectionValues);
-                    declarationResult.TypeName = typeName;
-                    break;
-
-                default:
-                    value = variable.AcceptDynamicType(new VariableVisitor()).ToString()!;
-                    declarationResult.Value = value;
-                    declarationResult.TypeName = typeName;
-                    break;
-            }
 
             return declarationResult;
         }

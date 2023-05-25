@@ -24,6 +24,8 @@ namespace verse_interpreter.lib.Data
 
         public List<List<ExpressionResult>>? ExpressionResults { get; set; } = null!;
 
+        public Variable IndexedVariable { get; set; } = null;
+
         public DeclarationResult()
         {
             TypeName = "undefined";

@@ -36,7 +36,7 @@ namespace verse_interpreter.lib.Parser
 
             if(inlineBody != null)
             {
-                blocks.Add(spacedBody.block());
+                blocks.Add(inlineBody.block());
                 return GetInlineBody(inlineBody.inline_body(), blocks);
             }
             if(spacedBody != null)

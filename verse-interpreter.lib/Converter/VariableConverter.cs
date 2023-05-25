@@ -20,6 +20,7 @@ namespace verse_interpreter.lib.Converter
             {
                 "int" => HandleIntVariables(declarationResult),
                 "string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.Value)),
+                "collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
                 _ => HandleDynamicType(declarationResult)
             };
         }

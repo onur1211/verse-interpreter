@@ -95,6 +95,7 @@ namespace verse_interpreter.lib.Parser
             declarationResult.Name = context.ID().GetText();
 
             declarationResult = HandleExpressionAsValue(declarationResult);
+            declarationResult = HandleIndexexVariable(declarationResult);
 
             return declarationResult;
         }
@@ -115,6 +116,35 @@ namespace verse_interpreter.lib.Parser
             };
             _generalEvaluator.ExecuteExpression(declarationResult.ExpressionResults);
          
+
+            return declarationResult;
+        }
+
+        private DeclarationResult HandleIndexexVariable(DeclarationResult declarationResult)
+        {
+            if (declarationResult.IndexedVariable == null)
+            {
+                return declarationResult;
+            }
+
+            if (declarationResult.IndexedVariable.Value.IntValue != null)
+            {
+                declarationResult.Value = declarationResult.IndexedVariable.Value.IntValue.ToString();
+                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                return declarationResult;
+            }
+            if(declarationResult.IndexedVariable.Value.StringValue != null)
+            {
+                declarationResult.Value = declarationResult.IndexedVariable.Value.StringValue;
+                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                return declarationResult; 
+            }
+            if(declarationResult.CollectionVariable.Values != null)
+            {
+                declarationResult.CollectionVariable = new VerseCollection(declarationResult.CollectionVariable.Values);
+                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                return declarationResult;
+            }
 
             return declarationResult;
         }

@@ -38,9 +38,7 @@
 
         public DynamicType DynamicType { get; set; } = null!;
 
-        public List<Variable> CollectionVariables { get; set; } = null !;
-
-        public VerseCollection CollectionVariable { get; }
+        public VerseCollection CollectionVariable { get; set; } = null!;
 
         public int CompareTo(ValueObject? other)
         {

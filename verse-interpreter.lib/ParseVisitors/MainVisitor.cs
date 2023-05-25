@@ -13,8 +13,6 @@ namespace verse_interpreter.lib.ParseVisitors
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly FunctionWrapper _functionWrapper;
         private readonly TypeHandlingWrapper _typeHandlingWrapper;
-        private readonly EvaluatorWrapper _baseEvaluator;
-        private readonly BackpropagationEventSystem _backPropagator;
         private readonly GeneralEvaluator _generalEvaluator;
 
         public MainVisitor(ApplicationState applicationState,
@@ -22,18 +20,13 @@ namespace verse_interpreter.lib.ParseVisitors
                            ExpressionVisitor expressionVisitor,
                            FunctionWrapper functionWrapper,
                            TypeHandlingWrapper typeHandlingWrapper,
-                           EvaluatorWrapper baseEvaluator,
-                           BackpropagationEventSystem backPropagator,
                            GeneralEvaluator generalEvaluator) : base(applicationState)
         {
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
             _functionWrapper = functionWrapper;
             _typeHandlingWrapper = typeHandlingWrapper;
-            _baseEvaluator = baseEvaluator;
-            _backPropagator = backPropagator;
             _generalEvaluator = generalEvaluator;
-            ApplicationState.CurrentScope.LookupManager.VariableBound += _backPropagator.HandleVariableBound!;
         }
 
         public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)

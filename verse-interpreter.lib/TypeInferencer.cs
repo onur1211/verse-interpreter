@@ -39,10 +39,6 @@ namespace verse_interpreter.lib
                 {
                     declarationResult.TypeName = "int";
                 }
-                else
-                {
-                    declarationResult.TypeName = "string";
-                }
 
                 if (declarationResult.CollectionVariable != null) 
                 {
