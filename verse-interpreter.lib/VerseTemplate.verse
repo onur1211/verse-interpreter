@@ -1,7 +1,12 @@
+y:int
+z:int
+x:int
+y  = 25
+z = x + 2
 assignValueFive(x:int, y:int, z:int):int {
     x = y + z
 }
-x:int
-assignValueFive(x, 5, 5)
 
-x + 5
+assignValueFive(x, y, 5)
+
+x + 5 + z

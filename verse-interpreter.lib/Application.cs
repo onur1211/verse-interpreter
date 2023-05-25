@@ -49,7 +49,7 @@ namespace verse_interpreter.lib
         {
             var services = new ServiceCollection()
                 .AddSingleton<ApplicationState>()
-                .AddSingleton<BackpropagationEventSystem>()
+                .AddTransient<BackpropagationEventSystem>()
                 .AddTransient<DeclarationVisitor>()
                 .AddTransient<ExpressionVisitor>()
                 .AddTransient<FunctionDeclarationVisitor>()
