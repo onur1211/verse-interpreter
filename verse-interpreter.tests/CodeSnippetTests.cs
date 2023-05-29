@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -109,6 +110,39 @@ namespace verse_interpreter.tests
                 });
 
                 Assert.That(writer.ToString(), Contains.Substring("50"));
+            }
+        }
+
+        [Test]
+        [TestCase("\"Hallo Welt\"", "Hallo Welt")]
+        [TestCase("2+2", "4")]
+        [TestCase("\"Hallo\" + \"Welt\"", "HalloWelt")]
+        public void Should_Print_Arbitrary_Values(string value, string expected)
+        {
+            using (var writer = new StringWriter())
+            {
+                Console.SetOut(writer);
+                _application.Run(new[]
+                {
+                    $"-c Print({value})",
+                });
+
+                Assert.That(writer.ToString(), Contains.Substring(expected));
+            }
+        }
+
+        [Test]
+        public void Should_Print_Member_Access()
+        {
+            using (var writer = new StringWriter())
+            {
+                Console.SetOut(writer);
+                _application.Run(new[]
+                {
+                    BasePathString + "Test5.verse"
+                });
+
+                Assert.That(writer.ToString(), Contains.Substring("20"));
             }
         }
     }
