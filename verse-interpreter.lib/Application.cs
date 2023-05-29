@@ -35,6 +35,9 @@ namespace verse_interpreter.lib
 
         public void Run(string[] args)
         {
+            this.RunWithErrorHandling(args);
+            return;
+
             var options = GetPath(args);
             if (options.Code == null && options.Path == null)
             {
@@ -46,7 +49,7 @@ namespace verse_interpreter.lib
             var inputCode = options.Code != null ? options.Code :
                 options.Path != null ? _reader.ReadFileToEnd(options.Path) :
                 throw new ArgumentException("You have to specify either the path or add code!");
-            
+
             var parseTree = generator.GenerateParseTree(inputCode);
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
             mainVisitor.VisitProgram(parseTree);
@@ -114,23 +117,29 @@ namespace verse_interpreter.lib
 
         private void RunWithErrorHandling(string[] args)
         {
-            var inputCode = _reader.ReadFileToEnd("../../../../verse-interpreter.lib/VerseTemplate.verse");
-
             try
             {
+                var options = GetPath(args);
+                if (options.Code == null && options.Path == null)
+                {
+                    return;
+                }
                 _services = BuildService();
                 ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+
+                var inputCode = options.Code != null ? options.Code :
+                    options.Path != null ? _reader.ReadFileToEnd(options.Path) :
+                    throw new ArgumentException("You have to specify either the path or add code!");
+
                 var parseTree = generator.GenerateParseTree(inputCode);
                 var mainVisitor = _services.GetRequiredService<MainVisitor>();
                 mainVisitor.VisitProgram(parseTree);
+                var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
             }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Error: " + ex.Message);
-                Console.WriteLine();
-                Console.WriteLine("Code: ");
-                Console.Write(inputCode);
                 Console.ResetColor();
             }
 
