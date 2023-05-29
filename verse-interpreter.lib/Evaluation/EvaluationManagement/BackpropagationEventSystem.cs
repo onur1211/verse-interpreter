@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Interfaces;
+using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Lookup.EventArguments;
@@ -15,11 +16,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
     public class BackpropagationEventSystem
     {
         private readonly ApplicationState _applicationState;
-        private List<IExpression<ArithmeticExpression>> _arithmeticExpressions;
-        private List<IExpression<StringExpression>> _stringExpressions;
+        private readonly List<IExpression<ArithmeticExpression>> _arithmeticExpressions;
+        private readonly List<IExpression<StringExpression>> _stringExpressions;
 
-        private Dictionary<string, IExpression<ArithmeticExpression>> _associatedArithmeticExpressions;
-        private Dictionary<string, IExpression<StringExpression>> _associatedStringExpressions;
+        private readonly Dictionary<string, IExpression<ArithmeticExpression>> _associatedArithmeticExpressions;
+        private readonly Dictionary<string, IExpression<StringExpression>> _associatedStringExpressions;
 
         // Keeps track of Expressions which are not yet ready to execute
         // When they are ready to execute, execute them
@@ -35,14 +36,17 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             _associatedStringExpressions = new Dictionary<string, IExpression<StringExpression>>();
         }
 
+        public event EventHandler<StringExpressionResolvedEventArgs> StringExpressionResolved;
+        public event EventHandler<ArithmeticExpressionResolvedEventArgs> ArithmeticExpressionResolved;
+
         public void AddExpression(IExpression<ArithmeticExpression> expression)
         {
             _arithmeticExpressions.Add(expression);
         }
 
-        public void AddExpression(string identfier, IExpression<ArithmeticExpression> expression)
+        public void AddExpression(string identifier, IExpression<ArithmeticExpression> expression)
         {
-            _associatedArithmeticExpressions.Add(identfier, expression);
+            _associatedArithmeticExpressions.Add(identifier, expression);
         }
 
         public void AddExpression(IExpression<StringExpression> expression)
@@ -62,14 +66,16 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         /// <param name="eventArgs"></param>
         public void HandleVariableBound(object sender, VariableBoundEventArgs eventArgs)
         {
-            foreach (var element in _arithmeticExpressions)
+            for (int i = 0; i < _arithmeticExpressions.Count; i++)
             {
-                var res = element.PostponedExpression.Invoke();
+                var res = _arithmeticExpressions[i].PostponedExpression.Invoke();
                 if (res.PostponedExpression == null)
                 {
-                    Printer.PrintResult(res.ResultValue.ToString()!);
+                    ArithmeticExpressionResolved?.Invoke(this, new ArithmeticExpressionResolvedEventArgs(res));
+                    _arithmeticExpressions.Remove(_arithmeticExpressions[i]);
                 }
             }
+
 
             foreach (var expression in _associatedArithmeticExpressions)
             {

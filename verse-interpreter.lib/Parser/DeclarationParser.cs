@@ -11,6 +11,7 @@ namespace verse_interpreter.lib.Parser
         private readonly ApplicationState _state;
         private readonly TypeInferencer _inferencer;
         private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
+        private readonly Lazy<DeclarationVisitor> _declarationVisitor;
         private readonly GeneralEvaluator _generalEvaluator;
 
         public DeclarationParser(ApplicationState applicationState,
@@ -18,23 +19,15 @@ namespace verse_interpreter.lib.Parser
                                  ValueDefinitionVisitor valueDefinitionVisitor,
                                  BackpropagationEventSystem backPropagator,
                                  ExpressionValidator validator,
-                                  GeneralEvaluator generalEvaluator)
+                                 Lazy<DeclarationVisitor> declarationVisitor,
+                                 GeneralEvaluator generalEvaluator)
         {
             _state = applicationState;
             _inferencer = typeInferencer;
             _valueDefinitionVisitor = valueDefinitionVisitor;
-            _valueDefinitionVisitor.DeclarationInArrayFound += _valueDefinitionVisitor_DeclarationInArrayFound;
+            _declarationVisitor = declarationVisitor;
             _generalEvaluator = generalEvaluator;
-        }
-
-        private void _valueDefinitionVisitor_DeclarationInArrayFound(object? sender, EventArguments.DeclarationInArrayFoundEventArgs e)
-        {
-            var result = this.ParseDeclaration(e.declarationContext);
-
-            if (result != null)
-            {
-                throw new NotImplementedException();
-            }
+            _state.CurrentScope.LookupManager.VariableBound += _generalEvaluator.Propagator.HandleVariableBound!;
         }
 
         public DeclarationResult ParseDeclaration(Verse.DeclarationContext context)
@@ -75,13 +68,14 @@ namespace verse_interpreter.lib.Parser
         private DeclarationResult ParseAssignValueToExistingVariable(Verse.DeclarationContext context)
         {
             var variableName = context.ID().GetText();
-
             if (!_state.CurrentScope.LookupManager.IsVariable(variableName))
             {
                 throw new InvalidOperationException($"Invalid usage of out of scope variable {nameof(variableName)}");
             }
+            
+            var result =  ParseValueAssignment(context);
 
-            return ParseValueAssignment(context);
+            return result;
         }
 
         /// <summary>
@@ -114,8 +108,8 @@ namespace verse_interpreter.lib.Parser
             {
                 declarationResult.Value = args.Result.Value;
             };
-            _generalEvaluator.ExecuteExpression(declarationResult.ExpressionResults);
-         
+            
+            _generalEvaluator.ExecuteExpression(declarationResult.ExpressionResults, declarationResult.Name);
 
             return declarationResult;
         }

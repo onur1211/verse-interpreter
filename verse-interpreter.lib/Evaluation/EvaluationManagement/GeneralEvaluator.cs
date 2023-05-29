@@ -29,8 +29,9 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         public event EventHandler<ArithmeticExpressionResolvedEventArgs>? ArithmeticExpressionResolved;
         public event EventHandler<StringExpressionResolvedEventArgs>? StringExpressionResolved;
 
+        public BackpropagationEventSystem Propagator => _propagator;
 
-        public void ExecuteExpression(List<List<ExpressionResult>> expressions)
+        public void ExecuteExpression(List<List<ExpressionResult>> expressions, string identifier = null)
         {
             if (!_expressionValidator.IsTypeConformityGiven(expressions))
             {
@@ -41,11 +42,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             switch (typeName)
             {
                 case "string":
-                    HandleStringExpression(expressions);
+                    HandleStringExpression(expressions, identifier);
                     break;
 
                 case "int":
-                    HandleArithmeticExpression(expressions);
+                    HandleArithmeticExpression(expressions, identifier);
                     break;
 
                 default:
@@ -53,9 +54,14 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             }
         }
 
-        private void HandleStringExpression(List<List<ExpressionResult>> expressions)
+        private void HandleStringExpression(List<List<ExpressionResult>> expressions, string identifier = null)
         {
             var result = _evaluatorWrapper.StringEvaluator.Evaluate(expressions);
+            if(result.PostponedExpression != null && identifier != null)
+            {
+                _propagator.AddExpression(identifier, result);
+                return;
+            }
             if (result.PostponedExpression != null)
             {
                 _propagator.AddExpression(result);
@@ -65,9 +71,14 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             StringExpressionResolved?.Invoke(this, new StringExpressionResolvedEventArgs(result));
         }
 
-        private void HandleArithmeticExpression(List<List<ExpressionResult>> expressions)
+        private void HandleArithmeticExpression(List<List<ExpressionResult>> expressions, string identifier = null)
         {
             var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
+            if (result.PostponedExpression != null && identifier != null)
+            {
+                _propagator.AddExpression(identifier, result);
+                return;
+            }
             if (result.PostponedExpression != null)
             {
                 _propagator.AddExpression(result);

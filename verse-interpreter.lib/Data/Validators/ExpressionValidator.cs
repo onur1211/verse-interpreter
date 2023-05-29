@@ -1,4 +1,5 @@
-﻿using verse_interpreter.lib.Data.Interfaces;
+﻿using System.Reflection.Metadata.Ecma335;
+using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Exceptions;
 
@@ -27,9 +28,12 @@ namespace verse_interpreter.lib.Data.Validators
                 {
                     if (!string.IsNullOrEmpty(exp.ValueIdentifier) && typeName == string.Empty)
                     {
-                        typeName = _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value.TypeName;
+                        typeName = _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value
+                            .TypeName;
                     }
-                    if (!string.IsNullOrEmpty(exp.ValueIdentifier) && _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value.TypeName != typeName)
+
+                    if (!string.IsNullOrEmpty(exp.ValueIdentifier) && _applicationState.CurrentScope.LookupManager
+                            .GetVariable(exp.ValueIdentifier).Value.TypeName != typeName)
                     {
                         return false;
                     }
@@ -43,21 +47,17 @@ namespace verse_interpreter.lib.Data.Validators
         {
             if (!IsTypeConformityGiven(expressions))
             {
-                throw new InvalidTypeCombinationException("The specified type contains multiple differently typed values");
+                throw new InvalidTypeCombinationException(
+                    "The specified type contains multiple differently typed values");
             }
 
-            foreach (var expression in expressions)
-            {
-                foreach (var exp in expression)
-                {
-                    if (!string.IsNullOrEmpty(exp.ValueIdentifier))
-                    {
-                        return _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value.TypeName;
-                    }
-                }
-            }
-
-            throw new InvalidTypeCombinationException("The specified type contains multiple differently typed values");
+            var result = expressions.First().First();
+            return result.StringValue != null
+                ? "string"
+                : result.IntegerValue != null
+                    ? "int"
+                    : result.ValueIdentifier != null
+                        ? _applicationState.CurrentScope.LookupManager.GetVariable(result.ValueIdentifier).Value.TypeName : throw new NotImplementedException();
         }
     }
 }

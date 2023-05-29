@@ -11,7 +11,7 @@ namespace verse_interpreter.lib.Factories
 
         public Nullable<int> ResultValue { get; set; }
 
-        public Func<ArithmeticExpression> PostponedExpression { get; set; } = null!;
+        public Func<ArithmeticExpression>? PostponedExpression { get; set; }
 
         public List<List<ExpressionResult>>? Arguments { get; set; }
 
@@ -19,9 +19,9 @@ namespace verse_interpreter.lib.Factories
         {
         }
 
-        public ArithmeticExpression Accept(IExpressionVisitor visitor)
+        public ArithmeticExpression Accept()
         {
-            return PostponedExpression.Invoke();
+            return PostponedExpression!.Invoke();
         }
     }
 }

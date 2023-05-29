@@ -1,7 +1,8 @@
 ﻿using System;
 using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
+using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Lookup.EventArguments;
 
@@ -57,9 +58,9 @@ namespace verse_interpreter.lib.Lookup
 
         public Function GetFunction(string name)
         {
-            if (lookupFunctions.Table[name] == null)
+            if (!lookupFunctions.Table.ContainsKey(name))
             {
-                throw new UnknownTypeException(name);
+                throw new UnknownFunctionException(name);
             }
 
             return lookupFunctions.Table[name].GetInstance();
@@ -115,25 +116,7 @@ namespace verse_interpreter.lib.Lookup
 
         public bool IsVariable(string name)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                return false;
-            }
-            else
-            {
-                return this.lookupTable.Table.ContainsKey(name);
-            }
-        }
-
-        public IEnumerable<Variable> GetUnboundVariables()
-        {
-            foreach (var element in this.lookupTable.Table)
-            {
-                if (!element.Value.HasValue())
-                {
-                    yield return element.Value;
-                }
-            }
+            return !string.IsNullOrEmpty(name) && this.lookupTable.Table.ContainsKey(name);
         }
 
         public bool HasValue(string variableName)
@@ -152,3 +135,4 @@ namespace verse_interpreter.lib.Lookup
         }
     }
 }
+

@@ -1,4 +1,5 @@
-﻿using verse_interpreter.lib.Data.ResultObjects;
+﻿using verse_interpreter.lib.Data.Functions;
+using verse_interpreter.lib.Data.ResultObjects;
 
 namespace verse_interpreter.lib.ParseVisitors
 {

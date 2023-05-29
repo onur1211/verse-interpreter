@@ -123,9 +123,14 @@ choice_rule : choice_value '|' choice_value
             
 // Conditionals
 
-if_block    : 'if' '(' comp_expression ')' then_body ;
+if_block    : 'if' '(' comp_expression ')' then_block else_block 
+            ;
 
-then_body : (NEWLINE)* 'then' block ;
+then_block : (NEWLINE* INDENT*) 'then' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
+           ;
+
+else_block : (NEWLINE* INDENT*) 'else' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
+           ;
 
 comp_expression
     : comp_term

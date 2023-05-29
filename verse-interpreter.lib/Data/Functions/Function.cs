@@ -2,7 +2,7 @@
 using verse_interpreter.lib.Lookup;
 using static verse_interpreter.lib.Grammar.Verse;
 
-namespace verse_interpreter.lib.Data.ResultObjects
+namespace verse_interpreter.lib.Data.Functions
 {
     public class Function : IScope<Variable>
     {
@@ -29,12 +29,12 @@ namespace verse_interpreter.lib.Data.ResultObjects
 
         public void AddFunction(Function res)
         {
-            this.LookupManager.AddFunction(res);
+            LookupManager.AddFunction(res);
         }
 
         public void AddScopedVariable(Variable variable)
         {
-            this.LookupManager.AddVariable(variable);
+            LookupManager.AddVariable(variable);
         }
 
         public Function GetInstance()

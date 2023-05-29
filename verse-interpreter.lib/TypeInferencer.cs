@@ -30,7 +30,6 @@ namespace verse_interpreter.lib
                 throw new ArgumentNullException("The specified input object is null!");
             }
 
-
             if (declarationResult.TypeName == "undefined")
             {
                 var isInt = int.TryParse(declarationResult.Value, out _);
@@ -49,11 +48,6 @@ namespace verse_interpreter.lib
             if (!_state.Types.ContainsKey(declarationResult.TypeName) && !_state.WellKnownTypes.Contains(declarationResult.TypeName))
             {
                 throw new UnknownTypeException(declarationResult.TypeName);
-            }
-
-            if (declarationResult.ExpressionResults != null)
-            {
-                declarationResult.TypeName = HandleExpressions(declarationResult);
             }
 
             return declarationResult;

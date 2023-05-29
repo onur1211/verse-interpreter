@@ -23,7 +23,7 @@ namespace verse_interpreter.lib.Visitors
             _result = new FunctionParameters();
         }
 
-        public FunctionParameters GetDefintionParameters(Verse.Param_def_itemContext function_paramContext)
+        public FunctionParameters GetDefinitionParameters(Verse.Param_def_itemContext function_paramContext)
         {
             ParseParametersRecursivly(function_paramContext);
             var parameters = _result;
@@ -31,9 +31,9 @@ namespace verse_interpreter.lib.Visitors
             return parameters;
         }
 
-        public FunctionParameters GetCallParamters(Verse.Param_call_itemContext function_paramContext)
+        public FunctionParameters GetCallParameters(Verse.Param_call_itemContext function_paramContext)
         {
-            ParseCallParametersRecursivly(function_paramContext);
+            ParseCallParametersRecursively(function_paramContext);
             var parameters = _result;
             _result = new FunctionParameters();
             return parameters;
@@ -51,7 +51,7 @@ namespace verse_interpreter.lib.Visitors
             ParseParametersRecursivly(nextChild);
         }
 
-        private void ParseCallParametersRecursivly(Verse.Param_call_itemContext call_paramContext)
+        private void ParseCallParametersRecursively(Verse.Param_call_itemContext call_paramContext)
         {
             if (call_paramContext == null)
             {
@@ -72,7 +72,7 @@ namespace verse_interpreter.lib.Visitors
             }
 
             _result.Parameters.Add(variable!);
-            ParseCallParametersRecursivly(call_paramContext.param_call_item());
+            ParseCallParametersRecursively(call_paramContext.param_call_item());
         }
     }
 }

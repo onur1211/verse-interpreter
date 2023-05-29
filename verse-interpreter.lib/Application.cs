@@ -77,6 +77,7 @@ namespace verse_interpreter.lib
                 .AddTransient<BodyParser>()
                 .AddTransient<BlockParser>()
                 .AddTransient<FunctionCallVisitor>()
+                .AddTransient<IfExpressionVisitor>()
                 .AddLazyResolution()
                 .BuildServiceProvider();
 

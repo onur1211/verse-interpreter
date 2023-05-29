@@ -1,4 +1,4 @@
-﻿using verse_interpreter.lib.Data.ResultObjects;
+﻿using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Lookup;
 

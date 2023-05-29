@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using Antlr4.Runtime.Tree;
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
@@ -16,6 +18,7 @@ using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
+using System.Xml.Linq;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
@@ -25,91 +28,114 @@ namespace verse_interpreter.lib.ParseVisitors
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly TypeConstructorVisitor _constructorVisitor;
         private readonly CollectionParser _collectionParser;
+        private readonly GeneralEvaluator _evaluator;
         private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
-
-        public event EventHandler<DeclarationInArrayFoundEventArgs>? DeclarationInArrayFound;
+        private readonly Lazy<DeclarationParser> _declarationParser;
+        
 
         public ValueDefinitionVisitor(ApplicationState applicationState,
                                       TypeInferencer typeInferencer,
                                       Lazy<FunctionCallVisitor> functionVisitor,
+                                      Lazy<DeclarationParser> declarationParser,
                                       ExpressionVisitor expressionVisitor,
                                       TypeConstructorVisitor constructorVisitor,
-                                      CollectionParser collectionParser) : base(applicationState)
+                                      CollectionParser collectionParser,
+                                      GeneralEvaluator evaluator) : base(applicationState)
         {
             _typeInferencer = typeInferencer;
             _expressionVisitor = expressionVisitor;
             _constructorVisitor = constructorVisitor;
             _collectionParser = collectionParser;
+            _evaluator = evaluator;
             _functionCallVisitor = functionVisitor;
+            _declarationParser = declarationParser;
         }
 
         public override DeclarationResult VisitValue_definition([NotNull] Verse.Value_definitionContext context)
         {
+            var maybeInt = context.INT();
+            if(maybeInt != null)
+            {
+                return new DeclarationResult()
+                {
+                    Value = maybeInt.GetText(),
+                    TypeName = "int"
+                };
+            }
+
             return HandleValueAssignment(context);
         }
 
         private DeclarationResult HandleValueAssignment([NotNull] Verse.Value_definitionContext context)
         {
+            // Instead of a big if, lets use the visitor to determine which kind of value definition it actually is.
+            var declarationResult = context.GetChild(0).Accept(this);
+            if (declarationResult == null)
+            {
+                throw new NotImplementedException();
+            }
+
+            return declarationResult;
+        }
+
+        public override DeclarationResult VisitString_rule(Verse.String_ruleContext context)
+        {
+            DeclarationResult declarationResult = new DeclarationResult
+            {
+                Value = context.SEARCH_TYPE().GetText().Replace("\"", ""),
+                TypeName = "string"
+            };
+            return _typeInferencer.InferGivenType(declarationResult);
+        }
+
+        public override DeclarationResult VisitConstructor_body(Verse.Constructor_bodyContext context)
+        {
+            var typeInstance = context.Accept(_constructorVisitor);
+
+            DeclarationResult declarationResult = new DeclarationResult
+            {
+                TypeName = typeInstance.Name,
+                DynamicType = typeInstance
+            };
+
+            return _typeInferencer.InferGivenType(declarationResult);
+        }
+
+        public override DeclarationResult VisitExpression(Verse.ExpressionContext context)
+        {
+            var expression = _expressionVisitor.Visit(context);
+            _expressionVisitor.Clean();
+            DeclarationResult declarationResult = new DeclarationResult
+            {
+                ExpressionResults = expression
+            };
+            _evaluator.ArithmeticExpressionResolved += (x,y) =>
+            {
+                declarationResult.Value = y.Result.ResultValue.ToString()!;
+                declarationResult.ExpressionResults = null;
+                declarationResult.TypeName = "int";
+            };
+            _evaluator.StringExpressionResolved += (x, y) =>
+            {
+                declarationResult.ExpressionResults = null;
+                declarationResult.Value = y.Result.Value;
+            };
+            _evaluator.ExecuteExpression(expression);
+            return declarationResult;
+        }
+
+        public override DeclarationResult VisitFunction_call(Verse.Function_callContext context)
+        {
             DeclarationResult declarationResult = new DeclarationResult();
-            FunctionCallResult functionCallResult = new FunctionCallResult();
+            var functionCallResult = _functionCallVisitor.Value.Visit(context);
 
-            var maybeInt = context.INT();
-            var maybeArrayLiteral = context.array_literal();
-            var maybeArrayIndex = context.array_index();
-            var maybeExpression = context.expression();
-            var maybeString = context.string_rule();
-            var maybeConstructor = context.constructor_body();
-            var maybeFunctionCall = context.function_call();
+            var intValue = functionCallResult.ArithmeticExpression;
+            var stringValue = functionCallResult.StringExpression;
 
-            if (maybeConstructor != null)
-            {
-                var typeInstance = maybeConstructor.Accept(_constructorVisitor);
-                declarationResult.TypeName = typeInstance.Name;
-                declarationResult.DynamicType = typeInstance;
+            declarationResult.Value = intValue != null ? intValue.ResultValue.ToString() : stringValue != null ?
+                stringValue.Value : throw new NotImplementedException();
 
-                return _typeInferencer.InferGivenType(declarationResult);
-            }
-
-            if (maybeInt != null)
-            {
-                declarationResult.Value = maybeInt.GetText();
-                return _typeInferencer.InferGivenType(declarationResult);
-            }
-
-            if (maybeArrayLiteral != null)
-            {
-                declarationResult = this.VisitArray_literal(maybeArrayLiteral);
-                return _typeInferencer.InferGivenType(declarationResult);
-            }
-
-            if (maybeArrayIndex != null)
-            {
-                declarationResult = this.VisitArray_index(maybeArrayIndex);
-                return declarationResult;
-            }
-
-            if (maybeExpression != null)
-            {
-                var expression = _expressionVisitor.Visit(maybeExpression);
-
-                _expressionVisitor.Clean();
-
-                declarationResult.ExpressionResults = expression;
-                return _typeInferencer.InferGivenType(declarationResult);
-            }
-
-            if (maybeString != null)
-            {
-                declarationResult.Value = maybeString.SEARCH_TYPE().GetText().Replace("\"", "");
-                return _typeInferencer.InferGivenType(declarationResult);
-            }
-
-            if (maybeFunctionCall != null)
-            {
-                functionCallResult = _functionCallVisitor.Value.Visit(maybeFunctionCall);
-            }
-
-            throw new NotImplementedException();
+            return _typeInferencer.InferGivenType(declarationResult);
         }
 
         public override DeclarationResult VisitArray_literal([NotNull] Verse.Array_literalContext context)
@@ -130,7 +156,8 @@ namespace verse_interpreter.lib.ParseVisitors
             {
                 foreach (var declDef in result.DeclarationElements)
                 {
-                    this.FireDeclarationInArrayFoundEvent(this, declDef);
+                    var variableResult = _declarationParser.Value.ParseDeclaration(declDef);
+                    variables.Add(VariableConverter.Convert(variableResult));
                 }
             }
 
@@ -138,7 +165,7 @@ namespace verse_interpreter.lib.ParseVisitors
             declarationResult.TypeName = "collection";
             declarationResult.CollectionVariable = new VerseCollection(variables);
 
-            return declarationResult;
+            return _typeInferencer.InferGivenType(declarationResult);
         }
 
         public override DeclarationResult VisitArray_index([NotNull] Verse.Array_indexContext context)
@@ -198,17 +225,7 @@ namespace verse_interpreter.lib.ParseVisitors
             declarationResult.IndexedVariable = variables[indexNumber];
             // Get the value of the variable depending on its variable type
 
-            return declarationResult;
-        }
-
-        protected virtual void FireDeclarationInArrayFoundEvent(object sender, Verse.DeclarationContext declarationContext)
-        {
-            if (this.DeclarationInArrayFound != null)
-            {
-                this.DeclarationInArrayFound(sender, new DeclarationInArrayFoundEventArgs(declarationContext));
-            }
-
-            throw new NotImplementedException();
+            return _typeInferencer.InferGivenType(declarationResult);
         }
     }
 }

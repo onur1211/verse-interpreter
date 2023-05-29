@@ -1,5 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
-using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
 using verse_interpreter.lib.Visitors;
@@ -29,7 +29,7 @@ namespace verse_interpreter.lib.ParseVisitors
                 FunctionName = name.GetText(),
                 ReturnType = type.GetText(),
             };
-            var parameterResult = functionDeclarationParser.GetDefintionParameters(parameter);
+            var parameterResult = functionDeclarationParser.GetDefinitionParameters(parameter);
             functionDeclarationResult.Parameters = parameterResult.Parameters;
             functionDeclarationResult.FunctionBody = bodyParser.GetBody(context.body());
             functionDeclarationResult.LookupManager.AddFunction(functionDeclarationResult);

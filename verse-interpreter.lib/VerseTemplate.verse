@@ -1,5 +1,7 @@
-add(x:int, y:int):int {
-    x + y
-}
-
-z := add(1,2)
+x:int
+y:int
+z:int
+x = y + z
+z = y + 2
+y = 3
+x + y + z

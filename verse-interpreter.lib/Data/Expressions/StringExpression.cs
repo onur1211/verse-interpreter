@@ -7,7 +7,7 @@ namespace verse_interpreter.lib.Data.Expressions
 
     public class StringExpression : IExpression<StringExpression>
     {
-        public Func<StringExpression> PostponedExpression { get; set; } = null!;
+        public Func<StringExpression>? PostponedExpression { get; set; }
 
         public string Value { get; internal set; } = null!;
 

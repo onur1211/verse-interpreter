@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
@@ -20,6 +21,7 @@ namespace verse_interpreter.lib.ParseVisitors
         private readonly FunctionCallPreprocessor _functionCallPreprocessor;
         private readonly DeclarationVisitor _declarationVisitor;
         private readonly ExpressionVisitor _expressionVisitor;
+        private readonly List<FunctionCallResult> _results;
 
         public FunctionCallVisitor(ApplicationState applicationState,
                                    FunctionParser functionParser,
@@ -36,22 +38,29 @@ namespace verse_interpreter.lib.ParseVisitors
             _functionCallPreprocessor = functionCallPreprocessor;
             _declarationVisitor = declarationVisitor;
             _expressionVisitor = expressionVisitor;
+            _results = new List<FunctionCallResult>();
         }
 
         private void StringExpressionResolvedCallback(object? sender, StringExpressionResolvedEventArgs e)
         {
-            throw new NotImplementedException();
+            _results.Add(new FunctionCallResult()
+            {
+                StringExpression = e.Result
+            });
         }
 
         private void ArithmeticExpressionResolvedCallback(object? sender, ArithmeticExpressionResolvedEventArgs e)
         {
-
+            _results.Add(new FunctionCallResult()
+            {
+                ArithmeticExpression = e.Result
+            });
         }
 
         public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
         {
             var functionName = context.ID();
-            var parameters = _functionParser.GetCallParamters(context.param_call_item());
+            var parameters = _functionParser.GetCallParameters(context.param_call_item());
             var body = ApplicationState.CurrentScope.LookupManager.GetFunction(functionName.GetText());
             var functionCallItem = new FunctionCall(parameters, body);
             _functionCallPreprocessor.BuildExecutableFunction(functionCallItem);
@@ -60,12 +69,19 @@ namespace verse_interpreter.lib.ParseVisitors
             ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, functionCallItem.Function);
             ApplicationState.CurrentScope.AddFunction(functionCallItem.Function);
 
-            var results = functionCallItem.Function.FunctionBody.Select(statements => statements.Accept(this)).ToList();
+            _results.AddRange(functionCallItem.Function.FunctionBody.Select(statements => statements.Accept(this)).ToList());
+            _results.RemoveAll(x => x == null);
             ParseValueToTopScopedVariable(functionCallItem);
 
             ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
             ApplicationState.CurrentScopeLevel -= 1;
-            return results.Last();
+
+            if (_results.Count == 0 && functionCallItem.Function.ReturnType != "void")
+            {
+                throw new InvalidOperationException(
+                    $"The function with the return type \"{functionCallItem.Function.ReturnType}\" has to return a value!");
+            }
+            return _results.Last();
         }
 
         public override FunctionCallResult VisitExpression(Verse.ExpressionContext context)
