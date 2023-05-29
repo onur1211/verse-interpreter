@@ -1,7 +1,6 @@
-x:int
-y:int
-z:int
-x = y + z
-z = y + 2
-y = 3
-x + y + z
+myAddThreeTimesTwo(x:int, y:int, z:int):int {
+    temp := x + y + z
+    temp + temp
+}
+
+myAddThreeTimesTwo(1, 2, 3)

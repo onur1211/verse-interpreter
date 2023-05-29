@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "verse-interpreter.exe": {
+      "commandName": "Project",
+      "commandLineArgs": "-p \"../../../../verse-interpreter.lib/VerseTemplate.verse\""
+    }
+  }
+}

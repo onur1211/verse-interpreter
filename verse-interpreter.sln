@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "verse-interpreter.exe", "ve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "verse-interpreter.lib", "verse-interpreter.lib\verse-interpreter.lib.csproj", "{6BF974F6-CBA0-414C-8680-CD1C206D4539}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "verse-interpreter.tests", "verse-interpreter.tests\verse-interpreter.tests.csproj", "{A48C203B-3B4C-4892-82EF-13CDD2F599D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6BF974F6-CBA0-414C-8680-CD1C206D4539}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BF974F6-CBA0-414C-8680-CD1C206D4539}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BF974F6-CBA0-414C-8680-CD1C206D4539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A48C203B-3B4C-4892-82EF-13CDD2F599D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A48C203B-3B4C-4892-82EF-13CDD2F599D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A48C203B-3B4C-4892-82EF-13CDD2F599D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A48C203B-3B4C-4892-82EF-13CDD2F599D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

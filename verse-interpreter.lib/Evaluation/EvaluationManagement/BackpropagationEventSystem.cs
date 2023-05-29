@@ -68,7 +68,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         {
             for (int i = 0; i < _arithmeticExpressions.Count; i++)
             {
-                var res = _arithmeticExpressions[i].PostponedExpression.Invoke();
+                var res = _arithmeticExpressions[i].PostponedExpression!.Invoke();
                 if (res.PostponedExpression == null)
                 {
                     ArithmeticExpressionResolved?.Invoke(this, new ArithmeticExpressionResolvedEventArgs(res));
@@ -79,11 +79,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
             foreach (var expression in _associatedArithmeticExpressions)
             {
-                var evaluatedExpression = expression.Value.PostponedExpression.Invoke();
+                var evaluatedExpression = expression.Value.PostponedExpression!.Invoke();
                 if (evaluatedExpression.PostponedExpression == null)
                 {
                     _associatedArithmeticExpressions.Remove(expression.Key);
-                    _applicationState.CurrentScope.LookupManager.UpdateVariable(new Variable(expression.Key, new("int", expression.Value.PostponedExpression.Invoke().ResultValue)));
+                    _applicationState.CurrentScope.LookupManager.UpdateVariable(new Variable(expression.Key, new ValueObject("int", expression.Value.PostponedExpression.Invoke().ResultValue)));
                 }
             }
         }

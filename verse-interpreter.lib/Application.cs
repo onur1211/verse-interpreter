@@ -1,7 +1,5 @@
 ﻿using Antlr4.Runtime;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
@@ -16,6 +14,7 @@ using verse_interpreter.lib.Parser;
 using verse_interpreter.lib.ParseVisitors;
 using verse_interpreter.lib.Visitors;
 using verse_interpreter.lib.Wrapper;
+using CommandLine;
 
 namespace verse_interpreter.lib
 {
@@ -34,16 +33,41 @@ namespace verse_interpreter.lib
 
         public void Run(string[] args)
         {
+            var options = GetPath(args);
+            if (options.Code == null && options.Path == null)
+            {
+                return;
+            }
             _services = BuildService();
             ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 
-            var inputCode = _reader.ReadFileToEnd("../../../../verse-interpreter.lib/VerseTemplate.verse");
+            var inputCode = options.Code != null ? options.Code :
+                options.Path != null ? _reader.ReadFileToEnd(options.Path) :
+                throw new ArgumentException("You have to specify either the path or add code!");
+
+
             var parseTree = generator.GenerateParseTree(inputCode);
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
             mainVisitor.VisitProgram(parseTree);
             var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-            
-            Console.ReadKey();
+        }
+
+        private CommandLineOptions GetPath(string[] args)
+        {
+            CommandLineOptions options = new CommandLineOptions();
+            string path = null;
+            CommandLine.Parser.Default.ParseArguments<CommandLineOptions>(args)
+                .WithParsed<CommandLineOptions>(o =>
+                {
+                    if (string.IsNullOrEmpty(o.Path) && string.IsNullOrEmpty(o.Code))
+                    {
+                        throw new ArgumentException("The path must not be null!");
+                    }
+                    options.Path = o.Path;
+                    options.Code = o.Code;
+                });
+
+            return options;
         }
 
         private IServiceProvider BuildService()

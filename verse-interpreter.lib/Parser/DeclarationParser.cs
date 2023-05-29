@@ -72,7 +72,9 @@ namespace verse_interpreter.lib.Parser
             {
                 throw new InvalidOperationException($"Invalid usage of out of scope variable {nameof(variableName)}");
             }
-            
+
+            var variable = _state.CurrentScope.LookupManager.GetVariable(variableName);
+
             var result =  ParseValueAssignment(context);
 
             return result;

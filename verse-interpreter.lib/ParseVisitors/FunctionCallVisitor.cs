@@ -33,6 +33,7 @@ namespace verse_interpreter.lib.ParseVisitors
         {
             _functionParser = functionParser;
             _evaluator = evaluator;
+            ApplicationState.CurrentScope.LookupManager.VariableBound += _evaluator.Propagator.HandleVariableBound!;
             _evaluator.ArithmeticExpressionResolved += ArithmeticExpressionResolvedCallback;
             _evaluator.StringExpressionResolved += StringExpressionResolvedCallback;
             _functionCallPreprocessor = functionCallPreprocessor;
