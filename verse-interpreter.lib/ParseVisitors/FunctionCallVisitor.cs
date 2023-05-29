@@ -75,7 +75,6 @@ namespace verse_interpreter.lib.ParseVisitors
                 return null!;
             }
 
-
             var body = ApplicationState.CurrentScope.LookupManager.GetFunction(functionName);
             var functionCallItem = new FunctionCall(parameters, body);
 
@@ -84,9 +83,14 @@ namespace verse_interpreter.lib.ParseVisitors
             ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, functionCallItem.Function);
             ApplicationState.CurrentScope.AddFunction(functionCallItem.Function);
 
-            _results.AddRange(functionCallItem.Function.FunctionBody.Select(statements => statements.Accept(this)).ToList());
+            //_results.AddRange(functionCallItem.Function.FunctionBody.Select(statements => statements.Accept(this)).ToList());
+            foreach (var statement in functionCallItem.Function.FunctionBody)
+            {
+                _results.Add(statement.Accept(this));
+            }
             _results.RemoveAll(x => x == null);
             ParseValueToTopScopedVariable(functionCallItem);
+
 
             ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
             ApplicationState.CurrentScopeLevel -= 1;
@@ -114,12 +118,18 @@ namespace verse_interpreter.lib.ParseVisitors
         public override FunctionCallResult VisitIf_block(Verse.If_blockContext context)
         {
             var blocks = _ifVisitor.Visit(context);
-            foreach(var block in blocks)
+            foreach (var block in blocks)
             {
-                block.Accept(this);
+                var result = block.Accept(this);
             }
 
+
             return null!;
+        }
+
+        public override FunctionCallResult VisitBlock(Verse.BlockContext context)
+        {
+            return VisitChildren(context);
         }
 
         public override FunctionCallResult VisitChoice_rule(Verse.Choice_ruleContext context)

@@ -94,7 +94,11 @@ namespace verse_interpreter.lib.ParseVisitors
 
         public override object VisitIf_block(Verse.If_blockContext context)
         {
-            _ifExpressionVisitor.Visit(context);
+           var result =  _ifExpressionVisitor.Visit(context);
+           foreach (var value in result)
+           {
+               value.Accept(this);
+           }
             return null!;
         }
     }

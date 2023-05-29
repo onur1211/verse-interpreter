@@ -1,1 +1,3 @@
-myArray:=(1,2,3); x:=5; x + myArray[2]
+x:int
+if(x=0) then {Print(3)} else {Print("4")}
+x = 0
