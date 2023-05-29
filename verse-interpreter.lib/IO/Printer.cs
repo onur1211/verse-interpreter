@@ -19,6 +19,11 @@ namespace verse_interpreter.lib.IO
 
         public static void PrintResult(FunctionCallResult result)
         {
+            if (result == null)
+            {
+                return;
+            }
+
             if(result.ArithmeticExpression != null)
             {
                 PrintResult(result.ArithmeticExpression.ResultValue.ToString());

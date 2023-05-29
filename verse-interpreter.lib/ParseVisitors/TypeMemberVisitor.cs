@@ -49,6 +49,7 @@ namespace verse_interpreter.lib.ParseVisitors
             // Only the property itself is accessed
             if (children.Length == 2)
             {
+                finalResult.AbsoluteCall += children[0] + "." + children[1];
                 finalResult.VariableName = children[0];
                 finalResult.PropertyName = children[1];
                 return finalResult;
@@ -56,6 +57,7 @@ namespace verse_interpreter.lib.ParseVisitors
             // only the variable itself is accessed
             if (children.Length == 1)
             {
+                finalResult.AbsoluteCall += "." + children[0];
                 finalResult.VariableName = children[0];
                 return finalResult;
             }
@@ -63,6 +65,7 @@ namespace verse_interpreter.lib.ParseVisitors
             // If there is a property access of a child object within a class then go recursivly deeper to build the actual access object
             // Example: x.neighbour.age
             // Where neighbour is of type "Person"
+            finalResult.AbsoluteCall += children[0] + "." + children[1];
             finalResult.VariableName = children[0];
             finalResult.PropertyName = children[1];
             finalResult.ChildResult = FetchChildrenRecursivly(children.Skip(2).ToArray(), new TypeMemberAccessResult());

@@ -6,6 +6,8 @@
 
         public string VariableName { get; set; }
 
+        public string AbsoluteCall { get; set; }
+
         public TypeMemberAccessResult? ChildResult { get; set; }
 
         public TypeMemberAccessResult(string variableName, string propertyName)

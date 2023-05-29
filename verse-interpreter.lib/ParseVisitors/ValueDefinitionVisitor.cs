@@ -27,6 +27,7 @@ namespace verse_interpreter.lib.ParseVisitors
         private readonly TypeInferencer _typeInferencer;
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly TypeConstructorVisitor _constructorVisitor;
+        private readonly Lazy<TypeMemberVisitor> _memberVisitor;
         private readonly CollectionParser _collectionParser;
         private readonly GeneralEvaluator _evaluator;
         private readonly PropertyResolver _resolver;
@@ -40,6 +41,7 @@ namespace verse_interpreter.lib.ParseVisitors
                                       Lazy<DeclarationParser> declarationParser,
                                       ExpressionVisitor expressionVisitor,
                                       TypeConstructorVisitor constructorVisitor,
+                                      Lazy<TypeMemberVisitor> memberVisitor,
                                       CollectionParser collectionParser,
                                       GeneralEvaluator evaluator,
                                       PropertyResolver resolver) : base(applicationState)
@@ -47,6 +49,7 @@ namespace verse_interpreter.lib.ParseVisitors
             _typeInferencer = typeInferencer;
             _expressionVisitor = expressionVisitor;
             _constructorVisitor = constructorVisitor;
+            _memberVisitor = memberVisitor;
             _collectionParser = collectionParser;
             _evaluator = evaluator;
             _resolver = resolver;
@@ -122,6 +125,7 @@ namespace verse_interpreter.lib.ParseVisitors
             {
                 declarationResult.ExpressionResults = null;
                 declarationResult.Value = y.Result.Value;
+                declarationResult.TypeName = "string";
             };
             _evaluator.ExecuteExpression(expression);
             return declarationResult;
@@ -139,6 +143,21 @@ namespace verse_interpreter.lib.ParseVisitors
                 stringValue.Value : throw new NotImplementedException();
 
             return _typeInferencer.InferGivenType(declarationResult);
+        }
+
+        public override DeclarationResult VisitType_member_access(Verse.Type_member_accessContext context)
+        {
+            DeclarationResult   declarationResult = new DeclarationResult();
+            var result = _memberVisitor.Value.Visit(context);
+            var variable = _resolver.ResolveProperty(result.AbsoluteCall);
+
+            declarationResult.TypeName = variable.Value.TypeName;
+            declarationResult.CollectionVariable = variable.Value.CollectionVariable;
+            declarationResult.DynamicType = variable.Value.DynamicType;
+            declarationResult.Value =
+                variable!.Value.TypeName == "int" ? variable!.Value.IntValue.ToString() : variable!.Value.StringValue;
+
+            return declarationResult;
         }
 
         public override DeclarationResult VisitArray_literal([NotNull] Verse.Array_literalContext context)

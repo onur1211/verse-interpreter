@@ -11,7 +11,7 @@ declaration : ID ':' type
             ;
 
 
-value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index)
+value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access)
                  ;
                  
 
@@ -20,6 +20,7 @@ program : function_definition program
         | function_call program
         | type_header program
         | type_member_definition program
+        | type_member_access program
         | expression program
         | (NEWLINE | NEWLINE NEWLINE) program
         | program ';' program
@@ -27,6 +28,7 @@ program : function_definition program
         | function_call
         | type_header
         | type_member_definition
+        | type_member_access
         | function_definition
         | expression
         | array_index

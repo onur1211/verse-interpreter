@@ -1,0 +1,9 @@
+data Triangle = Triangle 
+{
+    width:int
+    height:int
+}
+
+x := instance Triangle()
+x.width = 25
+Print(x.width + 2)

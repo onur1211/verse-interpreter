@@ -1,4 +1,5 @@
 ﻿using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.Functions;
 
 namespace verse_interpreter.lib
 {
@@ -7,7 +8,9 @@ namespace verse_interpreter.lib
         public Dictionary<int, IScope<Variable>> Scopes { get; set; }
         public Dictionary<string, DynamicType> Types { get; set; }
 
-        public ApplicationState()
+        public List<Function> PredefinedFunctions { get; set; }
+
+        public ApplicationState(PredefinedFunctionInitializer initializer)
         {
             Scopes = new Dictionary<int, IScope<Variable>>
             {
@@ -22,6 +25,8 @@ namespace verse_interpreter.lib
             {
                 "int", "string", "dynamic", "collection"
             };
+
+            PredefinedFunctions = initializer.GetPredefinedFunctions();
         }
 
         public List<string> WellKnownTypes { get; }

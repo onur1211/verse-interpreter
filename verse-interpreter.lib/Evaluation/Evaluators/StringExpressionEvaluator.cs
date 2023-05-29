@@ -14,10 +14,12 @@ namespace verse_interpreter.lib.Evaluators
     public class StringExpressionEvaluator : IEvaluator<StringExpression, List<List<ExpressionResult>>>
     {
         private ApplicationState _applicationState;
+        private readonly PropertyResolver _resolver;
 
-        public StringExpressionEvaluator(ApplicationState applicationState)
+        public StringExpressionEvaluator(ApplicationState applicationState, PropertyResolver resolver)
         {
             _applicationState = applicationState;
+            _resolver = resolver;
         }
 
         public StringExpression Evaluate(List<List<ExpressionResult>> input)
@@ -62,14 +64,14 @@ namespace verse_interpreter.lib.Evaluators
         {
             if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
             {
-                return _applicationState.CurrentScope.LookupManager.GetVariable(expressionResult.ValueIdentifier).Value.StringValue;
+                return _resolver.ResolveProperty(expressionResult.ValueIdentifier).Value.StringValue;
             }
             if(expressionResult.StringValue != null)
             {
                 return expressionResult.StringValue.Replace("\"", "");
             }
 
-            throw new NotImplementedException("The given expression contains no, or unkown data!");
+            throw new NotImplementedException("The given expression contains no, or unknown data!");
         }
 
         private string Add(ExpressionResult firstExpressionResult, ExpressionResult secondExpressionResult)

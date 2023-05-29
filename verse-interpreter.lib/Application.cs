@@ -15,6 +15,8 @@ using verse_interpreter.lib.ParseVisitors;
 using verse_interpreter.lib.Visitors;
 using verse_interpreter.lib.Wrapper;
 using CommandLine;
+using verse_interpreter.lib.Data.Functions;
+using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 
 namespace verse_interpreter.lib
 {
@@ -103,6 +105,8 @@ namespace verse_interpreter.lib
                 .AddTransient<FunctionCallVisitor>()
                 .AddTransient<IfExpressionVisitor>()
                 .AddTransient<PropertyResolver>()
+                .AddTransient<PredefinedFunctionInitializer>()
+                .AddTransient<PredefinedFunctionEvaluator>()
                 .AddLazyResolution()
                 .BuildServiceProvider();
 

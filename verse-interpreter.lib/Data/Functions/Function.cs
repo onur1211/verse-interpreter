@@ -27,6 +27,8 @@ namespace verse_interpreter.lib.Data.Functions
 
         public LookupManager LookupManager { get; }
 
+        public Action<string>? StatelessFunctionCall { get; set; }
+
         public void AddFunction(Function res)
         {
             LookupManager.AddFunction(res);

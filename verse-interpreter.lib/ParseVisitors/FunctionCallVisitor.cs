@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
+using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Visitors;
@@ -20,6 +21,7 @@ namespace verse_interpreter.lib.ParseVisitors
         private readonly GeneralEvaluator _evaluator;
         private readonly FunctionCallPreprocessor _functionCallPreprocessor;
         private readonly DeclarationVisitor _declarationVisitor;
+        private readonly PredefinedFunctionEvaluator _functionEvaluator;
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly List<FunctionCallResult> _results;
 
@@ -29,6 +31,7 @@ namespace verse_interpreter.lib.ParseVisitors
                                    FunctionCallPreprocessor functionCallPreprocessor,
                                    DeclarationVisitor declarationVisitor,
                                    Lazy<ValueDefinitionVisitor> valueDefinitionVisitor,
+                                   PredefinedFunctionEvaluator functionEvaluator,
                                    ExpressionVisitor expressionVisitor) : base(applicationState)
         {
             _functionParser = functionParser;
@@ -38,6 +41,7 @@ namespace verse_interpreter.lib.ParseVisitors
             _evaluator.StringExpressionResolved += StringExpressionResolvedCallback;
             _functionCallPreprocessor = functionCallPreprocessor;
             _declarationVisitor = declarationVisitor;
+            _functionEvaluator = functionEvaluator;
             _expressionVisitor = expressionVisitor;
             _results = new List<FunctionCallResult>();
         }
@@ -60,11 +64,21 @@ namespace verse_interpreter.lib.ParseVisitors
 
         public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
         {
-            var functionName = context.ID();
+            var functionName = context.ID().GetText();
             var parameters = _functionParser.GetCallParameters(context.param_call_item());
-            var body = ApplicationState.CurrentScope.LookupManager.GetFunction(functionName.GetText());
+
+            if (ApplicationState.PredefinedFunctions.Count(x => x.FunctionName == functionName) >= 1)
+            {
+                _functionEvaluator.Execute(functionName, context.param_call_item());
+                return null!;
+            }
+
+
+            var body = ApplicationState.CurrentScope.LookupManager.GetFunction(functionName);
             var functionCallItem = new FunctionCall(parameters, body);
+
             _functionCallPreprocessor.BuildExecutableFunction(functionCallItem);
+
             ApplicationState.CurrentScopeLevel += 1;
 
             ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, functionCallItem.Function);
