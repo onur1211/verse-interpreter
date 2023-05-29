@@ -36,7 +36,7 @@
 
         public int? IntValue { get; set; } = null;
 
-        public DynamicType DynamicType { get; set; } = null!;
+        public DynamicType? DynamicType { get; set; }
 
         public VerseCollection CollectionVariable { get; set; } = null!;
 

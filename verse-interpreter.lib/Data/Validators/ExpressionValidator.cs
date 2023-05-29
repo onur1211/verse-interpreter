@@ -8,10 +8,12 @@ namespace verse_interpreter.lib.Data.Validators
     public class ExpressionValidator : IValidator<List<List<ExpressionResult>>>
     {
         private readonly ApplicationState _applicationState;
+        private readonly PropertyResolver _resolver;
 
-        public ExpressionValidator(ApplicationState applicationState)
+        public ExpressionValidator(ApplicationState applicationState, PropertyResolver resolver)
         {
             _applicationState = applicationState;
+            _resolver = resolver;
         }
 
         /// <summary>
@@ -26,14 +28,25 @@ namespace verse_interpreter.lib.Data.Validators
             {
                 foreach (var exp in expression)
                 {
-                    if (!string.IsNullOrEmpty(exp.ValueIdentifier) && typeName == string.Empty)
+                    if (string.IsNullOrEmpty(exp.ValueIdentifier))
+                    {
+                        continue;
+                    }
+
+                    if (exp.ValueIdentifier.Contains("."))
+                    {
+                        typeName = _resolver.ResolveProperty(exp.ValueIdentifier).Value.TypeName;
+                        continue;
+                    }
+
+                    if (typeName == string.Empty)
                     {
                         typeName = _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value
                             .TypeName;
+                        continue;
                     }
 
-                    if (!string.IsNullOrEmpty(exp.ValueIdentifier) && _applicationState.CurrentScope.LookupManager
-                            .GetVariable(exp.ValueIdentifier).Value.TypeName != typeName)
+                    if (_applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value.TypeName != typeName)
                     {
                         return false;
                     }
@@ -51,13 +64,13 @@ namespace verse_interpreter.lib.Data.Validators
                     "The specified type contains multiple differently typed values");
             }
 
-            var result = expressions.First().First();
-            return result.StringValue != null
-                ? "string"
-                : result.IntegerValue != null
-                    ? "int"
-                    : result.ValueIdentifier != null
-                        ? _applicationState.CurrentScope.LookupManager.GetVariable(result.ValueIdentifier).Value.TypeName : throw new NotImplementedException();
+            var result = expressions.Select(x => x.Where(y => string.IsNullOrEmpty(y.Operator))).First().First();
+            if (!string.IsNullOrEmpty(result.ValueIdentifier))
+            {
+                return _resolver.ResolveProperty(result.ValueIdentifier).Value.TypeName;
+            }
+
+            return result.TypeName;
         }
     }
 }

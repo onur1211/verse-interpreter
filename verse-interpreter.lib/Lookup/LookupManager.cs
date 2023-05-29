@@ -13,6 +13,7 @@ namespace verse_interpreter.lib.Lookup
         private ILookupTable<Variable> lookupTable;
         private ILookupTable<Function> lookupFunctions;
         private List<string> valueLessVariables;
+        private PropertyResolver propertyResolver;
 
         public LookupManager()
         {

@@ -60,7 +60,7 @@ namespace verse_interpreter.tests
                     "-c d := \"\"; e := \"abc\"; \"xyz\" + e"
                 });
 
-                // Takes A and B and adds them two together
+                // Takes xyz and abc and adds them two together --> inline
                 Assert.That(writer.ToString(), Contains.Substring("xyzabc"));
             }
         }
@@ -78,6 +78,22 @@ namespace verse_interpreter.tests
 
                 // The function takes 1 2 3 and adds 6 + 6
                 Assert.That(writer.ToString(), Contains.Substring("12"));
+            }
+        }
+
+        [Test]
+        public void Should_Access_Type_Property()
+        {
+            using (var writer = new StringWriter())
+            {
+                Console.SetOut(writer);
+                _application.Run(new[]
+                {
+                    BasePathString + "Test4.verse"
+                });
+                
+                // Accesses the member of the custom made triangle type and adds 25 to it
+                Assert.That(writer.ToString(), Contains.Substring("50"));
             }
         }
         

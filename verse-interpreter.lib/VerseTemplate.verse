@@ -1,6 +1,9 @@
-myAddThreeTimesTwo(x:int, y:int, z:int):int {
-    temp := x + y + z
-    temp + temp
+data Triangle = Triangle 
+{
+    width:int
+    height:int
 }
 
-myAddThreeTimesTwo(1, 2, 3)
+x := instance Triangle()
+x.width = 25
+x.width + 25

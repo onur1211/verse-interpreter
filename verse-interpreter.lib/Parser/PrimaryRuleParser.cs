@@ -18,6 +18,7 @@ namespace verse_interpreter.lib.Parser
             if (fetchedValue != null)
             {
                 result.IntegerValue = Convert.ToInt32(fetchedValue.ToString());
+                result.TypeName = "int";
                 return result;
             }
             if (fetchedIdentifier != null)
@@ -34,6 +35,7 @@ namespace verse_interpreter.lib.Parser
             if(fetchedString != null)
             {
                 result.StringValue = fetchedString.GetText();
+                result.TypeName = "string";
                 return result;
             }
 
