@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
-using verse_interpreter.lib.Data.Validators;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.Evaluators;
@@ -17,6 +16,7 @@ using verse_interpreter.lib.Wrapper;
 using CommandLine;
 using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Evaluation.FunctionEvaluator;
+using verse_interpreter.lib.Data.ResultObjects.Validators;
 
 namespace verse_interpreter.lib
 {
@@ -46,8 +46,7 @@ namespace verse_interpreter.lib
             var inputCode = options.Code != null ? options.Code :
                 options.Path != null ? _reader.ReadFileToEnd(options.Path) :
                 throw new ArgumentException("You have to specify either the path or add code!");
-
-
+            
             var parseTree = generator.GenerateParseTree(inputCode);
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
             mainVisitor.VisitProgram(parseTree);
@@ -101,12 +100,12 @@ namespace verse_interpreter.lib
                 .AddTransient<FunctionCallPreprocessor>()
                 .AddTransient<GeneralEvaluator>()
                 .AddTransient<BodyParser>()
-                .AddTransient<BlockParser>()
                 .AddTransient<FunctionCallVisitor>()
                 .AddTransient<IfExpressionVisitor>()
                 .AddTransient<PropertyResolver>()
                 .AddTransient<PredefinedFunctionInitializer>()
                 .AddTransient<PredefinedFunctionEvaluator>()
+                .AddTransient<ComparisonEvaluator>()
                 .AddLazyResolution()
                 .BuildServiceProvider();
 

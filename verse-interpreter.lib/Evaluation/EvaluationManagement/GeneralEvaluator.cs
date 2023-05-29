@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
-using verse_interpreter.lib.Data.Validators;
+using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Exceptions;
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.ParseVisitors;
 
-namespace verse_interpreter.lib.Data.Validators
+namespace verse_interpreter.lib.Data.ResultObjects.Validators
 {
     public class ParameterValidator : IValidator<FunctionCall>
     {

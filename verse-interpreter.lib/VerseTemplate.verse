@@ -1,9 +1,1 @@
-data Triangle = Triangle 
-{
-    width:int
-    height:int
-}
-
-x := instance Triangle()
-x.width = 25
-Print(x.width)
+myArray:=(1,2,3); x:=5; x + myArray[2]

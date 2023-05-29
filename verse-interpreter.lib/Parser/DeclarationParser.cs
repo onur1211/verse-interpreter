@@ -1,5 +1,5 @@
 ﻿using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.Validators;
+using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.ParseVisitors;

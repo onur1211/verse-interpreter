@@ -1,5 +1,5 @@
 ﻿using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.Validators;
+using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Exceptions;
 
 namespace verse_interpreter.lib

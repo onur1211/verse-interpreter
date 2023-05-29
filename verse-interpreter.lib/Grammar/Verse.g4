@@ -21,6 +21,7 @@ program : function_definition program
         | type_header program
         | type_member_definition program
         | type_member_access program
+        | if_block program
         | expression program
         | (NEWLINE | NEWLINE NEWLINE) program
         | program ';' program
@@ -125,7 +126,7 @@ choice_rule : choice_value '|' choice_value
             
 // Conditionals
 
-if_block    : 'if' '(' comp_expression ')' then_block else_block 
+if_block    : 'if' '(' expression ')' then_block else_block 
             ;
 
 then_block : (NEWLINE* INDENT*) 'then' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
@@ -133,27 +134,6 @@ then_block : (NEWLINE* INDENT*) 'then' (NEWLINE* INDENT*) '{' NEWLINE* body NEWL
 
 else_block : (NEWLINE* INDENT*) 'else' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
            ;
-
-comp_expression
-    : comp_term
-    | comp_expression comparsion_op comp_term 
-    ;
-
-comp_term
-    : comp_factor
-    | comp_term comparsion_op factor
-    ;
-
-comp_factor
-    : comp_primary
-    | comparsion_op comp_factor
-    ;
-
-comp_primary
-    : ID
-    | INT
-    | '(' comp_expression ')'
-    ;
 
 
 // Math expression rules
@@ -188,5 +168,4 @@ primary
 
 
 type : (INTTYPE | STRINGTYPE | ID | VOID ) ;
-comparsion_op : ('>' | '<' | '|' | '=' )   ; 
-operator : ('*' | '/' |'-'|'+'| '>');
+operator : ('*' | '/' |'-'|'+'| '>' | '<' | '|' | '=');

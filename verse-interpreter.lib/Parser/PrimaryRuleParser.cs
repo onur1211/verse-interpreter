@@ -14,6 +14,7 @@ namespace verse_interpreter.lib.Parser
             var fetchedIdentifier = context.ID();
             var fetchedMemberAccess = context.type_member_access();
             var fetchedString = context.string_rule();
+            var fetchedArrayAccess = context.array_index();
 
             if (fetchedValue != null)
             {
@@ -36,6 +37,12 @@ namespace verse_interpreter.lib.Parser
             {
                 result.StringValue = fetchedString.GetText();
                 result.TypeName = "string";
+                return result;
+            }
+            if (fetchedArrayAccess != null)
+            {
+                result.ValueIdentifier =  fetchedArrayAccess.GetText();
+                result.TypeName = "collection";
                 return result;
             }
 

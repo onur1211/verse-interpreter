@@ -22,6 +22,7 @@ namespace verse_interpreter.lib.ParseVisitors
         private readonly FunctionCallPreprocessor _functionCallPreprocessor;
         private readonly DeclarationVisitor _declarationVisitor;
         private readonly PredefinedFunctionEvaluator _functionEvaluator;
+        private readonly IfExpressionVisitor _ifVisitor;
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly List<FunctionCallResult> _results;
 
@@ -30,8 +31,8 @@ namespace verse_interpreter.lib.ParseVisitors
                                    GeneralEvaluator evaluator,
                                    FunctionCallPreprocessor functionCallPreprocessor,
                                    DeclarationVisitor declarationVisitor,
-                                   Lazy<ValueDefinitionVisitor> valueDefinitionVisitor,
                                    PredefinedFunctionEvaluator functionEvaluator,
+                                   IfExpressionVisitor ifVisitor,
                                    ExpressionVisitor expressionVisitor) : base(applicationState)
         {
             _functionParser = functionParser;
@@ -42,6 +43,7 @@ namespace verse_interpreter.lib.ParseVisitors
             _functionCallPreprocessor = functionCallPreprocessor;
             _declarationVisitor = declarationVisitor;
             _functionEvaluator = functionEvaluator;
+            _ifVisitor = ifVisitor;
             _expressionVisitor = expressionVisitor;
             _results = new List<FunctionCallResult>();
         }
@@ -78,9 +80,7 @@ namespace verse_interpreter.lib.ParseVisitors
             var functionCallItem = new FunctionCall(parameters, body);
 
             _functionCallPreprocessor.BuildExecutableFunction(functionCallItem);
-
             ApplicationState.CurrentScopeLevel += 1;
-
             ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, functionCallItem.Function);
             ApplicationState.CurrentScope.AddFunction(functionCallItem.Function);
 
@@ -96,6 +96,11 @@ namespace verse_interpreter.lib.ParseVisitors
                 throw new InvalidOperationException(
                     $"The function with the return type \"{functionCallItem.Function.ReturnType}\" has to return a value!");
             }
+            if (functionCallItem.Function.ReturnType == "void")
+            {
+                return null!;
+            }
+
             return _results.Last();
         }
 
@@ -103,6 +108,17 @@ namespace verse_interpreter.lib.ParseVisitors
         {
             var expression = _expressionVisitor.VisitExpression(context);
             _evaluator.ExecuteExpression(expression);
+            return null!;
+        }
+
+        public override FunctionCallResult VisitIf_block(Verse.If_blockContext context)
+        {
+            var blocks = _ifVisitor.Visit(context);
+            foreach(var block in blocks)
+            {
+                block.Accept(this);
+            }
+
             return null!;
         }
 

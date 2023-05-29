@@ -28,7 +28,6 @@ namespace verse_interpreter.lib
             _parser = new Verse(new CommonTokenStream(_lexer))
             {
                 BuildParseTree = true,
-                TrimParseTree = true,
             };
             _parser.AddErrorListener(_listener);
 

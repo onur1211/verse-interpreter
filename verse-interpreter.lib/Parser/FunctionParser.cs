@@ -11,15 +11,18 @@ namespace verse_interpreter.lib.Visitors
         private readonly ApplicationState _applicationState;
         private readonly DeclarationVisitor _declarationVisitor;
         private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
+        private readonly PropertyResolver _resolver;
         private FunctionParameters _result;
 
         public FunctionParser(ApplicationState applicationState,
                               DeclarationVisitor declarationVisitor,
-                              ValueDefinitionVisitor valueDefinitionVisitor)
+                              ValueDefinitionVisitor valueDefinitionVisitor,
+                              PropertyResolver resolver)
         {
             _applicationState = applicationState;
             _declarationVisitor = declarationVisitor;
             _valueDefinitionVisitor = valueDefinitionVisitor;
+            _resolver = resolver;
             _result = new FunctionParameters();
         }
 
@@ -64,7 +67,7 @@ namespace verse_interpreter.lib.Visitors
 
             if (identifier != null)
             {
-                variable = _applicationState.CurrentScope.LookupManager.GetVariable(identifier.GetText());
+                variable = _resolver.ResolveProperty(identifier.GetText());
             }
             if (result != null)
             {

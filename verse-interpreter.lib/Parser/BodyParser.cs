@@ -10,12 +10,6 @@ namespace verse_interpreter.lib.Parser
 {
     public class BodyParser
     {
-        private readonly BlockParser blockParser;
-
-        public BodyParser(BlockParser blockParser)
-        {
-            this.blockParser = blockParser;
-        }
 
         public List<BlockContext> GetBody(Verse.BodyContext bodyContext)
         {

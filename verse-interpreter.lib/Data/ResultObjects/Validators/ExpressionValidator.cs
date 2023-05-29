@@ -3,7 +3,7 @@ using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Exceptions;
 
-namespace verse_interpreter.lib.Data.Validators
+namespace verse_interpreter.lib.Data.ResultObjects.Validators
 {
     public class ExpressionValidator : IValidator<List<List<ExpressionResult>>>
     {

@@ -185,21 +185,14 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
             {
                 foreach (var subExpression in expressionResult)
                 {
-                    if (!string.IsNullOrEmpty(subExpression.ValueIdentifier) && subExpression.ValueIdentifier.Contains('.'))
+                    if (!string.IsNullOrEmpty(subExpression.ValueIdentifier))
                     {
-                        var identfieres = subExpression.ValueIdentifier.Split('.');
-                        var instanceVariable = _state.CurrentScope.LookupManager.GetVariable(identfieres[0]).Value.DynamicType;
-                        var result = _state.CurrentScope.LookupManager.GetMemberVariable(instanceVariable, identfieres[0], identfieres[1]).Value.IntValue;
-                        if (result == null)
+                        var result = _resolver.ResolveProperty(subExpression.ValueIdentifier);
+
+                        if (!result.HasValue())
                         {
                             return false;
                         }
-                        continue;
-                    }
-
-                    if (!string.IsNullOrEmpty(subExpression.ValueIdentifier) && !_state.CurrentScope.LookupManager.HasValue(subExpression.ValueIdentifier))
-                    {
-                        return false;
                     }
                 }
             }

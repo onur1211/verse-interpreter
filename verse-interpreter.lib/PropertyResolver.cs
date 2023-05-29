@@ -19,6 +19,10 @@ namespace verse_interpreter.lib
                 var parameters = propertyName.Split(".");
                 return ResolveProperty(parameters, _applicationState.CurrentScope.LookupManager); ;
             }
+            if (propertyName.EndsWith("]"))
+            {
+                return ResolveArrayAccess(propertyName);
+            }
 
             return _applicationState.CurrentScope.LookupManager.GetVariable(propertyName);
         }
@@ -26,12 +30,28 @@ namespace verse_interpreter.lib
         private Variable ResolveProperty(string[] parameters, LookupManager lookupTable)
         {
             var identifier = parameters[0];
+
+            if (!lookupTable.IsVariable(identifier))
+            {
+                return null!;
+            }
+
             var baseVariable = lookupTable.GetVariable(identifier);
             if (baseVariable.Value.DynamicType == null)
             {
                 return baseVariable;
             }
             return ResolveProperty(parameters.Skip(1).ToArray(), baseVariable.Value.DynamicType.LookupManager);
+        }
+
+        private Variable ResolveArrayAccess(string variableName)
+        {
+            var identifieres = variableName.Split('[', ']');
+
+            var collection = _applicationState.CurrentScope.LookupManager.GetVariable(identifieres[0]).Value.CollectionVariable.Values;
+            int index = Convert.ToInt32(identifieres[1]);
+
+            return collection[index];
         }
     }
 }
