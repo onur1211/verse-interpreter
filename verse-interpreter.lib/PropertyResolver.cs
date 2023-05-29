@@ -21,8 +21,6 @@ namespace verse_interpreter.lib
             }
 
             return _applicationState.CurrentScope.LookupManager.GetVariable(propertyName);
-            // first is variable, second is property identifier ( could be value or other variable type) repeat
-
         }
 
         private Variable ResolveProperty(string[] parameters, LookupManager lookupTable)

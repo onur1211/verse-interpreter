@@ -14,10 +14,12 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
     public class ArithmeticEvaluator : IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>
     {
         private ApplicationState _state;
+        private readonly PropertyResolver _resolver;
 
-        public ArithmeticEvaluator(ApplicationState applicationState)
+        public ArithmeticEvaluator(ApplicationState applicationState, PropertyResolver resolver)
         {
             _state = applicationState;
+            _resolver = resolver;
         }
 
         public ArithmeticExpression Evaluate(List<List<ExpressionResult>> input)
@@ -80,21 +82,10 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 
             foreach (var expressionResult in input)
             {
-                // Pfusch, müss ma fixen wenn LookupTable geupdated wurde!
-                if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier) && expressionResult.ValueIdentifier.Contains('.'))
-                {
-                    var identfieres = expressionResult.ValueIdentifier.Split('.');
-                    var instanceVariable = _state.CurrentScope.LookupManager.GetVariable(identfieres[0]).Value.DynamicType;
-                    var result = _state.CurrentScope.LookupManager.GetMemberVariable(instanceVariable, identfieres[0], identfieres[1]).Value.IntValue;
-                    expressionResult.IntegerValue = result;
-                    expressionResult.ValueIdentifier = string.Empty;
-                    results.Add(expressionResult);
-                }
-
                 if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
                 {
                     // Lookup the variable value and substitute it in the expression
-                    int? result = _state.CurrentScope.LookupManager.GetVariable(expressionResult.ValueIdentifier).Value.IntValue;
+                    int? result = _resolver.ResolveProperty(expressionResult.ValueIdentifier).Value.IntValue;
                     expressionResult.IntegerValue = result;
                     expressionResult.ValueIdentifier = string.Empty;
                     results.Add(expressionResult);

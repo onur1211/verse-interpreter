@@ -96,6 +96,20 @@ namespace verse_interpreter.tests
                 Assert.That(writer.ToString(), Contains.Substring("50"));
             }
         }
-        
+
+        [Test]
+        public void Should_Add_Two_Local_Variables()
+        {
+            using (var writer = new StringWriter())
+            {
+                Console.SetOut(writer);
+                _application.Run(new[]
+                {
+                    "-c x := 25\r\ny := 25\r\nx + y"
+                });
+
+                Assert.That(writer.ToString(), Contains.Substring("50"));
+            }
+        }
     }
 }

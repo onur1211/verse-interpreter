@@ -52,10 +52,5 @@ namespace verse_interpreter.lib
 
             return declarationResult;
         }
-
-        private string HandleExpressions(DeclarationResult declarationResult)
-        {
-            return _expressionValidator.GetExpressionType(declarationResult.ExpressionResults);
-        }
     }
 }

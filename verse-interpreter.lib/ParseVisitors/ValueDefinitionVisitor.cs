@@ -29,6 +29,7 @@ namespace verse_interpreter.lib.ParseVisitors
         private readonly TypeConstructorVisitor _constructorVisitor;
         private readonly CollectionParser _collectionParser;
         private readonly GeneralEvaluator _evaluator;
+        private readonly PropertyResolver _resolver;
         private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
         private readonly Lazy<DeclarationParser> _declarationParser;
         
@@ -40,13 +41,15 @@ namespace verse_interpreter.lib.ParseVisitors
                                       ExpressionVisitor expressionVisitor,
                                       TypeConstructorVisitor constructorVisitor,
                                       CollectionParser collectionParser,
-                                      GeneralEvaluator evaluator) : base(applicationState)
+                                      GeneralEvaluator evaluator,
+                                      PropertyResolver resolver) : base(applicationState)
         {
             _typeInferencer = typeInferencer;
             _expressionVisitor = expressionVisitor;
             _constructorVisitor = constructorVisitor;
             _collectionParser = collectionParser;
             _evaluator = evaluator;
+            _resolver = resolver;
             _functionCallVisitor = functionVisitor;
             _declarationParser = declarationParser;
         }
@@ -190,7 +193,7 @@ namespace verse_interpreter.lib.ParseVisitors
             }
 
             // Get the array from the lookup manager
-            Variable array = ApplicationState.CurrentScope.LookupManager.GetVariable(name);
+            Variable array = _resolver.ResolveProperty(name);
 
             // If the array has no value or is null then throw exception
             if (array == null || !array.HasValue())

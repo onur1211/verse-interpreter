@@ -23,30 +23,33 @@ namespace verse_interpreter.lib.Data.Validators
         /// <returns></returns>
         public bool IsTypeConformityGiven(List<List<ExpressionResult>> expressions)
         {
-            string typeName = string.Empty;
+            string typeName = null;
+
             foreach (var expression in expressions)
             {
+                string currentIterationType = null;
+
                 foreach (var exp in expression)
                 {
-                    if (string.IsNullOrEmpty(exp.ValueIdentifier))
+                    if (!string.IsNullOrEmpty(exp.StringValue))
                     {
-                        continue;
+                        currentIterationType = "string";
+                        typeName ??= currentIterationType;
                     }
 
-                    if (exp.ValueIdentifier.Contains("."))
+                    if (exp.IntegerValue != null)
                     {
-                        typeName = _resolver.ResolveProperty(exp.ValueIdentifier).Value.TypeName;
-                        continue;
+                        currentIterationType = "int";
+                        typeName ??= currentIterationType;
                     }
 
-                    if (typeName == string.Empty)
+                    if (!string.IsNullOrEmpty(exp.ValueIdentifier))
                     {
-                        typeName = _applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value
-                            .TypeName;
-                        continue;
+                        currentIterationType = _resolver.ResolveProperty(exp.ValueIdentifier).Value.TypeName;
+                        typeName ??= currentIterationType;
                     }
 
-                    if (_applicationState.CurrentScope.LookupManager.GetVariable(exp.ValueIdentifier).Value.TypeName != typeName)
+                    if (currentIterationType != typeName)
                     {
                         return false;
                     }
