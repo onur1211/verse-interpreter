@@ -142,8 +142,7 @@ namespace verse_interpreter.lib
                 Console.WriteLine("Error: " + ex.Message);
                 Console.ResetColor();
             }
-
-            Console.ReadKey();
+            
         }
     }
 }

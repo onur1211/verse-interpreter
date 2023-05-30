@@ -145,5 +145,36 @@ namespace verse_interpreter.tests
                 Assert.That(writer.ToString(), Contains.Substring("20"));
             }
         }
+
+        [Test]
+        public void Should_Add_Value_OutOf_Array()
+        {
+            using (var writer = new StringWriter())
+            {
+                Console.SetOut(writer);
+                _application.Run(new[]
+                {
+                    BasePathString + "Test6.verse"
+                });
+
+                Assert.That(writer.ToString(), Contains.Substring("6"));
+            }
+        }
+
+        [Test]
+        public void Should_Assign_Value_Based_On_If()
+        {
+            using (var writer = new StringWriter())
+            {
+                Console.SetOut(writer);
+                _application.Run(new[]
+                {
+                    BasePathString + "Test7.verse"
+                });
+
+                Assert.That(writer.ToString(), Contains.Substring("2"));
+                Assert.That(writer.ToString(), Contains.Substring("5"));
+            }
+        }
     }
 }
