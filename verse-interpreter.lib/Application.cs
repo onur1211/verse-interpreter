@@ -85,6 +85,7 @@ namespace verse_interpreter.lib
                 .AddTransient<TypeInferencer>()
                 .AddTransient<IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
                 .AddTransient<IEvaluator<StringExpression, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
+                .AddTransient<IEvaluator<ComparisonExpression, List<List <ExpressionResult >>>, ComparisonEvaluator>()
                 .AddTransient<IValidator<List<List<ExpressionResult>>>, ExpressionValidator>()
                 .AddTransient<IValidator<FunctionCall>, ParameterValidator>()
                 .AddTransient<ExpressionValidator>()
@@ -105,7 +106,6 @@ namespace verse_interpreter.lib
                 .AddTransient<PropertyResolver>()
                 .AddTransient<PredefinedFunctionInitializer>()
                 .AddTransient<PredefinedFunctionEvaluator>()
-                .AddTransient<ComparisonEvaluator>()
                 .AddLazyResolution()
                 .BuildServiceProvider();
 
