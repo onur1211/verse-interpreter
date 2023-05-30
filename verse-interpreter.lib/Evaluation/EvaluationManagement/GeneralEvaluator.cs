@@ -28,6 +28,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
         public event EventHandler<ArithmeticExpressionResolvedEventArgs>? ArithmeticExpressionResolved;
         public event EventHandler<StringExpressionResolvedEventArgs>? StringExpressionResolved;
+        public event EventHandler<ComparisonExpressionResolvedEventArgs>? ComparisonExpressionResolved;
 
         public BackpropagationEventSystem Propagator => _propagator;
 
@@ -48,10 +49,26 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 case "int":
                     HandleArithmeticExpression(expressions, identifier);
                     break;
+                case "comparison":
+                    HandleComparisonExpression(expressions, identifier);
+                    break;
 
                 default:
                     throw new UnknownTypeException(typeName);
             }
+        }
+
+        private void HandleComparisonExpression(List<List<ExpressionResult>> expressions, string? identifier)
+        {
+            var result = _evaluatorWrapper.ComparisonEvaluator.Evaluate(expressions);
+
+            if (result.PostponedExpression != null)
+            {
+                _propagator.AddExpression(result);
+                return;
+            }
+
+            ComparisonExpressionResolved?.Invoke(this, new ComparisonExpressionResolvedEventArgs(result));
         }
 
         private void HandleStringExpression(List<List<ExpressionResult>> expressions, string? identifier = null)

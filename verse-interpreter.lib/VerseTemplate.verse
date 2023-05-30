@@ -1,3 +1,11 @@
+assignValueFive(x:int):void {
+    x = 5
+}
 x:int
-if(x=0) then {Print(3)} else {Print("4")}
-x = 0
+y:int
+assignValueFive(x)
+
+if(x=5) then {y = 2} else {y = 3}
+
+Print(x)
+Print(y)

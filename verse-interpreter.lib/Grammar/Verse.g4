@@ -65,7 +65,7 @@ array_elements : value_definition (',' array_elements)*
                | declaration (',' array_elements)*
                ;
 
-array_index : ID '[' INT ']'
+array_index : ID '[' (INT|ID) ']'
             ;
             
 bracket_body : '{' block+ '}';

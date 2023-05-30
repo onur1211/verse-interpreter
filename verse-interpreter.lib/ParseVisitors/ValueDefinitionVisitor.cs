@@ -194,7 +194,9 @@ namespace verse_interpreter.lib.ParseVisitors
         {
             // Get the index and the name of the array variable
             var index = context.INT().GetText();
-            var name = context.ID().GetText();
+            var variableIndex = context.ID()[1].GetText();
+            var name = context.ID().First().GetText();
+
 
             if (name == null)
             {

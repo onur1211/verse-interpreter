@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Interfaces;
+using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.IO;
@@ -18,6 +19,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         private readonly ApplicationState _applicationState;
         private readonly List<IExpression<ArithmeticExpression>> _arithmeticExpressions;
         private readonly List<IExpression<StringExpression>> _stringExpressions;
+        private readonly List<IExpression<ComparisonExpression>> _comparisonExpressions;
 
         private readonly Dictionary<string, IExpression<ArithmeticExpression>> _associatedArithmeticExpressions;
         private readonly Dictionary<string, IExpression<StringExpression>> _associatedStringExpressions;
@@ -31,6 +33,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
             _arithmeticExpressions = new List<IExpression<ArithmeticExpression>>();
             _stringExpressions = new List<IExpression<StringExpression>>();
+            _comparisonExpressions = new List<IExpression<ComparisonExpression>>();
 
             _associatedArithmeticExpressions = new Dictionary<string, IExpression<ArithmeticExpression>>();
             _associatedStringExpressions = new Dictionary<string, IExpression<StringExpression>>();
@@ -38,6 +41,12 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
         public event EventHandler<StringExpressionResolvedEventArgs> StringExpressionResolved;
         public event EventHandler<ArithmeticExpressionResolvedEventArgs> ArithmeticExpressionResolved;
+        public event EventHandler<ComparisonExpressionResolvedEventArgs> ComparisonExpressionResolved;
+
+        public void AddExpression(IExpression<ComparisonExpression> expression)
+        {
+            _comparisonExpressions.Add(expression);
+        }
 
         public void AddExpression(IExpression<ArithmeticExpression> expression)
         {
@@ -84,6 +93,27 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 {
                     _associatedArithmeticExpressions.Remove(expression.Key);
                     _applicationState.CurrentScope.LookupManager.UpdateVariable(new Variable(expression.Key, new ValueObject("int", expression.Value.PostponedExpression.Invoke().ResultValue)));
+                }
+            }
+
+            for (var i = 0; i < _stringExpressions.Count; i++)
+            {
+                var expression = _stringExpressions[i];
+                var res = expression.PostponedExpression!.Invoke();
+                if (res.PostponedExpression == null)
+                {
+                    StringExpressionResolved?.Invoke(this, new StringExpressionResolvedEventArgs(res));
+                    _stringExpressions.Remove(_stringExpressions[i]);
+                }
+            }
+
+            for(int i = 0; i < _comparisonExpressions.Count ; i++)
+            {
+                var res = _comparisonExpressions[i].PostponedExpression!.Invoke();
+                if (res.PostponedExpression == null)
+                {
+                    ComparisonExpressionResolved?.Invoke(this, new ComparisonExpressionResolvedEventArgs(res));
+                    _comparisonExpressions.Remove(_comparisonExpressions[i]);
                 }
             }
         }

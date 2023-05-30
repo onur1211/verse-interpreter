@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Exceptions;
@@ -68,6 +69,11 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
             }
 
             var result = expressions.Select(x => x.Where(y => string.IsNullOrEmpty(y.Operator))).First().First();
+
+            if (expressions.Select(x => x.Select(y => y.Operator)).Any(x => x.Any(y => y == ">" || y == "=" || y == "<")))
+            {
+                return "comparison";
+            }
             if (!string.IsNullOrEmpty(result.ValueIdentifier))
             {
                 return _resolver.ResolveProperty(result.ValueIdentifier).Value.TypeName;
