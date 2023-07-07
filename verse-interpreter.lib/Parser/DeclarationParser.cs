@@ -73,8 +73,6 @@ namespace verse_interpreter.lib.Parser
                 throw new InvalidOperationException($"Invalid usage of out of scope variable {nameof(variableName)}");
             }
 
-            var variable = _state.CurrentScope.LookupManager.GetVariable(variableName);
-
             var result =  ParseValueAssignment(context);
 
             return result;
@@ -129,12 +127,14 @@ namespace verse_interpreter.lib.Parser
                 declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
                 return declarationResult;
             }
+
             if(declarationResult.IndexedVariable.Value.StringValue != null)
             {
                 declarationResult.Value = declarationResult.IndexedVariable.Value.StringValue;
                 declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
                 return declarationResult; 
             }
+
             if(declarationResult.CollectionVariable.Values != null)
             {
                 declarationResult.CollectionVariable = new VerseCollection(declarationResult.CollectionVariable.Values);

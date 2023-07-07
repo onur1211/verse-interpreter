@@ -36,6 +36,7 @@ namespace verse_interpreter.lib
         public void Run(string[] args)
         {
             this.RunWithErrorHandling(args);
+            Console.ReadKey();
             return;
 
             var options = GetPath(args);
@@ -142,7 +143,6 @@ namespace verse_interpreter.lib
                 Console.WriteLine("Error: " + ex.Message);
                 Console.ResetColor();
             }
-            
         }
     }
 }

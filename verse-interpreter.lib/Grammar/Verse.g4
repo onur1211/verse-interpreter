@@ -63,6 +63,7 @@ array_literal : '(' array_elements ')'
 
 array_elements : value_definition (',' array_elements)*
                | declaration (',' array_elements)*
+               | ID (',' array_elements)*
                ;
 
 array_index : ID '[' (INT|ID) ']'
@@ -145,7 +146,7 @@ binary_expression
     : term operator term
     | binary_expression operator term
     ;
-
+     
 term
     : factor
     | term operator factor

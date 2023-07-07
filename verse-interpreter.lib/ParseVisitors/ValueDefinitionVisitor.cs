@@ -183,6 +183,15 @@ namespace verse_interpreter.lib.ParseVisitors
                 }
             }
 
+            if (result.VariableElements != null)
+            {
+                foreach (var variable in result.VariableElements)
+                {
+                    var variableResult = ApplicationState.CurrentScope.LookupManager.GetVariable(variable);
+                    variables.Add(variableResult);
+                }
+            }
+
             DeclarationResult declarationResult = new DeclarationResult();
             declarationResult.TypeName = "collection";
             declarationResult.CollectionVariable = new VerseCollection(variables);
@@ -194,9 +203,7 @@ namespace verse_interpreter.lib.ParseVisitors
         {
             // Get the index and the name of the array variable
             var index = context.INT().GetText();
-            var variableIndex = context.ID()[1].GetText();
             var name = context.ID().First().GetText();
-
 
             if (name == null)
             {
@@ -244,11 +251,11 @@ namespace verse_interpreter.lib.ParseVisitors
             }
 
             // Get the single variable from the list
-
             DeclarationResult declarationResult = new DeclarationResult();
             declarationResult.IndexedVariable = variables[indexNumber];
-            // Get the value of the variable depending on its variable type
+            declarationResult.TypeName = variables[indexNumber].Value.TypeName;
 
+            // Get the value of the variable depending on its variable type
             return _typeInferencer.InferGivenType(declarationResult);
         }
     }
