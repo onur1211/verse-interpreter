@@ -33,14 +33,6 @@ LAMBDA : '=>' ;
 CHOICE : '|' ;
 NOVALUE : 'false?';
 
-// Predefined Functions
-HEAD : 'head' ;
-TAIL : 'tail';
-CONS : 'cons';
-SNOC : 'snoc';
-APPEND : 'append';
-MAP : 'map' ;
-
 // Keywords
 IF: 'if';
 THEN: 'then';

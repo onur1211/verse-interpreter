@@ -74,16 +74,7 @@ bracket_body : '{' block+ '}';
 // Functions
 function_call: ID '(' param_call_item ')'
              | ID '(' ')'
-             | predefined_function_call
              ;
-
-predefined_function_call: HEAD '(' param_call_item ')'
-                        | TAIL '(' param_call_item ')'
-                        | CONS '(' param_call_item ')'
-                        | SNOC '(' param_call_item ')'
-                        | APPEND '(' param_call_item ')'
-                        | MAP '(' param_call_item ')'
-                        ;
 
 function_definition : ID function_param ':' type NEWLINE* '{' NEWLINE* body NEWLINE*'}'
                     ;
