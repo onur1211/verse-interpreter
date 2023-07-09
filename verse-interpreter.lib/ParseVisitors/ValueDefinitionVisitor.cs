@@ -163,13 +163,21 @@ namespace verse_interpreter.lib.ParseVisitors
         public override DeclarationResult VisitArray_literal([NotNull] Verse.Array_literalContext context)
         {
             List<Variable> variables = new List<Variable>();
+            DeclarationResult rangeExpressionResult = new DeclarationResult();
             var result = _collectionParser.GetParameters(context.array_elements());
 
             if (result.ValueElements != null)
             {
                 foreach (var valueDef in result.ValueElements)
                 {
-                    var variableResult = VariableConverter.Convert(valueDef.Accept(this));
+                    rangeExpressionResult = valueDef.Accept(this);
+
+                    if (rangeExpressionResult.CollectionVariable != null) 
+                    {
+                        continue;
+                    }
+
+                    var variableResult = VariableConverter.Convert(rangeExpressionResult);
                     variables.Add(variableResult);
                 }
             }
@@ -195,6 +203,11 @@ namespace verse_interpreter.lib.ParseVisitors
             DeclarationResult declarationResult = new DeclarationResult();
             declarationResult.TypeName = "collection";
             declarationResult.CollectionVariable = new VerseCollection(variables);
+
+            if (rangeExpressionResult.CollectionVariable != null)
+            {
+                declarationResult = rangeExpressionResult;
+            }
 
             return _typeInferencer.InferGivenType(declarationResult);
         }
