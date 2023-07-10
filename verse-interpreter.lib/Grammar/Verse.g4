@@ -34,6 +34,7 @@ program : function_definition program
         | expression
         | array_index
         | if_block
+        | value_definition
         ;
 
 block : declaration

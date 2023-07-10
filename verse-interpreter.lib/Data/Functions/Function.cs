@@ -29,11 +29,6 @@ namespace verse_interpreter.lib.Data.Functions
 
         public Action<string>? StatelessFunctionCall { get; set; }
 
-        public void AddFunction(Function res)
-        {
-            LookupManager.AddFunction(res);
-        }
-
         public void AddScopedVariable(Variable variable)
         {
             LookupManager.AddVariable(variable);

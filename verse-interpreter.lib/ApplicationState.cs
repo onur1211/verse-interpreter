@@ -1,5 +1,8 @@
 ﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Functions;
+using verse_interpreter.lib.Data.Variables;
+using verse_interpreter.lib.Exceptions;
+using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib
 {
@@ -10,6 +13,8 @@ namespace verse_interpreter.lib
 
         public List<Function> PredefinedFunctions { get; set; }
 
+        public Dictionary<string, Function> Functions { get; set; }
+
         public ApplicationState(PredefinedFunctionInitializer initializer)
         {
             Scopes = new Dictionary<int, IScope<Variable>>
@@ -18,21 +23,49 @@ namespace verse_interpreter.lib
             };
 
             Types = new Dictionary<string, DynamicType>();
+            Functions = new Dictionary<string, Function>();
 
             CurrentScopeLevel = 1;
 
-            WellKnownTypes = new List<string>()
+            WellKnownTypes = new List<TypeData>()
             {
-                "int", "string", "dynamic", "collection"
+                new TypeData("int"),
+                new TypeData("string"),
+                new TypeData("dynamic"),
+                new TypeData("collection")
             };
 
             PredefinedFunctions = initializer.GetPredefinedFunctions();
         }
 
-        public List<string> WellKnownTypes { get; }
+        public List<TypeData> WellKnownTypes { get; }
 
         public int CurrentScopeLevel { get; set; }  
 
         public IScope<Variable> CurrentScope { get { return Scopes[CurrentScopeLevel]; } }
-    }
+
+		public void AddFunction(Function function)
+		{
+			if (function == null)
+			{
+				throw new ArgumentNullException(nameof(function));
+			}
+			if (Functions.ContainsKey(function.FunctionName))
+			{
+				throw new VariableAlreadyExistException(function.FunctionName);
+			}
+
+			Functions.Add(function.FunctionName, function);
+		}
+
+		public Function GetFunction(string name)
+		{
+			if (!Functions.ContainsKey(name))
+			{
+				throw new UnknownFunctionException(name);
+			}
+
+			return Functions[name].GetInstance();
+		}
+	}
 }

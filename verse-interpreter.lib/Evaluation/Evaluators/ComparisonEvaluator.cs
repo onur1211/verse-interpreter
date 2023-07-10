@@ -91,17 +91,17 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
                     if (!string.IsNullOrEmpty(expression.ValueIdentifier))
                     {
                         var variable = _resolver.ResolveProperty(expression.ValueIdentifier);
-                        switch (variable.Value.TypeName)
+                        switch (variable.Value.TypeData.Name)
                         {
                             case "string":
-                                expression.StringValue = variable.Value.StringValue;
+                                expression.StringValue = variable.Value.TypeData.Name;
                                 expression.ValueIdentifier = string.Empty;
-                                expression.TypeName = variable.Value.TypeName;
+                                expression.TypeName = variable.Value.TypeData.Name;
                                 break;
                             case "int":
                                 expression.IntegerValue = variable.Value.IntValue;
                                 expression.ValueIdentifier = string.Empty;
-                                expression.TypeName = variable.Value.TypeName;
+                                expression.TypeName = variable.Value.TypeData.Name;
                                 break;
                         }
                     }

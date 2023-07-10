@@ -1,6 +1,7 @@
 ﻿using Antlr4.Runtime.Misc;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
+using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Wrapper;
@@ -13,7 +14,8 @@ namespace verse_interpreter.lib.ParseVisitors
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly FunctionWrapper _functionWrapper;
         private readonly TypeHandlingWrapper _typeHandlingWrapper;
-        private readonly GeneralEvaluator _generalEvaluator;
+		private readonly FunctionCallVisitor _functionCallVisitor;
+		private readonly GeneralEvaluator _generalEvaluator;
         private readonly IfExpressionVisitor _ifExpressionVisitor;
 
         public MainVisitor(ApplicationState applicationState,
@@ -21,6 +23,7 @@ namespace verse_interpreter.lib.ParseVisitors
                            ExpressionVisitor expressionVisitor,
                            FunctionWrapper functionWrapper,
                            TypeHandlingWrapper typeHandlingWrapper,
+                           FunctionCallVisitor functionCallVisitor,
                            GeneralEvaluator generalEvaluator,
                            IfExpressionVisitor ifExpressionVisitor) : base(applicationState)
         {
@@ -28,17 +31,32 @@ namespace verse_interpreter.lib.ParseVisitors
             _expressionVisitor = expressionVisitor;
             _functionWrapper = functionWrapper;
             _typeHandlingWrapper = typeHandlingWrapper;
-            _generalEvaluator = generalEvaluator;
+			_functionCallVisitor = functionCallVisitor;
+			_functionCallVisitor.FunctionRequestedExecution += FunctionRequestedExecutionCallback;
+			_generalEvaluator = generalEvaluator;
             ApplicationState.CurrentScope.LookupManager.VariableBound +=
                 _generalEvaluator.Propagator.HandleVariableBound!;
             _ifExpressionVisitor = ifExpressionVisitor;
         }
 
-        public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
+		private void FunctionRequestedExecutionCallback(object? sender, FunctionRequestedExecutionEventArgs e)
+		{
+            foreach (var block in e.FunctionCall.Function.FunctionBody)
+            {
+                block.Accept(this);
+            }
+		}
+
+		public override object VisitValue_definition([NotNull] Verse.Value_definitionContext context)
+		{
+            return base.VisitValue_definition(context);
+		}
+
+		public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
         {
             var declaredVariable = context.Accept(_declarationVisitor);
-
-            if (declaredVariable.Value.TypeName != "undefined")
+            
+            if (declaredVariable.Value.TypeData.Name != "undefined")
             {
                 ApplicationState.CurrentScope.AddScopedVariable(declaredVariable);
             }
@@ -68,7 +86,7 @@ namespace verse_interpreter.lib.ParseVisitors
         public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
         {
             var res = _functionWrapper.FunctionDeclarationVisitor.Visit(context);
-            ApplicationState.CurrentScope.AddFunction(res);
+            ApplicationState.AddFunction(res);
             return null!;
         }
 

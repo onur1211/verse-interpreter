@@ -25,10 +25,5 @@ namespace verse_interpreter.lib.Data
         {
             this.LookupManager.AddVariable(variable);
         }
-
-        public void AddFunction(Function function)
-        {
-            this.LookupManager.AddFunction(function);
-        }
     }
 }

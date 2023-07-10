@@ -47,7 +47,7 @@ namespace verse_interpreter.lib.Parser
             string name = context.ID().GetText();
             string type = context.type().GetText();
 
-            if (!(_state.Types.ContainsKey(type) || _state.WellKnownTypes.Contains(type)))
+            if (!(_state.Types.ContainsKey(type) || _state.WellKnownTypes.Any(x => x.Name == type)))
             {
                 throw new InvalidOperationException($"The specified type \"{type}\" does not exist!");
             }
@@ -73,8 +73,6 @@ namespace verse_interpreter.lib.Parser
                 throw new InvalidOperationException($"Invalid usage of out of scope variable {nameof(variableName)}");
             }
 
-            var variable = _state.CurrentScope.LookupManager.GetVariable(variableName);
-
             var result =  ParseValueAssignment(context);
 
             return result;
@@ -91,7 +89,7 @@ namespace verse_interpreter.lib.Parser
             declarationResult.Name = context.ID().GetText();
 
             declarationResult = HandleExpressionAsValue(declarationResult);
-            declarationResult = HandleIndexexVariable(declarationResult);
+            declarationResult = HandleIndexedVariable(declarationResult);
 
             return declarationResult;
         }
@@ -116,7 +114,7 @@ namespace verse_interpreter.lib.Parser
             return declarationResult;
         }
 
-        private DeclarationResult HandleIndexexVariable(DeclarationResult declarationResult)
+        private DeclarationResult HandleIndexedVariable(DeclarationResult declarationResult)
         {
             if (declarationResult.IndexedVariable == null)
             {
@@ -126,19 +124,19 @@ namespace verse_interpreter.lib.Parser
             if (declarationResult.IndexedVariable.Value.IntValue != null)
             {
                 declarationResult.Value = declarationResult.IndexedVariable.Value.IntValue.ToString();
-                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
                 return declarationResult;
             }
             if(declarationResult.IndexedVariable.Value.StringValue != null)
             {
                 declarationResult.Value = declarationResult.IndexedVariable.Value.StringValue;
-                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
                 return declarationResult; 
             }
             if(declarationResult.CollectionVariable.Values != null)
             {
                 declarationResult.CollectionVariable = new VerseCollection(declarationResult.CollectionVariable.Values);
-                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
                 return declarationResult;
             }
 
