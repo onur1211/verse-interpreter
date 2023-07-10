@@ -29,6 +29,7 @@ namespace verse_interpreter.lib.IO
                 PrintResult(result.ArithmeticExpression.ResultValue.ToString());
                 return;
             }
+
             if(result.StringExpression != null)
             {
                 PrintResult(result.StringExpression.Value);

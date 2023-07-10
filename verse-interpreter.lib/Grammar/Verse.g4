@@ -11,9 +11,9 @@ declaration : ID ':' type
             ;
 
 
-value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
+value_definition : (INT | NOVALUE | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
                  ;
-                 
+
 
 program : function_definition program
         | declaration program
@@ -34,6 +34,7 @@ program : function_definition program
         | expression
         | array_index
         | if_block
+        | value_definition
         ;
 
 block : declaration

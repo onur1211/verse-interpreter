@@ -23,7 +23,7 @@ namespace verse_interpreter.lib
 
             WellKnownTypes = new List<string>()
             {
-                "int", "string", "dynamic", "collection"
+                "int", "string", "false?", "dynamic", "collection"
             };
 
             PredefinedFunctions = initializer.GetPredefinedFunctions();

@@ -55,6 +55,7 @@ namespace verse_interpreter.lib
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
             mainVisitor.VisitProgram(parseTree);
             var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
+            Console.ReadKey();
         }
 
         private CommandLineOptions GetPath(string[] args)
@@ -143,6 +144,7 @@ namespace verse_interpreter.lib
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Error: " + ex.Message);
                 Console.ResetColor();
+                Printer.PrintResult("false?");
             }
         }
     }
