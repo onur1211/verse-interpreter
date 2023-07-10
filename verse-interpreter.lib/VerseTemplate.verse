@@ -1,3 +1,3 @@
-test:=1..20
-x:=test[10]
+test:=1,3..10
+x:=test[2]
 Print(x)
