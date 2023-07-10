@@ -1,2 +1,2 @@
 x:=false?
-Print(s)
+Print(x)

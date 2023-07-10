@@ -21,6 +21,7 @@ namespace verse_interpreter.lib.IO
         {
             if (result == null)
             {
+                PrintResult("false?");
                 return;
             }
 
