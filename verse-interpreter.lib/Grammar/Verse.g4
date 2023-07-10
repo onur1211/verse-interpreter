@@ -59,8 +59,6 @@ spaced_body : INDENT* block
 // Range (..) expressions
 range_expression    : INT RANGE INT
                     | INT ',' INT RANGE INT
-                    | string_rule RANGE string_rule
-                    | string_rule ',' string_rule RANGE string_rule
                     ;
 
 

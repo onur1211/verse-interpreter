@@ -1,3 +1,3 @@
-myArray:=(1..10)
-x:=myArray[4]
+test:=1..20
+x:=test[10]
 Print(x)
