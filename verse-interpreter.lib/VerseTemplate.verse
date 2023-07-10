@@ -1,5 +1,3 @@
-x:=1 
-y:=2 
-myArray:=(x,y) 
-z:=myArray[0] 
-Print(z)
+test:=1,3..10
+x:=test[2]
+Print(x)

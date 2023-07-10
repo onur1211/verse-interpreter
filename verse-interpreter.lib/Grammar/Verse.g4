@@ -11,7 +11,7 @@ declaration : ID ':' type
             ;
 
 
-value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access)
+value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
                  ;
                  
 
@@ -54,6 +54,13 @@ inline_body : block ';' inline_body
 spaced_body : INDENT* block
             | INDENT* block NEWLINE spaced_body
             ;
+
+
+// Range (..) expressions
+range_expression    : INT RANGE INT
+                    | INT ',' INT RANGE INT
+                    ;
+
 
 // Arrays/Tuples
 array_literal : '(' array_elements ')'
