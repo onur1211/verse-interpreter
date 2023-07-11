@@ -104,7 +104,7 @@ namespace verse_interpreter.lib
 				.AddTransient<FunctionCallPreprocessor>()
 				.AddSingleton<GeneralEvaluator>()
 				.AddTransient<BodyParser>()
-				.AddScoped<FunctionCallVisitor>()
+				.AddSingleton<FunctionCallVisitor>()
 				.AddTransient<IfExpressionVisitor>()
 				.AddTransient<PropertyResolver>()
 				.AddTransient<PredefinedFunctionInitializer>()

@@ -6,56 +6,56 @@ using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib
 {
-    public class ApplicationState
-    {
-        public Dictionary<int, IScope<Variable>> Scopes { get; set; }
-        public Dictionary<string, DynamicType> Types { get; set; }
+	public class ApplicationState
+	{
+		public Dictionary<int, IScope<Variable>> Scopes { get; set; }
+		public Dictionary<string, DynamicType> Types { get; set; }
 
-        public List<Function> PredefinedFunctions { get; set; }
+		public List<Function> PredefinedFunctions { get; set; }
 
-        public Dictionary<string, Function> Functions { get; set; }
+		public Dictionary<string, Function> Functions { get; set; }
 
-        public ApplicationState(PredefinedFunctionInitializer initializer)
-        {
-            Scopes = new Dictionary<int, IScope<Variable>>
-            {
-                { 1, new CurrentScope(1) }
-            };
+		public ApplicationState(PredefinedFunctionInitializer initializer)
+		{
+			Scopes = new Dictionary<int, IScope<Variable>>
+			{
+				{ 1, new CurrentScope(1) }
+			};
 
-            Types = new Dictionary<string, DynamicType>();
-            Functions = new Dictionary<string, Function>();
+			Types = new Dictionary<string, DynamicType>();
+			Functions = new Dictionary<string, Function>();
 
-            CurrentScopeLevel = 1;
+			CurrentScopeLevel = 1;
 
-            WellKnownTypes = new List<TypeData>()
-            {
-                new TypeData("int"),
-                new TypeData("string"),
-                new TypeData("dynamic"),
-                new TypeData("collection")
-            };
+			WellKnownTypes = new List<TypeData>()
+			{
+				new TypeData("int"),
+				new TypeData("string"),
+				new TypeData("dynamic"),
+				new TypeData("collection")
+			};
 
-            PredefinedFunctions = initializer.GetPredefinedFunctions();
-        }
+			PredefinedFunctions = initializer.GetPredefinedFunctions();
+		}
 
-        public List<TypeData> WellKnownTypes { get; }
+		public List<TypeData> WellKnownTypes { get; }
 
-        public int CurrentScopeLevel { get; set; }  
+		public int CurrentScopeLevel { get; set; }
 
-        public IScope<Variable> CurrentScope { get { return Scopes[CurrentScopeLevel]; } }
+		public IScope<Variable> CurrentScope { get { return Scopes[CurrentScopeLevel]; } }
 
-		public void AddFunction(Function function)
+		public void AddFunction(Function? function)
 		{
 			if (function == null)
 			{
 				throw new ArgumentNullException(nameof(function));
 			}
-			if (Functions.ContainsKey(function.FunctionName))
+			if (Functions.ContainsKey(function.Value.FunctionName))
 			{
-				throw new VariableAlreadyExistException(function.FunctionName);
+				throw new VariableAlreadyExistException(function.Value.FunctionName);
 			}
 
-			Functions.Add(function.FunctionName, function);
+			Functions.Add(function.Value.FunctionName, function.Value);
 		}
 
 		public Function GetFunction(string name)
@@ -65,7 +65,9 @@ namespace verse_interpreter.lib
 				throw new UnknownFunctionException(name);
 			}
 
-			return Functions[name].GetInstance();
+			var function = Functions[name].Clone();
+
+			return (Function)function;
 		}
 	}
 }

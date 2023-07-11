@@ -1,5 +1,4 @@
-addThree(x:int):int {
-   x + 3
-}
-
-addThree(5)
+x:int
+y:int
+z:int
+x = y + z

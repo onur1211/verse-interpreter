@@ -123,7 +123,8 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 
         private int? EvaluateEqual(ExpressionResult firstOperand, ExpressionResult secondOperand)
         {
-            return firstOperand.IntegerValue == secondOperand.IntegerValue ? firstOperand.IntegerValue : null;
+            var res =  firstOperand.IntegerValue == secondOperand.IntegerValue ? firstOperand.IntegerValue : null;
+            return res;
         }
     }
 }

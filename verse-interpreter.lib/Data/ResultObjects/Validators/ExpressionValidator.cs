@@ -68,7 +68,8 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
                     "The specified type contains multiple differently typed values");
             }
 
-            var result = expressions.Select(x => x.Where(y => string.IsNullOrEmpty(y.Operator))).First().First();
+            var result = expressions.Last().Where(x => string.IsNullOrEmpty(x.Operator)).First();
+            //var result = expressions.Select(x => x.Where(y => string.IsNullOrEmpty(y.Operator))).First().First();
 
             if (expressions.Select(x => x.Select(y => y.Operator)).Any(x => x.Any(y => y == ">" || y == "=" || y == "<")))
             {

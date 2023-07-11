@@ -10,7 +10,7 @@ namespace verse_interpreter.lib.Data
 
         public Dictionary<int, IScope<Variable>> SubScope { get; private set; }
 
-        public LookupManager LookupManager { get; private set; }
+        public LookupManager LookupManager { get; set; }
 
         public int Level { get { return _level; } set { _level = value; } }
 

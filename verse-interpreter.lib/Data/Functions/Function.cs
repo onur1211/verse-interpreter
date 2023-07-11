@@ -1,16 +1,16 @@
-﻿using System.Reflection.Metadata;
-using verse_interpreter.lib.Lookup;
+﻿using verse_interpreter.lib.Lookup;
 using static verse_interpreter.lib.Grammar.Verse;
 
 namespace verse_interpreter.lib.Data.Functions
 {
-    public class Function : IScope<Variable>
+	public struct Function : IScope<Variable>, ICloneable
     {
         public Function()
         {
             Parameters = new List<Variable>();
             LookupManager = new LookupManager();
             SubScope = new Dictionary<int, IScope<Variable>>();
+            StatelessFunctionCall = null;
         }
 
         public string FunctionName { get; set; } = null!;
@@ -25,7 +25,7 @@ namespace verse_interpreter.lib.Data.Functions
 
         public Dictionary<int, IScope<Variable>> SubScope { get; }
 
-        public LookupManager LookupManager { get; }
+        public LookupManager LookupManager { get; set; }
 
         public Action<string>? StatelessFunctionCall { get; set; }
 
@@ -34,14 +34,14 @@ namespace verse_interpreter.lib.Data.Functions
             LookupManager.AddVariable(variable);
         }
 
-        public Function GetInstance()
-        {
-            Function function = new Function();
-            function.FunctionName = FunctionName;
-            function.Parameters = Parameters;
-            function.ReturnType = ReturnType;
-            function.FunctionBody = FunctionBody;
-            return function;
-        }
+		public object Clone()
+		{
+			Function function = new Function();
+			function.FunctionName = FunctionName;
+			function.Parameters = Parameters;
+			function.ReturnType = ReturnType;
+			function.FunctionBody = FunctionBody;
+			return function;
+		}
     }
 }

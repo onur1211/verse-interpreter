@@ -62,7 +62,7 @@ namespace verse_interpreter.lib.ParseVisitors
         private DeclarationResult HandleValueAssignment([NotNull] Verse.Value_definitionContext context)
         {
             // Instead of a big if, lets use the visitor to determine which kind of value definition it actually is.
-            var declarationResult = context.GetChild(0).Accept(this);
+            var declarationResult = context.children.First().Accept(this);
             if (declarationResult == null)
             {
                 throw new NotImplementedException();

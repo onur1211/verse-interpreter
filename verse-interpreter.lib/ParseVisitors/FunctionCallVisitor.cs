@@ -6,11 +6,13 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.EventArguments;
+using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Visitors;
 using verse_interpreter.lib.Wrapper;
@@ -25,9 +27,6 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly DeclarationVisitor _declarationVisitor;
 		private readonly PredefinedFunctionEvaluator _functionEvaluator;
 		private readonly FunctionFactory _functionFactory;
-		private readonly IfExpressionVisitor _ifVisitor;
-		private readonly ExpressionVisitor _expressionVisitor;
-		private readonly List<FunctionCallResult> _results;
 
 		public FunctionCallVisitor(ApplicationState applicationState,
 								   FunctionParser functionParser,
@@ -35,43 +34,44 @@ namespace verse_interpreter.lib.ParseVisitors
 								   FunctionCallPreprocessor functionCallPreprocessor,
 								   DeclarationVisitor declarationVisitor,
 								   PredefinedFunctionEvaluator functionEvaluator,
-								   FunctionFactory functionFactory,
-								   IfExpressionVisitor ifVisitor,
-								   ExpressionVisitor expressionVisitor) : base(applicationState)
+								   FunctionFactory functionFactory) : base(applicationState)
 		{
 			_functionParser = functionParser;
 			_evaluator = evaluator;
 			ApplicationState.CurrentScope.LookupManager.VariableBound += _evaluator.Propagator.HandleVariableBound!;
-			_evaluator.ArithmeticExpressionResolved += ArithmeticExpressionResolvedCallback;
-			_evaluator.StringExpressionResolved += StringExpressionResolvedCallback;
 			_functionCallPreprocessor = functionCallPreprocessor;
 			_declarationVisitor = declarationVisitor;
 			_functionEvaluator = functionEvaluator;
 			_functionFactory = functionFactory;
-			_ifVisitor = ifVisitor;
-			_expressionVisitor = expressionVisitor;
-			_results = new List<FunctionCallResult>();
 		}
 
-		public event EventHandler<FunctionRequestedExecutionEventArgs> FunctionRequestedExecution;
+		public event EventHandler<FunctionRequestedExecutionEventArgs>? FunctionRequestedExecution;
+
+		private ArithmeticExpression ArithmeticExpression { get; set; }
+		private StringExpression StringExpression { get; set; }
 
 		public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
 		{
 			var functionName = context.ID().GetText();
 			var parameters = _functionParser.GetCallParameters(context.param_call_item());
+			ApplicationState.CurrentScopeLevel += 1;
+			if (ApplicationState.PredefinedFunctions.Count(x => x.FunctionName == functionName) >= 1)
+			{
+				_functionEvaluator.Execute(functionName, context.param_call_item());
+				return null!;
+			}
 
 			var functionCall = PrepareFunctionForExecution(functionName, parameters);
 
-			ApplicationState.CurrentScopeLevel += 1;
-			ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, new CurrentScope(ApplicationState.CurrentScopeLevel));
-			FunctionRequestedExecution.Invoke(this, new FunctionRequestedExecutionEventArgs(functionCall));
+			SetApplicationState(functionCall);
+			FunctionRequestedExecution?.Invoke(this, new FunctionRequestedExecutionEventArgs(functionCall));
 
-			return null;
-		}
-
-		public override FunctionCallResult VisitChoice_rule(Verse.Choice_ruleContext context)
-		{
-			throw new NotImplementedException();
+			ApplicationState.CurrentScopeLevel -= 1;
+			return new FunctionCallResult()
+			{
+				ArithmeticExpression = ArithmeticExpression,
+				StringExpression = StringExpression,
+			};
 		}
 
 		public override FunctionCallResult VisitDeclaration(Verse.DeclarationContext context)
@@ -81,22 +81,6 @@ namespace verse_interpreter.lib.ParseVisitors
 			return null!;
 		}
 
-		private void StringExpressionResolvedCallback(object? sender, StringExpressionResolvedEventArgs e)
-		{
-			_results.Add(new FunctionCallResult()
-			{
-				StringExpression = e.Result
-			});
-		}
-
-		private void ArithmeticExpressionResolvedCallback(object? sender, ArithmeticExpressionResolvedEventArgs e)
-		{
-			_results.Add(new FunctionCallResult()
-			{
-				ArithmeticExpression = e.Result
-			});
-		}
-
 		private FunctionCall PrepareFunctionForExecution(string functionName, FunctionParameters parameters)
 		{
 			var function = _functionFactory.GetFunctionInstance(functionName);
@@ -104,6 +88,24 @@ namespace verse_interpreter.lib.ParseVisitors
 			_functionCallPreprocessor.BuildExecutableFunction(functionCall);
 
 			return functionCall;
+		}
+
+		private void SetApplicationState(FunctionCall functionCall)
+		{
+			ApplicationState.Scopes.Add(ApplicationState.CurrentScopeLevel, new CurrentScope(ApplicationState.CurrentScopeLevel)
+			{
+				LookupManager = functionCall.Function.LookupManager
+			});
+		}
+
+		public void OnResultEvaluated(ArithmeticExpression arithmeticExpression)
+		{
+			this.ArithmeticExpression = arithmeticExpression;
+		}
+
+		public void OnResultEvaluated(StringExpression stringExpression)
+		{
+			this.StringExpression = stringExpression;	
 		}
 	}
 }

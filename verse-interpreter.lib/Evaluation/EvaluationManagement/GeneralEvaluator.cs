@@ -38,6 +38,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             {
                 throw new InvalidTypeCombinationException("The given expression contains multiple types!");
             }
+
             var typeName = _expressionValidator.GetExpressionType(expressions);
 
             switch (typeName)

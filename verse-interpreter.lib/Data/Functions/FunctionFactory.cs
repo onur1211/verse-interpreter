@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib.Data.Functions
 {
@@ -18,10 +19,15 @@ namespace verse_interpreter.lib.Data.Functions
 		public Function GetFunctionInstance(string functionName)
 		{
 			var bluePrint = _applicationState.GetFunction(functionName);
+			Function function = new Function()
+			{
+			};
 			bluePrint.Parameters.ForEach(p =>
 			{
 				p = ClearedValues(p);
 			});
+			//Might need change
+			bluePrint.LookupManager = new LookupManager();
 
 			return bluePrint;
 		}
