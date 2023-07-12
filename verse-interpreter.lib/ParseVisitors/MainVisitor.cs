@@ -100,6 +100,10 @@ namespace verse_interpreter.lib.ParseVisitors
 		public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
 		{
 			var result = _functionWrapper.FunctionCallVisitor.Visit(context);
+			if(result == null || result.IsVoid)
+			{
+				return null;
+			}
 			Printer.PrintResult(result);
 			return result;
 		}

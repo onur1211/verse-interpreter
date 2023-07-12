@@ -54,23 +54,27 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			var functionName = context.ID().GetText();
 			var parameters = _functionParser.GetCallParameters(context.param_call_item());
-			ApplicationState.CurrentScopeLevel += 1;
 			if (ApplicationState.PredefinedFunctions.Count(x => x.FunctionName == functionName) >= 1)
 			{
 				_functionEvaluator.Execute(functionName, context.param_call_item());
 				return null!;
 			}
+			ApplicationState.CurrentScopeLevel += 1;
+			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 1}");
 
 			var functionCall = PrepareFunctionForExecution(functionName, parameters);
+			var isVoid = functionCall.Function.ReturnType == "void";
 
 			SetApplicationState(functionCall);
 			FunctionRequestedExecution?.Invoke(this, new FunctionRequestedExecutionEventArgs(functionCall));
 
 			ApplicationState.CurrentScopeLevel -= 1;
+			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 1}");
 			return new FunctionCallResult()
 			{
 				ArithmeticExpression = ArithmeticExpression,
 				StringExpression = StringExpression,
+				IsVoid = isVoid,
 			};
 		}
 

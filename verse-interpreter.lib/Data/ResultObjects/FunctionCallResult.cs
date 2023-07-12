@@ -13,5 +13,8 @@ namespace verse_interpreter.lib.Data.ResultObjects
         public ArithmeticExpression ArithmeticExpression { get; set; }
 
         public StringExpression StringExpression { get; set; }
+
+
+        public bool IsVoid { get; set; }
     }
 }

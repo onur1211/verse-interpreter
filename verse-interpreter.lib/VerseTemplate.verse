@@ -1,4 +1,5 @@
-x:int
-y:int
-z:int
-x = y + z
+test():void {
+    Print("Was bruder")
+}
+
+test()
