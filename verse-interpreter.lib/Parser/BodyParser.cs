@@ -36,7 +36,9 @@ namespace verse_interpreter.lib.Parser
             if(spacedBody != null)
             {
                 blocks.Add(spacedBody.block());
-                return GetSpacedBody(spacedBody.spaced_body(), blocks);
+                var spacedBodies =  GetSpacedBody(spacedBody.spaced_body(), blocks);
+
+                return spacedBodies;
             }
 
             GetSpacedBody(context.spaced_body(), blocks);
@@ -51,16 +53,12 @@ namespace verse_interpreter.lib.Parser
             {
                 return blocks;
             }
+            blocks.Add(context.block());
 
             var inlineBody = context.inline_body();
             if (inlineBody != null)
             {
-                blocks.Add(inlineBody.block());
                 return GetInlineBody(context.inline_body(), blocks);
-            }
-            if(context != null && inlineBody != null)
-            {
-                blocks.Add(context.block());
             }
 
             throw new NotImplementedException("The specified body type is not yet implemented");
@@ -72,16 +70,13 @@ namespace verse_interpreter.lib.Parser
             {
                 return blocks;
             }
+            blocks.Add(context.block());
 
-            var inlineBody = context.spaced_body();
-            if (inlineBody != null)
+            var spacedBody = context.spaced_body();
+
+            if (spacedBody != null)
             {
-                blocks.Add(inlineBody.block());
                 return GetSpacedBody(context.spaced_body(), blocks);
-            }
-            if (context != null && inlineBody == null)
-            {
-                blocks.Add(context.block());
             }
 
            return blocks;

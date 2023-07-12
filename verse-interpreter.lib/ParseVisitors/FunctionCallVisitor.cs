@@ -60,7 +60,7 @@ namespace verse_interpreter.lib.ParseVisitors
 				return null!;
 			}
 			ApplicationState.CurrentScopeLevel += 1;
-			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 1}");
+			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 2}");
 
 			var functionCall = PrepareFunctionForExecution(functionName, parameters);
 			var isVoid = functionCall.Function.ReturnType == "void";
@@ -68,6 +68,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			SetApplicationState(functionCall);
 			FunctionRequestedExecution?.Invoke(this, new FunctionRequestedExecutionEventArgs(functionCall));
 
+			ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
 			ApplicationState.CurrentScopeLevel -= 1;
 			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 1}");
 			return new FunctionCallResult()

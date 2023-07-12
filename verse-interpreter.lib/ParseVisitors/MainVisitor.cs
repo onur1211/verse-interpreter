@@ -66,7 +66,10 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			foreach (var block in e.FunctionCall.Function.FunctionBody)
 			{
-				block.Accept(this);
+				foreach(var child in block.children)
+				{
+					child.Accept(this);
+				}
 			}
 		}
 
