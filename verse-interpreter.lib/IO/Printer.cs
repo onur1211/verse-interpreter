@@ -21,7 +21,6 @@ namespace verse_interpreter.lib.IO
         {
             if (result == null)
             {
-                PrintResult("false?");
                 return;
             }
 
@@ -37,7 +36,7 @@ namespace verse_interpreter.lib.IO
                 return;
             }
 
-            throw new NotImplementedException();
+            throw new NotImplementedException("Print result not implemented for this result!");
         }
     }
 }
