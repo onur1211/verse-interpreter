@@ -13,9 +13,9 @@ namespace verse_interpreter.lib.IO
     {
         public static void PrintResult(string result)
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("VERSE CODE RESULT: ");
-            Console.ResetColor();
+            //Console.ForegroundColor = ConsoleColor.Blue;
+            //Console.WriteLine("VERSE CODE RESULT: ");
+            //Console.ResetColor();
             Console.WriteLine(result);
         }
 

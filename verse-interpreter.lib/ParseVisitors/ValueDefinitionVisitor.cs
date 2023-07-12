@@ -103,17 +103,9 @@ namespace verse_interpreter.lib.ParseVisitors
 
         public override DeclarationResult VisitFunction_call(Verse.Function_callContext context)
         {
-            throw new NotImplementedException("Functions are not currently implemented");
-            //DeclarationResult declarationResult = new DeclarationResult();
-            //var functionCallResult = _functionCallVisitor.Value.Visit(context);
-
-            //var intValue = functionCallResult.ArithmeticExpression;
-            //var stringValue = functionCallResult.StringExpression;
-
-            //declarationResult.Value = intValue != null ? intValue.ResultValue.ToString() : stringValue != null ?
-            //    stringValue.Value : throw new NotImplementedException();
-
-            //return _typeInferencer.InferGivenType(declarationResult);
+            var functionCallResult = _functionCallVisitor.Value.Visit(context);
+            
+            return _typeInferencer.InferGivenType(DeclarationResultConverter.ConvertFunctionResult(functionCallResult));
         }
 
         public override DeclarationResult VisitType_member_access(Verse.Type_member_accessContext context)
