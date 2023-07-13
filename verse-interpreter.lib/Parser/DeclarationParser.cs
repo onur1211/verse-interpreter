@@ -120,24 +120,37 @@ namespace verse_interpreter.lib.Parser
             {
                 return declarationResult;
             }
-
-            if (declarationResult.IndexedVariable.Value.IntValue != null)
-            {
-                declarationResult.Value = declarationResult.IndexedVariable.Value.IntValue.ToString();
-                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
-                return declarationResult;
-            }
-            if(declarationResult.IndexedVariable.Value.StringValue != null)
-            {
-                declarationResult.Value = declarationResult.IndexedVariable.Value.StringValue;
-                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
-                return declarationResult; 
-            }
-            if(declarationResult.CollectionVariable.Values != null)
+            if (declarationResult.CollectionVariable != null && declarationResult.CollectionVariable.Values != null)
             {
                 declarationResult.CollectionVariable = new VerseCollection(declarationResult.CollectionVariable.Values);
                 declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
                 return declarationResult;
+            }
+
+            if (declarationResult.IndexedVariable != null)
+            {
+                Variable indexedVar = declarationResult.IndexedVariable;
+
+                if (indexedVar.Value.IntValue != null)
+                {
+                    declarationResult.Value = declarationResult.IndexedVariable.Value.IntValue.ToString();
+                    declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                    return declarationResult;
+                }
+
+                if (indexedVar.Value.StringValue != null)
+                {
+                    declarationResult.Value = declarationResult.IndexedVariable.Value.StringValue;
+                    declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                    return declarationResult;
+                }
+
+                if (indexedVar.Value.CollectionVariable != null)
+                {
+                    declarationResult.CollectionVariable = declarationResult.IndexedVariable.Value.CollectionVariable;
+                    declarationResult.TypeName = "collection";
+                    return declarationResult;
+                }
             }
 
             return declarationResult;

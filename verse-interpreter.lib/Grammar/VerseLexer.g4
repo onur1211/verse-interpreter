@@ -18,6 +18,7 @@ GT : '>' ;
 LT : '<' ;
 QUOTE : '"';
 DOT: '.';
+RANGE: '..';
 
 // Types
 INTTYPE : 'int';

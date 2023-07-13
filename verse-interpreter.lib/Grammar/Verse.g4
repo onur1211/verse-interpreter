@@ -11,7 +11,7 @@ declaration : ID ':' type
             ;
 
 
-value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access)
+value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
                  ;
                  
 
@@ -56,6 +56,13 @@ spaced_body : INDENT* block
             | INDENT* block NEWLINE spaced_body
             ;
 
+
+// Range (..) expressions
+range_expression    : INT RANGE INT
+                    | INT ',' INT RANGE INT
+                    ;
+
+
 // Arrays/Tuples
 array_literal : '(' array_elements ')'
               | '('')'
@@ -64,6 +71,7 @@ array_literal : '(' array_elements ')'
 
 array_elements : value_definition (',' array_elements)*
                | declaration (',' array_elements)*
+               | ID (',' array_elements)*
                ;
 
 array_index : ID '[' (INT|ID) ']'
@@ -72,10 +80,9 @@ array_index : ID '[' (INT|ID) ']'
 bracket_body : '{' block+ '}';
 
 // Functions
-
-function_call : ID '(' param_call_item ')'
-              | ID '(' ')' 
-              ;
+function_call: ID '(' param_call_item ')'
+             | ID '(' ')'
+             ;
 
 function_definition : ID function_param ':' type NEWLINE* '{' NEWLINE* body NEWLINE*'}'
                     ;
@@ -84,16 +91,17 @@ function_param : '(' ')'
                | '(' param_def_item ')'
                ;
                
-param_def_item     : declaration
-                   | declaration ',' param_def_item
-                   ;
-                   
-param_call_item : (value_definition | ID)
-                | (value_definition | ID) ',' param_call_item
+param_def_item  : declaration
+                | declaration ',' param_def_item
                 ;
+                   
+param_call_item: value_definition
+               | ID
+               | value_definition ',' param_call_item
+               | ID ',' param_call_item
+               ;
 
 // Type definition
-
 constructor_body : INSTANCE ID '('')'
                  ;
 
@@ -146,7 +154,7 @@ binary_expression
     : term operator term
     | binary_expression operator term
     ;
-
+     
 term
     : factor
     | term operator factor

@@ -26,6 +26,7 @@ namespace verse_interpreter.lib.Parser
 
             var valueDefs = context.value_definition();
             var declDefs = context.declaration();
+            var variableDefs = context.ID();
 
             if (valueDefs != null) 
             {
@@ -35,6 +36,11 @@ namespace verse_interpreter.lib.Parser
             if (declDefs != null) 
             {
                 collectionParseResult.DeclarationElements.Add(declDefs);
+            }
+
+            if (variableDefs != null) 
+            {
+                collectionParseResult.VariableElements.Add(variableDefs.GetText());
             }
 
             // Go to the next child recursive.

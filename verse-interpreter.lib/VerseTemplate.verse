@@ -3,5 +3,4 @@ fac(x:int):int {
 }
 
 x := fac(5)
-
 Print(x)

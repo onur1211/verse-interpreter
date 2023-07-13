@@ -13,11 +13,13 @@ namespace verse_interpreter.lib.Data.ResultObjects
         {
             this.ValueElements = new List<Verse.Value_definitionContext>();
             this.DeclarationElements = new List<Verse.DeclarationContext>();
+            this.VariableElements = new List<string>();
         }
 
         public List<Verse.Value_definitionContext> ValueElements { get; set; }
 
         public List<Verse.DeclarationContext> DeclarationElements { get; set; }
 
+        public List<string> VariableElements { get; set; }
     }
 }
