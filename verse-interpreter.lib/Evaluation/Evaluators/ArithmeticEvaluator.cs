@@ -27,6 +27,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
             // Remove any empty lists from the input
             input.RemoveAll(x => x.Count == 0);
             ArithmeticExpression lastExpression = new ArithmeticExpression();
+
             if (!AreVariablesBoundToValue(input))
             {
                 // If there are still unbound values in the expression, store it for later until the values are given
@@ -43,6 +44,13 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
             {
                 // Substitute variable values with their corresponding integer values
                 var exp = SubstituteValues(expression);
+
+                // Check if false? is contained in the expression
+                // and return only false? as a result
+                if(exp.Any(x => x.TypeName == "false?"))
+                {
+
+                }
 
                 // Check the number of expression items
                 if (exp.Count == 3)
@@ -64,7 +72,6 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
                 {
                     lastExpression = BuildSimpleComposedExpression(lastExpression, expression);
                 }
-                //Console.WriteLine($"{lastExpression.StringRepresentation} | {input.IndexOf(expression)}");
             }
 
             // If the result value of the last expression is not set, evaluate the string representation

@@ -1,2 +1,0 @@
-x:=false?
-Print(x)
