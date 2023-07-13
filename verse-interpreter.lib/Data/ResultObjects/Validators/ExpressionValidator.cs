@@ -46,7 +46,7 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
 
                     if (!string.IsNullOrEmpty(exp.ValueIdentifier))
                     {
-                        currentIterationType = _resolver.ResolveProperty(exp.ValueIdentifier).Value.TypeName;
+                        currentIterationType = _resolver.ResolveProperty(exp.ValueIdentifier).Value.TypeData.Name;
                         typeName ??= currentIterationType;
                     }
 
@@ -68,7 +68,8 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
                     "The specified type contains multiple differently typed values");
             }
 
-            var result = expressions.Select(x => x.Where(y => string.IsNullOrEmpty(y.Operator))).First().First();
+            var result = expressions.Last().Where(x => string.IsNullOrEmpty(x.Operator)).First();
+            //var result = expressions.Select(x => x.Where(y => string.IsNullOrEmpty(y.Operator))).First().First();
 
             if (expressions.Select(x => x.Select(y => y.Operator)).Any(x => x.Any(y => y == ">" || y == "=" || y == "<")))
             {
@@ -76,7 +77,7 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
             }
             if (!string.IsNullOrEmpty(result.ValueIdentifier))
             {
-                return _resolver.ResolveProperty(result.ValueIdentifier).Value.TypeName;
+                return _resolver.ResolveProperty(result.ValueIdentifier).Value.TypeData.Name;
             }
 
             return result.TypeName;

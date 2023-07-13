@@ -85,7 +85,6 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 }
             }
 
-
             foreach (var expression in _associatedArithmeticExpressions)
             {
                 var evaluatedExpression = expression.Value.PostponedExpression!.Invoke();

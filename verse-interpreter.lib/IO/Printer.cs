@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Factories;
 
 namespace verse_interpreter.lib.IO
 {
@@ -11,9 +13,9 @@ namespace verse_interpreter.lib.IO
     {
         public static void PrintResult(string result)
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("VERSE CODE RESULT: ");
-            Console.ResetColor();
+            //Console.ForegroundColor = ConsoleColor.Blue;
+            //Console.WriteLine("VERSE CODE RESULT: ");
+            //Console.ResetColor();
             Console.WriteLine(result);
         }
 
@@ -36,6 +38,26 @@ namespace verse_interpreter.lib.IO
             }
 
             throw new NotImplementedException();
+        }
+
+        public static void PrintResult(ArithmeticExpression arithmeticExpression)
+        {
+            if(arithmeticExpression.PostponedExpression != null)
+            {
+                return;
+            }
+
+            PrintResult(arithmeticExpression.ResultValue.ToString()!);
+        }
+
+        public static void PrintResult(StringExpression stringExpression)
+        {
+            if(stringExpression.PostponedExpression != null)
+            {
+                return;
+            }
+
+            PrintResult(stringExpression.Value);
         }
     }
 }

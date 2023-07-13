@@ -8,6 +8,7 @@ using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Extensions;
 using verse_interpreter.lib.Factories;
+using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.Evaluation.Evaluators
 {
@@ -25,7 +26,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
         public ArithmeticExpression Evaluate(List<List<ExpressionResult>> input)
         {
             // Remove any empty lists from the input
-            input.RemoveAll(x => x.Count == 0);
+            
             ArithmeticExpression lastExpression = new ArithmeticExpression();
             if (!AreVariablesBoundToValue(input))
             {
@@ -41,6 +42,10 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 
             foreach (var expression in input)
             {
+                if(expression.Count == 0)
+                {
+                    continue;
+                }
                 // Substitute variable values with their corresponding integer values
                 var exp = SubstituteValues(expression);
 

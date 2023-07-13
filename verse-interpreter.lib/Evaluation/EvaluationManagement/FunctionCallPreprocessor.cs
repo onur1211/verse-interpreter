@@ -4,7 +4,9 @@ using System.Diagnostics.SymbolStore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Interfaces;
+using verse_interpreter.lib.Data.Variables.Utility;
 using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.ParseVisitors;
 
@@ -42,7 +44,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         {
             for(int i = 0; i < item.Function.ParameterCount; i++)
             {
-                var variable  = item.Function.Parameters[i];
+                var variable = new Variable()
+                {
+                    Name = item.Function.Parameters[i].Name,
+                    Value = item.Function.Parameters[i].Value.Copy()
+                };
                 variable.Value = item.Parameters.Parameters[i].Value;
                 item.Function.AddScopedVariable(variable);
             }

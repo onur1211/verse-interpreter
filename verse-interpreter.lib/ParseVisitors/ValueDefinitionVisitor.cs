@@ -1,35 +1,22 @@
 using Antlr4.Runtime.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using Antlr4.Runtime.Tree;
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
-using verse_interpreter.lib.Evaluators;
-using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Exceptions;
-using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
-using System.Xml.Linq;
+using verse_interpreter.lib.Parser.ValueDefinitionParser;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
-    public class ValueDefinitionVisitor : AbstractVerseVisitor<DeclarationResult>
+	public class ValueDefinitionVisitor : AbstractVerseVisitor<DeclarationResult?>
     {
         private readonly TypeInferencer _typeInferencer;
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly TypeConstructorVisitor _constructorVisitor;
         private readonly Lazy<TypeMemberVisitor> _memberVisitor;
         private readonly CollectionParser _collectionParser;
-        private readonly GeneralEvaluator _evaluator;
+		private readonly ExpressionValueParser _expressionValueParser;
         private readonly PropertyResolver _resolver;
         private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
         private readonly Lazy<DeclarationParser> _declarationParser;
@@ -43,7 +30,7 @@ namespace verse_interpreter.lib.ParseVisitors
                                       TypeConstructorVisitor constructorVisitor,
                                       Lazy<TypeMemberVisitor> memberVisitor,
                                       CollectionParser collectionParser,
-                                      GeneralEvaluator evaluator,
+                                      ExpressionValueParser expressionValueParser,
                                       PropertyResolver resolver) : base(applicationState)
         {
             _typeInferencer = typeInferencer;
@@ -51,7 +38,7 @@ namespace verse_interpreter.lib.ParseVisitors
             _constructorVisitor = constructorVisitor;
             _memberVisitor = memberVisitor;
             _collectionParser = collectionParser;
-            _evaluator = evaluator;
+			_expressionValueParser = expressionValueParser;
             _resolver = resolver;
             _functionCallVisitor = functionVisitor;
             _declarationParser = declarationParser;
@@ -75,7 +62,7 @@ namespace verse_interpreter.lib.ParseVisitors
         private DeclarationResult HandleValueAssignment([NotNull] Verse.Value_definitionContext context)
         {
             // Instead of a big if, lets use the visitor to determine which kind of value definition it actually is.
-            var declarationResult = context.GetChild(0).Accept(this);
+            var declarationResult = context.children.First().Accept(this);
             if (declarationResult == null)
             {
                 throw new NotImplementedException();
@@ -107,42 +94,18 @@ namespace verse_interpreter.lib.ParseVisitors
             return _typeInferencer.InferGivenType(declarationResult);
         }
 
-        public override DeclarationResult VisitExpression(Verse.ExpressionContext context)
+        public override DeclarationResult? VisitExpression(Verse.ExpressionContext context)
         {
             var expression = _expressionVisitor.Visit(context);
-            _expressionVisitor.Clean();
-            DeclarationResult declarationResult = new DeclarationResult
-            {
-                ExpressionResults = expression
-            };
-            _evaluator.ArithmeticExpressionResolved += (x,y) =>
-            {
-                declarationResult.Value = y.Result.ResultValue.ToString()!;
-                declarationResult.ExpressionResults = null;
-                declarationResult.TypeName = "int";
-            };
-            _evaluator.StringExpressionResolved += (x, y) =>
-            {
-                declarationResult.ExpressionResults = null;
-                declarationResult.Value = y.Result.Value;
-                declarationResult.TypeName = "string";
-            };
-            _evaluator.ExecuteExpression(expression);
-            return declarationResult;
+
+            return _expressionValueParser.ParseExpression(expression);
         }
 
         public override DeclarationResult VisitFunction_call(Verse.Function_callContext context)
         {
-            DeclarationResult declarationResult = new DeclarationResult();
             var functionCallResult = _functionCallVisitor.Value.Visit(context);
-
-            var intValue = functionCallResult.ArithmeticExpression;
-            var stringValue = functionCallResult.StringExpression;
-
-            declarationResult.Value = intValue != null ? intValue.ResultValue.ToString() : stringValue != null ?
-                stringValue.Value : throw new NotImplementedException();
-
-            return _typeInferencer.InferGivenType(declarationResult);
+            
+            return _typeInferencer.InferGivenType(DeclarationResultConverter.ConvertFunctionResult(functionCallResult));
         }
 
         public override DeclarationResult VisitType_member_access(Verse.Type_member_accessContext context)
@@ -151,11 +114,11 @@ namespace verse_interpreter.lib.ParseVisitors
             var result = _memberVisitor.Value.Visit(context);
             var variable = _resolver.ResolveProperty(result.AbsoluteCall);
 
-            declarationResult.TypeName = variable.Value.TypeName;
+            declarationResult.TypeName = variable.Value.TypeData.Name;
             declarationResult.CollectionVariable = variable.Value.CollectionVariable;
             declarationResult.DynamicType = variable.Value.DynamicType;
             declarationResult.Value =
-                variable!.Value.TypeName == "int" ? variable!.Value.IntValue.ToString() : variable!.Value.StringValue;
+                variable!.Value.TypeData.Name == "int" ? variable!.Value.IntValue.ToString() : variable!.Value.StringValue;
 
             return declarationResult;
         }
@@ -243,7 +206,7 @@ namespace verse_interpreter.lib.ParseVisitors
             }
 
             // If the given variable name is not a collection then throw exception
-            if (array.Value.TypeName != "collection")
+            if (array.Value.TypeData.Name != "collection")
             {
                 throw new InvalidTypeException(nameof(array));
             }
