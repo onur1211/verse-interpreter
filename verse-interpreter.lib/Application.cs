@@ -34,7 +34,7 @@ namespace verse_interpreter.lib
 			_services = null!;
 			_reader = new FileReader();
 		}
-    
+
 		public void Run(string[] args)
 		{
 			var options = GetPath(args);
@@ -44,18 +44,15 @@ namespace verse_interpreter.lib
 			}
 			_services = BuildService();
 			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
-            var inputCode = options.Code != null ? options.Code :
-                options.Path != null ? _reader.ReadFileToEnd(options.Path) :
-                throw new ArgumentException("You have to specify either the path or add code!");
+			var inputCode = options.Code != null ? options.Code :
+				options.Path != null ? _reader.ReadFileToEnd(options.Path) :
+				throw new ArgumentException("You have to specify either the path or add code!");
 
-            var parseTree = generator.GenerateParseTree(inputCode);
-            var mainVisitor = _services.GetRequiredService<MainVisitor>();
-            mainVisitor.VisitProgram(parseTree);
-            var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-            Console.ReadKey();
-        }
-
+			var parseTree = generator.GenerateParseTree(inputCode);
+			var mainVisitor = _services.GetRequiredService<MainVisitor>();
 			mainVisitor.VisitProgram(parseTree);
+			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
+			Console.ReadKey();
 		}
 
 		private CommandLineOptions GetPath(string[] args)
@@ -149,3 +146,4 @@ namespace verse_interpreter.lib
 
 		}
 	}
+}

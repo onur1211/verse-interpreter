@@ -177,18 +177,54 @@ namespace verse_interpreter.lib.ParseVisitors
 
         public override DeclarationResult VisitArray_index([NotNull] Verse.Array_indexContext context)
         {
-            // Get the index and the name of the array variable
-            var index = context.INT().GetText();
+            string index = String.Empty;
+
+            // Check if the given index is a number
+            // Example: myArray[0] -> 0
+            if (context.INT() != null)
+            {
+                index = context.INT().GetText();
+
+                if (index == null || index == String.Empty)
+                {
+                    throw new ArgumentNullException(nameof(index), "Error: There was no index given for the array access.");
+                }
+            }
+
+            // Check if the given index is a variable
+            // Example: myArray[x] -> x
+            if (context.ID().Length > 1)
+            {
+                // Get the name of the variable
+                string variableName = context.ID().ElementAt(1).GetText();
+
+                if (variableName == null || variableName == String.Empty)
+                {
+                    throw new ArgumentNullException(nameof(index), "Error: There was no variable as index given for the array access.");
+                }
+
+                if (!ApplicationState.CurrentScope.LookupManager.IsVariable(variableName))
+                {
+                    throw new VariableDoesNotExistException(nameof(variableName));
+                }
+
+                // Get the actual variable
+                Variable variableValue = _resolver.ResolveProperty(variableName);
+
+                // Check if the value of the variable is a number
+                if (variableValue.Value.IntValue == null)
+                {
+                    throw new InvalidTypeException(nameof(variableValue));
+                }
+
+                index = variableValue.Value.IntValue.ToString()!;
+            }
+
             var name = context.ID().First().GetText();
 
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name), "Error: There was no name given for the array access.");
-            }
-
-            if (index == null)
-            {
-                throw new ArgumentNullException(nameof(index), "Error: There was no index given for the array access.");
             }
 
             if (!ApplicationState.CurrentScope.LookupManager.IsVariable(name))
@@ -281,7 +317,7 @@ namespace verse_interpreter.lib.ParseVisitors
             // Get the single variable from the list
             DeclarationResult declarationResult = new DeclarationResult();
             declarationResult.IndexedVariable = variables[indexNumber];
-            declarationResult.TypeName = variables[indexNumber].Value.TypeName;
+            declarationResult.TypeName = variables[indexNumber].Value.TypeData.Name;
 
             // Get the value of the variable depending on its variable type
             return _typeInferencer.InferGivenType(declarationResult);

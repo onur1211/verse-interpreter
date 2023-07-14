@@ -134,14 +134,14 @@ namespace verse_interpreter.lib.Parser
                 if (indexedVar.Value.IntValue != null)
                 {
                     declarationResult.Value = declarationResult.IndexedVariable.Value.IntValue.ToString();
-                    declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                    declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
                     return declarationResult;
                 }
 
                 if (indexedVar.Value.StringValue != null)
                 {
                     declarationResult.Value = declarationResult.IndexedVariable.Value.StringValue;
-                    declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                    declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
                     return declarationResult;
                 }
 
