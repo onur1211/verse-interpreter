@@ -62,11 +62,11 @@ namespace verse_interpreter.lib
 
 		private DeclarationResult IsCustomType(DeclarationResult declarationResult)
         {
-            if (declarationResult.DynamicType == null)
+            if (declarationResult.CustomType == null)
             {
                 return declarationResult;
             }
-            declarationResult.TypeName = declarationResult.DynamicType.Name;
+            declarationResult.TypeName = declarationResult.CustomType.Name;
 
 			if (!_state.Types.ContainsKey(declarationResult.TypeName) && !_state.WellKnownTypes.Any(x => x.Name == declarationResult.TypeName))
 			{

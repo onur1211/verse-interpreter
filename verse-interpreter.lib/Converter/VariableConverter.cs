@@ -14,14 +14,14 @@ namespace verse_interpreter.lib.Converter
     {
         public static Variable Convert(DeclarationResult declarationResult)
         {
-            // Pattern match the type. # functional programming
-            // object oriented programming sucks
+            // Pattern match the type. functional programming <3
+            // => object oriented programming sucks
             return declarationResult.TypeName switch
             {
                 "int" => HandleIntVariables(declarationResult),
                 "string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.Value)),
                 "collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
-                _ => HandleDynamicType(declarationResult)
+                _ => HandleCustomType(declarationResult)
             };
         }
 
@@ -37,9 +37,9 @@ namespace verse_interpreter.lib.Converter
             }
         }
 
-        private static Variable HandleDynamicType(DeclarationResult declarationResult)
+        private static Variable HandleCustomType(DeclarationResult declarationResult)
         {
-            return new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.DynamicType!));
+            return new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CustomType!));
         }
     }
 }

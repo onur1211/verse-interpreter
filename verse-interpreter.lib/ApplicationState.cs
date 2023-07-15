@@ -9,7 +9,7 @@ namespace verse_interpreter.lib
 	public class ApplicationState
 	{
 		public Dictionary<int, IScope<Variable>> Scopes { get; set; }
-		public Dictionary<string, DynamicType> Types { get; set; }
+		public Dictionary<string, CustomType> Types { get; set; }
 
 		public List<Function> PredefinedFunctions { get; set; }
 
@@ -22,7 +22,7 @@ namespace verse_interpreter.lib
 				{ 1, new CurrentScope(1) }
 			};
 
-			Types = new Dictionary<string, DynamicType>();
+			Types = new Dictionary<string, CustomType>();
 			Functions = new Dictionary<string, Function>();
 
 			CurrentScopeLevel = 1;
@@ -31,7 +31,7 @@ namespace verse_interpreter.lib
 			{
 				new TypeData("int"),
 				new TypeData("string"),
-				new TypeData("dynamic"),
+				new TypeData("custom"),
 				new TypeData("collection")
 			};
 

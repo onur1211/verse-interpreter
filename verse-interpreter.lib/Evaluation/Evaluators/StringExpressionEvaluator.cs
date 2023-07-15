@@ -96,7 +96,7 @@ namespace verse_interpreter.lib.Evaluators
                     if (!string.IsNullOrEmpty(subExpression.ValueIdentifier) && subExpression.ValueIdentifier.Contains('.'))
                     {
                         var identfieres = subExpression.ValueIdentifier.Split('.');
-                        var instanceVariable = _applicationState.CurrentScope.LookupManager.GetVariable(identfieres[0]).Value.DynamicType;
+                        var instanceVariable = _applicationState.CurrentScope.LookupManager.GetVariable(identfieres[0]).Value.CustomType;
                         string result = _applicationState.CurrentScope.LookupManager.GetMemberVariable(instanceVariable, identfieres[0], identfieres[1]).Value.StringValue;
                         if (result == null)
                         {

@@ -19,9 +19,9 @@ namespace verse_interpreter.lib.Data
 			this.IntValue = intValue;
 		}
 
-		public ValueObject(string typeName, DynamicType dynamicType) : this(typeName)
+		public ValueObject(string typeName, CustomType customType) : this(typeName)
 		{
-			this.DynamicType = dynamicType;
+			this.CustomType = customType;
 		}
 
 		public ValueObject(string typeName, VerseCollection collectionVariable) : this(typeName)
@@ -35,7 +35,7 @@ namespace verse_interpreter.lib.Data
 
 		public int? IntValue { get; set; } = null;
 
-		public DynamicType? DynamicType { get; set; } = null!;
+		public CustomType? CustomType { get; set; } = null!;
 
 		public VerseCollection CollectionVariable { get; set; } = null!;
 	}

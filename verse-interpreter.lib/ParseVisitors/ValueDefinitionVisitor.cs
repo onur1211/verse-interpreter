@@ -88,7 +88,7 @@ namespace verse_interpreter.lib.ParseVisitors
             DeclarationResult declarationResult = new DeclarationResult
             {
                 TypeName = typeInstance.Name,
-                DynamicType = typeInstance
+                CustomType = typeInstance
             };
 
             return _typeInferencer.InferGivenType(declarationResult);
@@ -110,13 +110,13 @@ namespace verse_interpreter.lib.ParseVisitors
 
         public override DeclarationResult VisitType_member_access(Verse.Type_member_accessContext context)
         {
-            DeclarationResult   declarationResult = new DeclarationResult();
+            DeclarationResult declarationResult = new DeclarationResult();
             var result = _memberVisitor.Value.Visit(context);
             var variable = _resolver.ResolveProperty(result.AbsoluteCall);
 
             declarationResult.TypeName = variable.Value.TypeData.Name;
             declarationResult.CollectionVariable = variable.Value.CollectionVariable;
-            declarationResult.DynamicType = variable.Value.DynamicType;
+            declarationResult.CustomType = variable.Value.CustomType;
             declarationResult.Value =
                 variable!.Value.TypeData.Name == "int" ? variable!.Value.IntValue.ToString() : variable!.Value.StringValue;
 
