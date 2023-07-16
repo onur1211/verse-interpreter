@@ -11,7 +11,7 @@ declaration : ID ':' type
             ;
 
 
-value_definition : (INT | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
+value_definition : (INT | ID | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
                  ;
                  
 

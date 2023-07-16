@@ -27,6 +27,36 @@ namespace verse_interpreter.lib.Converter
             };
         }
 
+        public static DeclarationResult ConvertBack(Variable variable)
+        {
+            switch (variable.Value.TypeData.Name)
+            {
+                case "int":
+                    return new DeclarationResult()
+                    {
+                        CustomType = variable.Value.CustomType,
+                        Value = variable.Value.IntValue.ToString(),
+                        TypeName = variable.Value.TypeData.Name,
+                    };
+
+                case "string":
+                    return new DeclarationResult()
+                    {
+                        CustomType = variable.Value.CustomType,
+                        Value = variable.Value.StringValue,
+                        TypeName = variable.Value.TypeData.Name,
+                    };
+
+                default:
+                    return new DeclarationResult()
+                    {
+                        CustomType = variable.Value.CustomType,
+                        CollectionVariable = variable.Value.CollectionVariable,
+                        TypeName = variable.Value.TypeData.Name,
+                    };
+            }
+        }
+
         private static Variable HandleIntVariables(DeclarationResult declarationResult)
         {
             if (declarationResult.Value == null)
