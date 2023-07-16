@@ -30,6 +30,7 @@ namespace verse_interpreter.lib
             {
                 throw new ArgumentNullException("The specified input object is null!");
             }
+
             if(declarationResult.TypeName != "undefined")
             {
                 return declarationResult;
@@ -38,7 +39,6 @@ namespace verse_interpreter.lib
             IsNumber(declarationResult);
             IsCustomType(declarationResult);
             IsCollection(declarationResult);
-
 
             return declarationResult;
         }
@@ -66,6 +66,7 @@ namespace verse_interpreter.lib
             {
                 return declarationResult;
             }
+
             declarationResult.TypeName = declarationResult.CustomType.Name;
 
 			if (!_state.Types.ContainsKey(declarationResult.TypeName) && !_state.WellKnownTypes.Any(x => x.Name == declarationResult.TypeName))
@@ -81,6 +82,10 @@ namespace verse_interpreter.lib
             if (declarationResult.CollectionVariable == null)
             {
                 return declarationResult;
+            }
+            else
+            {
+                declarationResult.TypeName = "collection";
             }
 
             return declarationResult;

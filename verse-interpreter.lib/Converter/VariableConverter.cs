@@ -20,6 +20,8 @@ namespace verse_interpreter.lib.Converter
             {
                 "int" => HandleIntVariables(declarationResult),
                 "string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.Value)),
+                "int[]" => HandleExplicitCollectionVariables(declarationResult, "int"),
+                "string[]" => HandleExplicitCollectionVariables(declarationResult, "string"),
                 "collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
                 _ => HandleCustomType(declarationResult)
             };
@@ -35,6 +37,19 @@ namespace verse_interpreter.lib.Converter
             {
                 return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName, int.Parse(declarationResult.Value)));
             }
+        }
+
+        private static Variable HandleExplicitCollectionVariables(DeclarationResult declarationResult, string elementsInCollectionType)
+        {
+            // Currently the expliciti collection types like int[] or string[] are just converted and handled as normal collections.
+            declarationResult.TypeName = "collection";
+
+            if (declarationResult.CollectionVariable == null)
+            {
+                return new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable));
+            }
+
+            return new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable));
         }
 
         private static Variable HandleCustomType(DeclarationResult declarationResult)

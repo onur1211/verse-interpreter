@@ -106,10 +106,13 @@ constructor_body : INSTANCE ID '('')'
                  ;
 
 type_header : DATA ID '=' ID NEWLINE '{' type_body NEWLINE '}'
+            | DATA ID '=' ID '{' type_body '}'
             ;
             
 type_body : NEWLINE INDENT declaration
           | NEWLINE INDENT declaration type_body
+          | declaration ',' type_body
+          | declaration
           ;
    
 type_member_definition : type_member_access '=' value_definition
@@ -176,5 +179,5 @@ primary
     ;
 
 
-type : (INTTYPE | STRINGTYPE | ID | VOID ) ;
+type : (INTTYPE | STRINGTYPE | COLLECTIONTYPE | ID | VOID ) ;
 operator : ('*' | '/' |'-'|'+'| '>' | '<' | '|' | '=');

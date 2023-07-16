@@ -25,32 +25,32 @@ namespace verse_interpreter.lib.Lookup
         public void AddVariable(Variable variable)
         {
             // Check if variable is already in a lookup table (which means the variable was already declared once).
-            // If true then throw exception.
-            if (IsVariable(variable.Name) && this.lookupTable.Table[variable.Name].Value.TypeData.Name == variable.Value.TypeData.Name)
+            // If true then update the value of the variable.
+            if (IsVariable(variable.Name))
             {
                 this.UpdateVariable(variable);
                 return;
             }
+
             if (!variable.HasValue())
             {
                 this.valueLessVariables.Add(variable.Name);
             }
 
-            // Add variable to table.
+            // Add the new variable to table.
             this.lookupTable.Table.Add(variable.Name, variable);
             this.FireVariableBound(variable);
         }
 
-
-
         public void UpdateVariable(Variable variable)
         {
-            // Check if variable is in the lookupn table.
+            // Check if variable is in the lookup table.
             // If false then throw exception.
             if (!IsVariable(variable.Name))
             {
                 throw new VariableDoesNotExistException(variable.Name);
             }
+
             if (variable.HasValue())
             {
                 this.valueLessVariables.Remove(variable.Name);
@@ -59,7 +59,7 @@ namespace verse_interpreter.lib.Lookup
                 return;
             }
 
-            // Replace old entry with new one.
+            // Replace old variable entry with new one.
             this.lookupTable.Table[variable.Name] = variable;
         }
 

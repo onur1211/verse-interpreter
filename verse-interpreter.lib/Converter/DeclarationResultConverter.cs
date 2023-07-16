@@ -13,11 +13,13 @@ namespace verse_interpreter.lib.Converter
 		public static DeclarationResult ConvertFunctionResult(FunctionCallResult result)
 		{
 			DeclarationResult declarationResult = new DeclarationResult();
+
 			if(result.ArithmeticExpression != null)
 			{
 				declarationResult.Value = result.ArithmeticExpression.ResultValue.ToString()!;
 				declarationResult.TypeName = "int";
 			}
+
 			if (result.StringExpression != null)
 			{
 				declarationResult.Value = result.StringExpression.Value;

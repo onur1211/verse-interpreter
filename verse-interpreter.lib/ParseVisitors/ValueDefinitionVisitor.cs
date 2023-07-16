@@ -47,6 +47,7 @@ namespace verse_interpreter.lib.ParseVisitors
         public override DeclarationResult VisitValue_definition([NotNull] Verse.Value_definitionContext context)
         {
             var maybeInt = context.INT();
+
             if(maybeInt != null)
             {
                 return new DeclarationResult()
@@ -63,6 +64,7 @@ namespace verse_interpreter.lib.ParseVisitors
         {
             // Instead of a big if, lets use the visitor to determine which kind of value definition it actually is.
             var declarationResult = context.children.First().Accept(this);
+
             if (declarationResult == null)
             {
                 throw new NotImplementedException();
@@ -78,6 +80,7 @@ namespace verse_interpreter.lib.ParseVisitors
                 Value = context.SEARCH_TYPE().GetText().Replace("\"", ""),
                 TypeName = "string"
             };
+
             return _typeInferencer.InferGivenType(declarationResult);
         }
 
@@ -129,12 +132,16 @@ namespace verse_interpreter.lib.ParseVisitors
             DeclarationResult rangeExpressionResult = new DeclarationResult();
             var result = _collectionParser.GetParameters(context.array_elements());
 
+            // Check if there are value elements in the collection
+            // Example: myArray:=(1,2,3) => 1,2 and 3 are value elements
             if (result.ValueElements != null)
             {
                 foreach (var valueDef in result.ValueElements)
                 {
+                    // Accept the range expression
                     rangeExpressionResult = valueDef.Accept(this);
 
+                    // Check if there is a range expression
                     if (rangeExpressionResult.CollectionVariable != null) 
                     {
                         continue;
@@ -145,6 +152,8 @@ namespace verse_interpreter.lib.ParseVisitors
                 }
             }
 
+            // Check if there are declaration elements in the collection
+            // Example: myArray:=(x:=1,2) => x:=1 is a declaration element
             if (result.DeclarationElements != null)
             {
                 foreach (var declDef in result.DeclarationElements)
@@ -154,6 +163,8 @@ namespace verse_interpreter.lib.ParseVisitors
                 }
             }
 
+            // Check if there are variable elements in the collection
+            // Example: x:=1; y:=2; myArray:=(x,y) => x and y are variable elements
             if (result.VariableElements != null)
             {
                 foreach (var variable in result.VariableElements)
@@ -164,7 +175,6 @@ namespace verse_interpreter.lib.ParseVisitors
             }
 
             DeclarationResult declarationResult = new DeclarationResult();
-            declarationResult.TypeName = "collection";
             declarationResult.CollectionVariable = new VerseCollection(variables);
 
             if (rangeExpressionResult.CollectionVariable != null)
@@ -295,7 +305,6 @@ namespace verse_interpreter.lib.ParseVisitors
             }
 
             DeclarationResult declarationResult = new DeclarationResult();
-            declarationResult.TypeName = "collection";
             declarationResult.CollectionVariable = new VerseCollection(anonymVariables);
             declarationResult.CollectionVariable.Values = anonymVariables;
 
