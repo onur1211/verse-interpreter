@@ -171,6 +171,7 @@ primary
     | ID
     | array_index
     | INT
+    | NOVALUE
     | string_rule
     | '(' expression ')'
     ;

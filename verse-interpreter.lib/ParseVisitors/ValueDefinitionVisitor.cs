@@ -62,20 +62,20 @@ namespace verse_interpreter.lib.ParseVisitors
             var maybeInt = context.INT();
             var maybeNoValue = context.NOVALUE();
 
-            if(maybeInt != null)
-            {
-                return new DeclarationResult()
-                {
-                    Value = maybeInt.GetText(),
-                    TypeName = "int"
-                };
-            }
-
             if (maybeNoValue != null)
             {
                 return new DeclarationResult()
                 {
                     TypeName = "false?"
+                };
+            }
+
+            if (maybeInt != null)
+            {
+                return new DeclarationResult()
+                {
+                    Value = maybeInt.GetText(),
+                    TypeName = "int"
                 };
             }
 
@@ -137,6 +137,12 @@ namespace verse_interpreter.lib.ParseVisitors
                 declarationResult.Value = y.Result.Value;
                 declarationResult.TypeName = "string";
             };
+            _evaluator.ExpressionWithNoValueFound += (x, y) =>
+            {
+                declarationResult.ExpressionResults = null;
+                declarationResult.TypeName = "false?";
+            };
+
             _evaluator.ExecuteExpression(expression);
             return declarationResult;
         }

@@ -11,6 +11,7 @@ namespace verse_interpreter.lib.Parser
             // Checks if the there are any subexpressions --> due to brackets for instance
             // Fetches the value / identifer from the current node
             var fetchedValue = context.INT();
+            var fetchedNoValue = context.NOVALUE();
             var fetchedIdentifier = context.ID();
             var fetchedMemberAccess = context.type_member_access();
             var fetchedString = context.string_rule();
@@ -22,23 +23,33 @@ namespace verse_interpreter.lib.Parser
                 result.TypeName = "int";
                 return result;
             }
+
+            if (fetchedNoValue != null) 
+            {
+                result.TypeName = "false?";
+                return result;
+            }
+
             if (fetchedIdentifier != null)
             {
                 result.ValueIdentifier = fetchedIdentifier.GetText();
                 return result;
 
             }
+
             if (fetchedMemberAccess != null)
             {
                 result.ValueIdentifier = fetchedMemberAccess.GetText();
                 return result;
             }
+
             if(fetchedString != null)
             {
                 result.StringValue = fetchedString.GetText();
                 result.TypeName = "string";
                 return result;
             }
+
             if (fetchedArrayAccess != null)
             {
                 result.ValueIdentifier =  fetchedArrayAccess.GetText();

@@ -45,13 +45,6 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
                 // Substitute variable values with their corresponding integer values
                 var exp = SubstituteValues(expression);
 
-                // Check if false? is contained in the expression
-                // and return only false? as a result
-                if(exp.Any(x => x.TypeName == "false?"))
-                {
-
-                }
-
                 // Check the number of expression items
                 if (exp.Count == 3)
                 {

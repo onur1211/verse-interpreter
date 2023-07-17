@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
@@ -27,8 +28,12 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         }
 
         public event EventHandler<ArithmeticExpressionResolvedEventArgs>? ArithmeticExpressionResolved;
+
         public event EventHandler<StringExpressionResolvedEventArgs>? StringExpressionResolved;
+
         public event EventHandler<ComparisonExpressionResolvedEventArgs>? ComparisonExpressionResolved;
+
+        public event EventHandler<ExpressionWithNoValueFoundEventArgs>? ExpressionWithNoValueFound;
 
         public BackpropagationEventSystem Propagator => _propagator;
 
@@ -38,7 +43,16 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             {
                 throw new InvalidTypeCombinationException("The given expression contains multiple types!");
             }
+
             var typeName = _expressionValidator.GetExpressionType(expressions);
+
+            // Check if false? is contained anywhere in the expression
+            // and invoke the event for the value definition visitor.
+            if (expressions.Any(x => x.Any(y => y.TypeName == "false?")))
+            {
+                ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
+                return;
+            }
 
             switch (typeName)
             {
@@ -49,6 +63,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 case "int":
                     HandleArithmeticExpression(expressions, identifier);
                     break;
+
                 case "comparison":
                     HandleComparisonExpression(expressions, identifier);
                     break;
@@ -62,6 +77,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         {
             var result = _evaluatorWrapper.ComparisonEvaluator.Evaluate(expressions);
 
+            if (result == null)
+            {
+                return;
+            }
+
             if (result.PostponedExpression != null)
             {
                 _propagator.AddExpression(result);
@@ -74,6 +94,12 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         private void HandleStringExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
             var result = _evaluatorWrapper.StringEvaluator.Evaluate(expressions);
+
+            if (result == null)
+            {
+                return;
+            }
+
             if(result.PostponedExpression != null && identifier != null)
             {
                 _propagator.AddExpression(identifier, result);
@@ -91,11 +117,18 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         private void HandleArithmeticExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
             var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
+
+            if (result == null)
+            {
+                return;
+            }
+
             if (result.PostponedExpression != null && identifier != null)
             {
                 _propagator.AddExpression(identifier, result);
                 return;
             }
+
             if (result.PostponedExpression != null)
             {
                 _propagator.AddExpression(result);
