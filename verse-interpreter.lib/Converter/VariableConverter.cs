@@ -26,7 +26,6 @@ namespace verse_interpreter.lib.Converter
 				_ => HandleCustomType(declarationResult)
 			};
 		}
-
 		private static Variable HandleIntVariables(DeclarationResult declarationResult)
 		{
 			if (declarationResult.IndexedVariable != null && declarationResult.Name == null)
@@ -42,6 +41,35 @@ namespace verse_interpreter.lib.Converter
 				return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName, int.Parse(declarationResult.Value)));
 			}
 		}
+        public static DeclarationResult ConvertBack(Variable variable)
+        {
+            switch (variable.Value.TypeData.Name)
+            {
+                case "int":
+                    return new DeclarationResult()
+                    {
+                        CustomType = variable.Value.CustomType,
+                        Value = variable.Value.IntValue.ToString(),
+                        TypeName = variable.Value.TypeData.Name,
+                    };
+
+                case "string":
+                    return new DeclarationResult()
+                    {
+                        CustomType = variable.Value.CustomType,
+                        Value = variable.Value.StringValue,
+                        TypeName = variable.Value.TypeData.Name,
+                    };
+
+                default:
+                    return new DeclarationResult()
+                    {
+                        CustomType = variable.Value.CustomType,
+                        CollectionVariable = variable.Value.CollectionVariable,
+                        TypeName = variable.Value.TypeData.Name,
+                    };
+            }
+        }
 
 		private static Variable HandleExplicitCollectionVariables(DeclarationResult declarationResult, string elementsInCollectionType)
 		{

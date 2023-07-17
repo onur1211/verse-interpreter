@@ -47,14 +47,29 @@ namespace verse_interpreter.lib.ParseVisitors
         public override DeclarationResult VisitValue_definition([NotNull] Verse.Value_definitionContext context)
         {
             var maybeInt = context.INT();
+            var maybeID = context.ID();
 
-            if(maybeInt != null)
+            // Check if the value is a number
+            if (maybeInt != null)
             {
                 return new DeclarationResult()
                 {
                     Value = maybeInt.GetText(),
                     TypeName = "int"
                 };
+            }
+
+            // Check if the value is a ID which is a variable name
+            if (maybeID != null)
+            {
+                // Get the variable name
+                var variableName = maybeID.GetText();
+
+                // Get the actual variable intance from the lookup table
+                Variable variable = _resolver.ResolveProperty(variableName);
+
+                // Convert the variable back to a declaration result
+                return VariableConverter.ConvertBack(variable);
             }
 
             return HandleValueAssignment(context);

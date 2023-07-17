@@ -1,1 +1,1 @@
-myArray:int; myArray:string; myArray=(1,2,3)
+
