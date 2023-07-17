@@ -128,14 +128,14 @@ namespace verse_interpreter.lib.Parser
                 return declarationResult;
             }
 
-            if(declarationResult.IndexedVariable.Value.StringValue != null)
+            if (declarationResult.IndexedVariable.Value.StringValue != null)
             {
                 declarationResult.Value = declarationResult.IndexedVariable.Value.StringValue;
                 declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
                 return declarationResult; 
             }
 
-            if(declarationResult.CollectionVariable.Values != null)
+            if (declarationResult.CollectionVariable.Values != null)
             {
                 declarationResult.CollectionVariable = new VerseCollection(declarationResult.CollectionVariable.Values);
                 declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;

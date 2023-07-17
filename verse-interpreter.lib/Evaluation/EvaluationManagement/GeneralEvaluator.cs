@@ -15,14 +15,17 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
     public class GeneralEvaluator
     {
         private readonly EvaluatorWrapper _evaluatorWrapper;
+        private readonly PropertyResolver _propertyResolver;
         private readonly BackpropagationEventSystem _propagator;
         private readonly ExpressionValidator _expressionValidator;
 
         public GeneralEvaluator(EvaluatorWrapper evaluatorWrapper,
+                                PropertyResolver propertyResolver,
                                 BackpropagationEventSystem propagator,
                                 ExpressionValidator expressionValidator)
         {
             _evaluatorWrapper = evaluatorWrapper;
+            _propertyResolver = propertyResolver;
             _propagator = propagator;
             _expressionValidator = expressionValidator;
         }
@@ -39,13 +42,6 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
         public void ExecuteExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
-            if (!_expressionValidator.IsTypeConformityGiven(expressions))
-            {
-                throw new InvalidTypeCombinationException("The given expression contains multiple types!");
-            }
-
-            var typeName = _expressionValidator.GetExpressionType(expressions);
-
             // Check if false? is contained anywhere in the expression
             // and invoke the event for the value definition visitor.
             if (expressions.Any(x => x.Any(y => y.TypeName == "false?")))
@@ -53,6 +49,34 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
                 return;
             }
+
+            // Check if a collection (example: myArray[0]) 
+            // and invoke the event for the value definition visitor.
+            if (expressions.Any(x => x.Any(y => y.TypeName == "collection")))
+            {
+                var filteredList = expressions.Where(x => x.Any(y => y.TypeName == "collection"));
+
+                foreach (var expression in filteredList)
+                {
+                    var arrayIndex = expression.Where(x => x.TypeName == "collection");
+
+                    foreach (var value in arrayIndex)
+                    {
+                        if (_propertyResolver.ResolveProperty(value.ValueIdentifier).Value.TypeName == "false?")
+                        {
+                            ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
+                            return;
+                        }
+                    }
+                }
+            }
+
+            if (!_expressionValidator.IsTypeConformityGiven(expressions))
+            {
+                throw new InvalidTypeCombinationException("The given expression contains multiple types!");
+            }
+
+            var typeName = _expressionValidator.GetExpressionType(expressions);
 
             switch (typeName)
             {
@@ -100,7 +124,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 return;
             }
 
-            if(result.PostponedExpression != null && identifier != null)
+            if (result.PostponedExpression != null && identifier != null)
             {
                 _propagator.AddExpression(identifier, result);
                 return;
