@@ -146,7 +146,6 @@ namespace verse_interpreter.lib.ParseVisitors
             List<Variable> variables = new List<Variable>();
             DeclarationResult rangeExpressionResult = new DeclarationResult();
             var result = _collectionParser.GetParameters(context.array_elements());
-
             // Check if there are value elements in the collection
             // Example: myArray:=(1,2,3) => 1,2 and 3 are value elements
             if (result.ValueElements != null)
