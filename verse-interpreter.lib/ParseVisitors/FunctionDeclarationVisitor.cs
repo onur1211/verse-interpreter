@@ -19,22 +19,43 @@ namespace verse_interpreter.lib.ParseVisitors
             this.bodyParser = bodyParser;
         }
 
-        public override Function VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
-        {
-            var name = context.ID();
-            var type = context.type();
+		public override Function VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
+		{
+			return base.VisitFunction_definition(context);
+		}
 
-            var parameter = context.function_param().param_def_item();
-            var functionDeclarationResult = new Function()
-            {
-                FunctionName = name.GetText(),
-                ReturnType = type.GetText(),
-            };
-            var parameterResult = functionDeclarationParser.GetDefinitionParameters(parameter);
-            functionDeclarationResult.Parameters = parameterResult.Parameters;
-            functionDeclarationResult.FunctionBody = bodyParser.GetBody(context.body());
+		public override Function VisitLambdaFunc([NotNull] Verse.LambdaFuncContext context)
+		{
+			var name = context.ID();
 
-            return functionDeclarationResult;
-        }
-    }
+			var parameter = context.param_def_item();
+			var functionDeclarationResult = new Function()
+			{
+				FunctionName = name.GetText(),
+			};
+			var parameterResult = functionDeclarationParser.GetDefinitionParameters(parameter);
+			functionDeclarationResult.Parameters = parameterResult.Parameters;
+			functionDeclarationResult.FunctionBody = bodyParser.GetBody(context.body());
+
+			return functionDeclarationResult;
+		}
+
+		public override Function VisitFunc([NotNull] Verse.FuncContext context)
+		{
+			var name = context.ID();
+			var type = context.type();
+
+			var parameter = context.function_param().param_def_item();
+			var functionDeclarationResult = new Function()
+			{
+				FunctionName = name.GetText(),
+				ReturnType = type.GetText(),
+			};
+			var parameterResult = functionDeclarationParser.GetDefinitionParameters(parameter);
+			functionDeclarationResult.Parameters = parameterResult.Parameters;
+			functionDeclarationResult.FunctionBody = bodyParser.GetBody(context.body());
+
+			return functionDeclarationResult;
+		}
+	}
 }

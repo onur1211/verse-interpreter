@@ -84,8 +84,10 @@ function_call: ID '(' param_call_item ')'
              | ID '(' ')'
              ;
 
-function_definition : ID function_param ':' type NEWLINE* '{' NEWLINE* body NEWLINE*'}'
+function_definition : ID function_param ':' type NEWLINE* '{' NEWLINE* body NEWLINE*'}' #func
+                    | ID ':=' '(' param_def_item '=>' body ')' #lambdaFunc
                     ;
+
                      
 function_param : '(' ')'
                | '(' param_def_item ')'

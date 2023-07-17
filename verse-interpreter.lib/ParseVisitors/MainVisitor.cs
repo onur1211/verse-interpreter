@@ -133,5 +133,19 @@ namespace verse_interpreter.lib.ParseVisitors
 			}
 			return null!;
 		}
+
+		public override object VisitLambdaFunc([NotNull] Verse.LambdaFuncContext context)
+		{
+			var res = _functionWrapper.FunctionDeclarationVisitor.Visit(context);
+			ApplicationState.AddFunction(res);
+			return null!;
+		}
+
+		public override object VisitFunc([NotNull] Verse.FuncContext context)
+		{
+			var res = _functionWrapper.FunctionDeclarationVisitor.Visit(context);
+			ApplicationState.AddFunction(res);
+			return null!;
+		}
 	}
 }
