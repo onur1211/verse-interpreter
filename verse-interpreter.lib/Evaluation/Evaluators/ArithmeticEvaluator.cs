@@ -28,6 +28,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
             // Remove any empty lists from the input
             
             ArithmeticExpression lastExpression = new ArithmeticExpression();
+
             if (!AreVariablesBoundToValue(input))
             {
                 // If there are still unbound values in the expression, store it for later until the values are given
@@ -69,7 +70,6 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
                 {
                     lastExpression = BuildSimpleComposedExpression(lastExpression, expression);
                 }
-                //Console.WriteLine($"{lastExpression.StringRepresentation} | {input.IndexOf(expression)}");
             }
 
             // If the result value of the last expression is not set, evaluate the string representation

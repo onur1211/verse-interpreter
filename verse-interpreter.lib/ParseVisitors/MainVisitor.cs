@@ -48,6 +48,12 @@ namespace verse_interpreter.lib.ParseVisitors
 				return;
 			}
 
+      if (declaredVariable.Value.TypeName != "undefined")
+      {
+         ApplicationState.CurrentScope.AddScopedVariable(declaredVariable);
+         return;
+      }
+       
 			Printer.PrintResult(e.Result);
 		}
 
@@ -60,7 +66,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			}
 
 			Printer.PrintResult(e.Result);
-        }
+     }
 
 		private void FunctionRequestedExecutionCallback(object? sender, FunctionRequestedExecutionEventArgs e)
 		{
@@ -92,6 +98,17 @@ namespace verse_interpreter.lib.ParseVisitors
 			_generalEvaluator.ExecuteExpression(res);
 			return null!;
 		}
+
+    public override object VisitIf_block(Verse.If_blockContext context)
+    {
+           var result =  _ifExpressionVisitor.Visit(context);
+           foreach (var value in result)
+           {
+               value.Accept(this);
+           }
+           return null!;
+        }
+    }
 
 		public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
 		{

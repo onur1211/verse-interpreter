@@ -10,10 +10,9 @@ declaration : ID ':' type
             | ID '=' array_literal
             ;
 
-
-value_definition : (INT | ID | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
+value_definition : (INT | NOVALUE | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
                  ;
-                 
+
 
 program : function_definition program
         | declaration program
@@ -174,10 +173,10 @@ primary
     | ID
     | array_index
     | INT
+    | NOVALUE
     | string_rule
     | '(' expression ')'
     ;
 
-
-type : (INTTYPE | STRINGTYPE | COLLECTIONTYPE | ID | VOID ) ;
+type : (INTTYPE | STRINGTYPE | ID | VOID ) ;
 operator : ('*' | '/' |'-'|'+'| '>' | '<' | '|' | '=');

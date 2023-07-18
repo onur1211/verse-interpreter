@@ -24,15 +24,14 @@ namespace verse_interpreter.lib
 
 			Types = new Dictionary<string, CustomType>();
 			Functions = new Dictionary<string, Function>();
-
 			CurrentScopeLevel = 1;
-
 			WellKnownTypes = new List<TypeData>()
 			{
 				new TypeData("int"),
 				new TypeData("string"),
 				new TypeData("int[]"),
 				new TypeData("string[]"),
+        new TypeData("false?"),
 				new TypeData("custom"),
 				new TypeData("collection")
 			};

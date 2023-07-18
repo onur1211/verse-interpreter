@@ -40,9 +40,15 @@ public class PredefinedFunctionEvaluator
         {
             function.StatelessFunctionCall.Invoke(parameter.Parameters[0].Value.StringValue);
         }
+
         if (parameter.Parameters[0].Value.IntValue != null)
         {
             function.StatelessFunctionCall.Invoke(parameter.Parameters[0].Value.IntValue.ToString());
+        }
+
+        if (parameter.Parameters[0].Value.TypeName == "false?")
+        {
+            function.StatelessFunctionCall.Invoke("false?");
         }
     }
 }

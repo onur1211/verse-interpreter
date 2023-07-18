@@ -47,7 +47,16 @@ namespace verse_interpreter.lib.ParseVisitors
         public override DeclarationResult VisitValue_definition([NotNull] Verse.Value_definitionContext context)
         {
             var maybeInt = context.INT();
+            var maybeNoValue = context.NOVALUE();
             var maybeID = context.ID();
+
+            if (maybeNoValue != null)
+            {
+                return new DeclarationResult()
+                {
+                    TypeName = "false?"
+                };
+            }
 
             // Check if the value is a number
             if (maybeInt != null)
@@ -116,7 +125,31 @@ namespace verse_interpreter.lib.ParseVisitors
         {
             var expression = _expressionVisitor.Visit(context);
 
-            return _expressionValueParser.ParseExpression(expression);
+            _expressionVisitor.Clean();
+            DeclarationResult declarationResult = new DeclarationResult
+            {
+                ExpressionResults = expression
+            };
+            _evaluator.ArithmeticExpressionResolved += (x,y) =>
+            {
+                declarationResult.Value = y.Result.ResultValue.ToString()!;
+                declarationResult.ExpressionResults = null;
+                declarationResult.TypeName = "int";
+            };
+            _evaluator.StringExpressionResolved += (x, y) =>
+            {
+                declarationResult.ExpressionResults = null;
+                declarationResult.Value = y.Result.Value;
+                declarationResult.TypeName = "string";
+            };
+            _evaluator.ExpressionWithNoValueFound += (x, y) =>
+            {
+                declarationResult.ExpressionResults = null;
+                declarationResult.TypeName = "false?";
+            };
+
+            _evaluator.ExecuteExpression(expression);
+            return declarationResult;
         }
 
         public override DeclarationResult VisitFunction_call(Verse.Function_callContext context)
@@ -330,17 +363,20 @@ namespace verse_interpreter.lib.ParseVisitors
             // Get the list of variables in the array and parse the index string to a number
             var variables = array.Value.CollectionVariable.Values;
             int indexNumber = int.Parse(index);
+            DeclarationResult declarationResult = new DeclarationResult();
 
             // Check if the index is valid
+            // If not then return false? as value
             if (indexNumber < 0 || indexNumber >= variables.Count)
             {
-                throw new ArgumentOutOfRangeException(nameof(indexNumber), "Error: The given index value was invalid!");
+                declarationResult.TypeName = "false?";
             }
-
-            // Get the single variable from the list
-            DeclarationResult declarationResult = new DeclarationResult();
-            declarationResult.IndexedVariable = variables[indexNumber];
-            declarationResult.TypeName = variables[indexNumber].Value.TypeData.Name;
+            else
+            {
+                // Get the single variable from the list
+                declarationResult.IndexedVariable = variables[indexNumber];
+                declarationResult.TypeName = variables[indexNumber].Value.TypeName;
+            }
 
             // Get the value of the variable depending on its variable type
             return _typeInferencer.InferGivenType(declarationResult);

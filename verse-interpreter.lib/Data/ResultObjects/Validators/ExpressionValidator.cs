@@ -75,6 +75,7 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
             {
                 return "comparison";
             }
+
             if (!string.IsNullOrEmpty(result.ValueIdentifier))
             {
                 return _resolver.ResolveProperty(result.ValueIdentifier).Value.TypeData.Name;

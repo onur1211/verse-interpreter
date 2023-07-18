@@ -54,7 +54,6 @@ namespace verse_interpreter.lib
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
 			Console.ReadKey();
 		}
-
         private void RunWithErrorHandling(string[] args)
         {
             try
@@ -75,17 +74,18 @@ namespace verse_interpreter.lib
                 var mainVisitor = _services.GetRequiredService<MainVisitor>();
                 mainVisitor.VisitProgram(parseTree);
                 var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
+                Console.ReadKey();
             }
             catch (Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("Error: " + ex.Message);
                 Console.ResetColor();
+                Printer.PrintResult("false?");
             }
-
         }
-
-        private CommandLineOptions GetPath(string[] args)
+  
+    private CommandLineOptions GetPath(string[] args)
 		{
 			CommandLineOptions options = new CommandLineOptions();
 			string path = null;

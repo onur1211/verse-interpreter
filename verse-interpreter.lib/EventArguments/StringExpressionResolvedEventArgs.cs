@@ -2,7 +2,7 @@
 
 namespace verse_interpreter.lib.EventArguments
 {
-    public class StringExpressionResolvedEventArgs
+    public class StringExpressionResolvedEventArgs : EventArgs
     {
         public StringExpressionResolvedEventArgs(StringExpression result)
         {

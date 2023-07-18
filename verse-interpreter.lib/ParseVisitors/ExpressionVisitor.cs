@@ -59,6 +59,23 @@ namespace verse_interpreter.lib.ParseVisitors
 			Expressions = new List<List<ExpressionResult>>();
 		}
 
+    public override List<List<ExpressionResult>> VisitPrimary([Antlr4.Runtime.Misc.NotNull] Verse.PrimaryContext context)
+    {
+            var expressionContext = context.expression();
+
+            if (expressionContext != null)
+            {
+                this.VisitExpression(expressionContext);
+                _expressions.Add(new List<ExpressionResult>());
+                return null;
+            }
+
+            var expressionResult = _primaryRuleParser.ParsePrimary(context);    
+            // When the instance is finalized the event is triggered to append it to the final result set
+            this.ExpressionTerminalVisited?.Invoke(this, new ExpressionTerminalVisited(expressionResult));
+            return base.VisitChildren(context);
+    }
+    
 		public override List<List<ExpressionResult>> VisitTerm([Antlr4.Runtime.Misc.NotNull] Verse.TermContext context)
 		{
 			return base.VisitTerm(context);

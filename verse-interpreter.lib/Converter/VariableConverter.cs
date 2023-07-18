@@ -22,6 +22,7 @@ namespace verse_interpreter.lib.Converter
 				"string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.Value)),
 				"int[]" => HandleExplicitCollectionVariables(declarationResult, "int"),
 				"string[]" => HandleExplicitCollectionVariables(declarationResult, "string"),
+        "false?" => new Variable(declarationResult.Name, new(declarationResult.TypeName)),
 				"collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
 				_ => HandleCustomType(declarationResult)
 			};
@@ -43,8 +44,8 @@ namespace verse_interpreter.lib.Converter
 		}
         public static DeclarationResult ConvertBack(Variable variable)
         {
-            switch (variable.Value.TypeData.Name)
-            {
+          switch (variable.ValueObject.TypeData.Name)
+          {
                 case "int":
                     return new DeclarationResult()
                     {
@@ -60,6 +61,12 @@ namespace verse_interpreter.lib.Converter
                         Value = variable.Value.StringValue,
                         TypeName = variable.Value.TypeData.Name,
                     };
+              
+            case "false?":
+                    return new DeclarationResult()
+                    {
+                        TypeName = variable.Value.TypeData.Name,
+                    };
 
                 default:
                     return new DeclarationResult()
@@ -68,7 +75,7 @@ namespace verse_interpreter.lib.Converter
                         CollectionVariable = variable.Value.CollectionVariable,
                         TypeName = variable.Value.TypeData.Name,
                     };
-            }
+          }
         }
 
 		private static Variable HandleExplicitCollectionVariables(DeclarationResult declarationResult, string elementsInCollectionType)

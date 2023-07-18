@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
@@ -14,26 +15,62 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
     public class GeneralEvaluator
     {
         private readonly EvaluatorWrapper _evaluatorWrapper;
+        private readonly PropertyResolver _propertyResolver;
         private readonly BackpropagationEventSystem _propagator;
         private readonly ExpressionValidator _expressionValidator;
 
         public GeneralEvaluator(EvaluatorWrapper evaluatorWrapper,
+                                PropertyResolver propertyResolver,
                                 BackpropagationEventSystem propagator,
                                 ExpressionValidator expressionValidator)
         {
             _evaluatorWrapper = evaluatorWrapper;
+            _propertyResolver = propertyResolver;
             _propagator = propagator;
             _expressionValidator = expressionValidator;
         }
 
         public event EventHandler<ArithmeticExpressionResolvedEventArgs>? ArithmeticExpressionResolved;
+
         public event EventHandler<StringExpressionResolvedEventArgs>? StringExpressionResolved;
+
         public event EventHandler<ComparisonExpressionResolvedEventArgs>? ComparisonExpressionResolved;
+
+        public event EventHandler<ExpressionWithNoValueFoundEventArgs>? ExpressionWithNoValueFound;
 
         public BackpropagationEventSystem Propagator => _propagator;
 
         public void ExecuteExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
+            // Check if false? is contained anywhere in the expression
+            // and invoke the event for the value definition visitor.
+            if (expressions.Any(x => x.Any(y => y.TypeName == "false?")))
+            {
+                ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
+                return;
+            }
+
+            // Check if a collection (example: myArray[0]) 
+            // and invoke the event for the value definition visitor.
+            if (expressions.Any(x => x.Any(y => y.TypeName == "collection")))
+            {
+                var filteredList = expressions.Where(x => x.Any(y => y.TypeName == "collection"));
+
+                foreach (var expression in filteredList)
+                {
+                    var arrayIndex = expression.Where(x => x.TypeName == "collection");
+
+                    foreach (var value in arrayIndex)
+                    {
+                        if (_propertyResolver.ResolveProperty(value.ValueIdentifier).Value.TypeName == "false?")
+                        {
+                            ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
+                            return;
+                        }
+                    }
+                }
+            }
+
             if (!_expressionValidator.IsTypeConformityGiven(expressions))
             {
                 throw new InvalidTypeCombinationException("The given expression contains multiple types!");
@@ -50,6 +87,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 case "int":
                     HandleArithmeticExpression(expressions, identifier);
                     break;
+
                 case "comparison":
                     HandleComparisonExpression(expressions, identifier);
                     break;
@@ -63,6 +101,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         {
             var result = _evaluatorWrapper.ComparisonEvaluator.Evaluate(expressions);
 
+            if (result == null)
+            {
+                return;
+            }
+
             if (result.PostponedExpression != null)
             {
                 _propagator.AddExpression(result);
@@ -75,7 +118,13 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         private void HandleStringExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
             var result = _evaluatorWrapper.StringEvaluator.Evaluate(expressions);
-            if(result.PostponedExpression != null && identifier != null)
+
+            if (result == null)
+            {
+                return;
+            }
+
+            if (result.PostponedExpression != null && identifier != null)
             {
                 _propagator.AddExpression(identifier, result);
                 return;
@@ -92,11 +141,18 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         private void HandleArithmeticExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
             var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
+
+            if (result == null)
+            {
+                return;
+            }
+
             if (result.PostponedExpression != null && identifier != null)
             {
                 _propagator.AddExpression(identifier, result);
                 return;
             }
+
             if (result.PostponedExpression != null)
             {
                 _propagator.AddExpression(result);
