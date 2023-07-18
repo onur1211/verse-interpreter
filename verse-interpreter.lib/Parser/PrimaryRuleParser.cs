@@ -23,7 +23,8 @@ namespace verse_interpreter.lib.Parser
 			// Fetches the value / identifer from the current node
 			var fetchedValue = context.INT();
 			var fetchedIdentifier = context.ID();
-			var fetchedMemberAccess = context.type_member_access();
+            var fetchedNoValue = context.NOVALUE();
+            var fetchedMemberAccess = context.type_member_access();
 			var fetchedString = context.string_rule();
 			var fetchedArrayAccess = context.array_index();
 			var fetchedFunctionCall = context.function_call();
@@ -34,29 +35,40 @@ namespace verse_interpreter.lib.Parser
 				result.TypeName = "int";
 				return result;
 			}
-			if (fetchedIdentifier != null)
+
+            if (fetchedNoValue != null)
+            {
+                result.TypeName = "false?";
+                return result;
+            }
+
+            if (fetchedIdentifier != null)
 			{
 				result.ValueIdentifier = fetchedIdentifier.GetText();
 				return result;
 
 			}
+
 			if (fetchedMemberAccess != null)
 			{
 				result.ValueIdentifier = fetchedMemberAccess.GetText();
 				return result;
 			}
+
 			if (fetchedString != null)
 			{
 				result.StringValue = fetchedString.GetText();
 				result.TypeName = "string";
 				return result;
 			}
+
 			if (fetchedArrayAccess != null)
 			{
 				result.ValueIdentifier = fetchedArrayAccess.GetText();
 				result.TypeName = "collection";
 				return result;
 			}
+
 			if (fetchedFunctionCall != null)
 			{
 				var returnedFunctionValue = fetchedFunctionCall.Accept(_functionCallVisitor.Value);

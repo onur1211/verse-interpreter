@@ -22,7 +22,8 @@ namespace verse_interpreter.lib.Converter
 				"string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.Value)),
 				"int[]" => HandleExplicitCollectionVariables(declarationResult, "int"),
 				"string[]" => HandleExplicitCollectionVariables(declarationResult, "string"),
-				"collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
+                "false?" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.Value)),
+                "collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
 				_ => HandleCustomType(declarationResult)
 			};
 		}

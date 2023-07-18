@@ -37,9 +37,14 @@ namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 				declarationResult.Value = y.Result.Value;
 				declarationResult.TypeName = "string";
 			};
+			_evaluator.ExpressionWithNoValueFound += (x, y) =>
+			{
+				declarationResult.TypeName = "false?";
+				
+			};
 			_evaluator.ExecuteExpression(expression);
 
-			return declarationResult.Value != null ? declarationResult : null;
+			return declarationResult;
 		}
 	}
 }

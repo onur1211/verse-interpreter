@@ -44,5 +44,9 @@ public class PredefinedFunctionEvaluator
         {
             function.StatelessFunctionCall.Invoke(parameter.Parameters[0].Value.IntValue.ToString());
         }
+        if (parameter.Parameters[0].Value.TypeData.Name == "false?")
+        {
+            function.StatelessFunctionCall.Invoke("false?");
+        }
     }
 }

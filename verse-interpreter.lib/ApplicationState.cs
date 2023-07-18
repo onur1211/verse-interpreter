@@ -34,6 +34,7 @@ namespace verse_interpreter.lib
 				new TypeData("string"),
 				new TypeData("int[]"),
 				new TypeData("string[]"),
+				new TypeData("false?"),
 				new TypeData("custom"),
 				new TypeData("collection")
 			};

@@ -1,9 +1,13 @@
-data Triangle = Triangle 
-{
-    width:int
-    height:int
+hanoi(count:int, start:string, end:string, temp:string):void {
+    if(count > 0)
+        then {
+            hanoi(count - 1, start, temp, end)
+            Print("Moved disk from " + start + " to " + end)
+            hanoi(count - 1, temp, end, start)
+        }
+        else {
+            Print("")
+        }
 }
 
-x := instance Triangle(width = 69, height = 12)
-
-x.width + 1
+hanoi(3, "A", "B", "C")
