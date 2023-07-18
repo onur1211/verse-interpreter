@@ -35,10 +35,6 @@ namespace verse_interpreter.lib
 
         public void Run(string[] args)
         {
-            //this.RunWithErrorHandling(args);
-            //Console.ReadKey();
-            //return;
-
             var options = GetPath(args);
             if (options.Code == null && options.Path == null)
             {
@@ -56,6 +52,37 @@ namespace verse_interpreter.lib
             mainVisitor.VisitProgram(parseTree);
             var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
             Console.ReadKey();
+        }
+
+        private void RunWithErrorHandling(string[] args)
+        {
+            try
+            {
+                var options = GetPath(args);
+                if (options.Code == null && options.Path == null)
+                {
+                    return;
+                }
+                _services = BuildService();
+                ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+
+                var inputCode = options.Code != null ? options.Code :
+                    options.Path != null ? _reader.ReadFileToEnd(options.Path) :
+                    throw new ArgumentException("You have to specify either the path or add code!");
+
+                var parseTree = generator.GenerateParseTree(inputCode);
+                var mainVisitor = _services.GetRequiredService<MainVisitor>();
+                mainVisitor.VisitProgram(parseTree);
+                var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Error: " + ex.Message);
+                Console.ResetColor();
+                Printer.PrintResult("false?");
+            }
         }
 
         private CommandLineOptions GetPath(string[] args)
@@ -115,37 +142,6 @@ namespace verse_interpreter.lib
                 .BuildServiceProvider();
 
             return services;
-        }
-
-        private void RunWithErrorHandling(string[] args)
-        {
-            try
-            {
-                var options = GetPath(args);
-                if (options.Code == null && options.Path == null)
-                {
-                    return;
-                }
-                _services = BuildService();
-                ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
-
-                var inputCode = options.Code != null ? options.Code :
-                    options.Path != null ? _reader.ReadFileToEnd(options.Path) :
-                    throw new ArgumentException("You have to specify either the path or add code!");
-
-                var parseTree = generator.GenerateParseTree(inputCode);
-                var mainVisitor = _services.GetRequiredService<MainVisitor>();
-                mainVisitor.VisitProgram(parseTree);
-                var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-                Console.ReadKey();
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Error: " + ex.Message);
-                Console.ResetColor();
-                Printer.PrintResult("false?");
-            }
         }
     }
 }

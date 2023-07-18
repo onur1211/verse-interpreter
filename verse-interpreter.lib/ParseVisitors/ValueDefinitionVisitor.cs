@@ -324,17 +324,20 @@ namespace verse_interpreter.lib.ParseVisitors
             // Get the list of variables in the array and parse the index string to a number
             var variables = array.Value.CollectionVariable.Values;
             int indexNumber = int.Parse(index);
+            DeclarationResult declarationResult = new DeclarationResult();
 
             // Check if the index is valid
+            // If not then return false? as value
             if (indexNumber < 0 || indexNumber >= variables.Count)
             {
-                throw new ArgumentOutOfRangeException(nameof(indexNumber), "Error: The given index value was invalid!");
+                declarationResult.TypeName = "false?";
             }
-
-            // Get the single variable from the list
-            DeclarationResult declarationResult = new DeclarationResult();
-            declarationResult.IndexedVariable = variables[indexNumber];
-            declarationResult.TypeName = variables[indexNumber].Value.TypeName;
+            else
+            {
+                // Get the single variable from the list
+                declarationResult.IndexedVariable = variables[indexNumber];
+                declarationResult.TypeName = variables[indexNumber].Value.TypeName;
+            }
 
             // Get the value of the variable depending on its variable type
             return _typeInferencer.InferGivenType(declarationResult);

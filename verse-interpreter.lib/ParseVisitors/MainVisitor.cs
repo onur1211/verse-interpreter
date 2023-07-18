@@ -42,6 +42,7 @@ namespace verse_interpreter.lib.ParseVisitors
             {
                 ApplicationState.CurrentScope.AddScopedVariable(declaredVariable);
             }
+
             return null!;
         }
 
@@ -99,7 +100,7 @@ namespace verse_interpreter.lib.ParseVisitors
            {
                value.Accept(this);
            }
-            return null!;
+           return null!;
         }
     }
 }

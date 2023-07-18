@@ -91,7 +91,6 @@ namespace verse_interpreter.lib.ParseVisitors
             _results.RemoveAll(x => x == null);
             ParseValueToTopScopedVariable(functionCallItem);
 
-
             ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
             ApplicationState.CurrentScopeLevel -= 1;
 
@@ -118,11 +117,11 @@ namespace verse_interpreter.lib.ParseVisitors
         public override FunctionCallResult VisitIf_block(Verse.If_blockContext context)
         {
             var blocks = _ifVisitor.Visit(context);
+
             foreach (var block in blocks)
             {
                 var result = block.Accept(this);
             }
-
 
             return null!;
         }
@@ -157,6 +156,7 @@ namespace verse_interpreter.lib.ParseVisitors
         private void ParseValueToTopScopedVariable(FunctionCall calle)
         {
             var topLevelScope = ApplicationState.Scopes[ApplicationState.CurrentScopeLevel - 1];
+
             foreach (var variable in calle.Function.LookupManager.GetAllVariables())
             {
                 if (topLevelScope.LookupManager.IsVariable(variable.Name) &&

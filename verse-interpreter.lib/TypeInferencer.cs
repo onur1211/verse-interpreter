@@ -30,17 +30,6 @@ namespace verse_interpreter.lib
                 throw new ArgumentNullException("The specified input object is null!");
             }
 
-            //if (declarationResult.ExpressionResults != null) 
-            //{
-            //    if (declarationResult.ExpressionResults.Any(x => x.Any(y => y.TypeName == "false?")))
-            //    {
-            //        var variableName = declarationResult.Name;
-            //        declarationResult = new DeclarationResult();
-            //        declarationResult.Name = variableName;
-            //        declarationResult.TypeName = "false?";
-            //    }
-            //}
-
             if (declarationResult.TypeName == "undefined")
             {
                 var isInt = int.TryParse(declarationResult.Value, out _);
