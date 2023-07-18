@@ -28,7 +28,7 @@ namespace verse_interpreter.lib.ParseVisitors
             var value = Converter.VariableConverter.Convert(context.value_definition().Accept(_valueDefinitionVisitor));
             value.Name = identfier.PropertyName;
 
-            var instance = _applicationState.CurrentScope.LookupManager.GetVariable(identfier.VariableName).Value.DynamicType;
+            var instance = _applicationState.CurrentScope.LookupManager.GetVariable(identfier.VariableName).Value.CustomType;
             instance.LookupManager.UpdateVariable(value);
             return base.VisitType_member_definition(context);
         }

@@ -8,40 +8,38 @@ using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
-    // EXAM_UPDATED
-    public class TypeDefinitionVisitor : AbstractVerseVisitor<DynamicType>
+    public class TypeDefinitionVisitor : AbstractVerseVisitor<CustomType>
     {
         private DeclarationVisitor _declarationVisitor;
-        private DynamicType _dynamicType;
+        private CustomType _customType;
 
         public TypeDefinitionVisitor(ApplicationState applicationState,
                                      DeclarationVisitor declarationVisitor) : base(applicationState)
         {
             _declarationVisitor = declarationVisitor;
-            _dynamicType = null!;
+            _customType = null!;
         }
 
 
-        public override DynamicType VisitType_header([NotNull] Verse.Type_headerContext context)
+        public override CustomType VisitType_header([NotNull] Verse.Type_headerContext context)
         {
-            _dynamicType = new DynamicType();
+            _customType = new CustomType();
             var identfiers = context.ID();
 
             // Fetches the name of the class and it's constructor
-            _dynamicType.Name = identfiers[0].GetText();
-            _dynamicType.ConstructorName = identfiers[1].GetText();
+            _customType.Name = identfiers[0].GetText();
+            _customType.ConstructorName = identfiers[1].GetText();
             
-            //ApplicationState.Types.Add(_dynamicType.Name, _dynamicType);
             base.VisitType_header(context);
 
-            return _dynamicType;
+            return _customType;
         }
 
-        public override DynamicType VisitType_body([NotNull] Verse.Type_bodyContext context)
+        public override CustomType VisitType_body([NotNull] Verse.Type_bodyContext context)
         {
             // Gets all the variables and adds it to the classes scope
             var res = context.declaration().Accept(this._declarationVisitor);
-            _dynamicType.AddScopedVariable(res);
+            _customType.AddScopedVariable(res);
             return this.VisitChildren(context);
         }
     }

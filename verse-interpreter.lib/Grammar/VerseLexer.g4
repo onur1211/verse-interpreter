@@ -23,6 +23,7 @@ RANGE: '..';
 // Types
 INTTYPE : 'int';
 STRINGTYPE: 'string';
+COLLECTIONTYPE: ID'[]';
 DATA : 'data';
 VOID : 'void';
 // Operators

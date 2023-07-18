@@ -37,11 +37,11 @@ namespace verse_interpreter.lib
             }
 
             var baseVariable = lookupTable.GetVariable(identifier);
-            if (baseVariable.Value.DynamicType == null)
+            if (baseVariable.Value.CustomType == null)
             {
                 return baseVariable;
             }
-            return ResolveProperty(parameters.Skip(1).ToArray(), baseVariable.Value.DynamicType.LookupManager);
+            return ResolveProperty(parameters.Skip(1).ToArray(), baseVariable.Value.CustomType.LookupManager);
         }
 
         private Variable ResolveArrayAccess(string variableName)

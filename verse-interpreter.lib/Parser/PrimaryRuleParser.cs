@@ -1,5 +1,7 @@
 ﻿using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Grammar;
+using verse_interpreter.lib.ParseVisitors;
+using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.Parser
 {

@@ -10,7 +10,6 @@ declaration : ID ':' type
             | ID '=' array_literal
             ;
 
-
 value_definition : (INT | NOVALUE | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
                  ;
 
@@ -106,10 +105,13 @@ constructor_body : INSTANCE ID '('')'
                  ;
 
 type_header : DATA ID '=' ID NEWLINE '{' type_body NEWLINE '}'
+            | DATA ID '=' ID '{' type_body '}'
             ;
             
 type_body : NEWLINE INDENT declaration
           | NEWLINE INDENT declaration type_body
+          | declaration ',' type_body
+          | declaration
           ;
    
 type_member_definition : type_member_access '=' value_definition
@@ -175,7 +177,6 @@ primary
     | string_rule
     | '(' expression ')'
     ;
-
 
 type : (INTTYPE | STRINGTYPE | ID | VOID ) ;
 operator : ('*' | '/' |'-'|'+'| '>' | '<' | '|' | '=');

@@ -9,13 +9,13 @@ using verse_interpreter.lib.Grammar;
 namespace verse_interpreter.lib.ParseVisitors
 {
     // EXAM_UPDATED
-    public class TypeConstructorVisitor : AbstractVerseVisitor<DynamicType>
+    public class TypeConstructorVisitor : AbstractVerseVisitor<CustomType>
     {
         public TypeConstructorVisitor(ApplicationState applicationState) : base(applicationState)
         {
         }
 
-        public override DynamicType VisitConstructor_body([NotNull] Verse.Constructor_bodyContext context)
+        public override CustomType VisitConstructor_body([NotNull] Verse.Constructor_bodyContext context)
         {
             var constructorName = context.ID().GetText();
             if(!ApplicationState.Types.Any(x => x.Value.ConstructorName == constructorName))

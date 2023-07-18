@@ -14,7 +14,7 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
         {
             for (int i = 0; i < value.Function.ParameterCount; i++)
             {
-                if (value.Function.Parameters[i].Value.TypeName != value.Parameters.Parameters[i].Value.TypeName)
+                if (value.Function.Parameters[i].Value.TypeData.Name != value.Parameters.Parameters[i].Value.TypeData.Name)
                 {
                     return false;
                 }

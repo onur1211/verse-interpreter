@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Factories;
 
 namespace verse_interpreter.lib.IO
 {
@@ -37,6 +39,26 @@ namespace verse_interpreter.lib.IO
             }
 
             throw new NotImplementedException("Print result not implemented for this result!");
+        }
+
+        public static void PrintResult(ArithmeticExpression arithmeticExpression)
+        {
+            if(arithmeticExpression.PostponedExpression != null)
+            {
+                return;
+            }
+
+            PrintResult(arithmeticExpression.ResultValue.ToString()!);
+        }
+
+        public static void PrintResult(StringExpression stringExpression)
+        {
+            if(stringExpression.PostponedExpression != null)
+            {
+                return;
+            }
+
+            PrintResult(stringExpression.Value);
         }
     }
 }

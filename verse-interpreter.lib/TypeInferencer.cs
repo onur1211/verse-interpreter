@@ -1,4 +1,5 @@
-﻿using verse_interpreter.lib.Data;
+﻿using System.Runtime.InteropServices;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Exceptions;
 
@@ -30,24 +31,61 @@ namespace verse_interpreter.lib
                 throw new ArgumentNullException("The specified input object is null!");
             }
 
-            if (declarationResult.TypeName == "undefined")
+            if(declarationResult.TypeName != "undefined")
             {
-                var isInt = int.TryParse(declarationResult.Value, out _);
-
-                if (isInt)
-                {
-                    declarationResult.TypeName = "int";
-                }
-
-                if (declarationResult.CollectionVariable != null) 
-                {
-                    declarationResult.TypeName = "collection";
-                }
+                return declarationResult;
             }
 
-            if (!_state.Types.ContainsKey(declarationResult.TypeName) && !_state.WellKnownTypes.Contains(declarationResult.TypeName))
+            IsNumber(declarationResult);
+            IsCustomType(declarationResult);
+            IsCollection(declarationResult);
+
+            return declarationResult;
+        }
+
+        private DeclarationResult IsNumber(DeclarationResult declarationResult)
+        {
+            if (declarationResult.Value == null)
             {
-                throw new UnknownTypeException(declarationResult.TypeName);
+                return declarationResult;
+            }
+
+            if (!int.TryParse(declarationResult.Value, out _))
+            {
+                declarationResult.TypeName = "string";
+                return declarationResult;
+            }
+
+			declarationResult.TypeName = "int";
+            return declarationResult;
+		}
+
+		private DeclarationResult IsCustomType(DeclarationResult declarationResult)
+        {
+            if (declarationResult.CustomType == null)
+            {
+                return declarationResult;
+            }
+
+            declarationResult.TypeName = declarationResult.CustomType.Name;
+
+			if (!_state.Types.ContainsKey(declarationResult.TypeName) && !_state.WellKnownTypes.Any(x => x.Name == declarationResult.TypeName))
+			{
+				throw new UnknownTypeException(declarationResult.TypeName);
+			}
+
+            return declarationResult;
+		}
+
+        private DeclarationResult IsCollection(DeclarationResult declarationResult)
+        {
+            if (declarationResult.CollectionVariable == null)
+            {
+                return declarationResult;
+            }
+            else
+            {
+                declarationResult.TypeName = "collection";
             }
 
             return declarationResult;

@@ -23,6 +23,7 @@ namespace verse_interpreter.lib.ParseVisitors
         {
             var name = context.ID();
             var type = context.type();
+
             var parameter = context.function_param().param_def_item();
             var functionDeclarationResult = new Function()
             {
@@ -32,7 +33,7 @@ namespace verse_interpreter.lib.ParseVisitors
             var parameterResult = functionDeclarationParser.GetDefinitionParameters(parameter);
             functionDeclarationResult.Parameters = parameterResult.Parameters;
             functionDeclarationResult.FunctionBody = bodyParser.GetBody(context.body());
-            functionDeclarationResult.LookupManager.AddFunction(functionDeclarationResult);
+
             return functionDeclarationResult;
         }
     }
