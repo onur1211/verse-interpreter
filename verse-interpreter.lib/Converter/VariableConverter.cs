@@ -91,7 +91,7 @@ namespace verse_interpreter.lib.Converter
 
 		private static Variable HandleCustomType(DeclarationResult declarationResult)
 		{
-			return new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CustomType!));
+			return new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CustomType.Value!));
 		}
 	}
 }

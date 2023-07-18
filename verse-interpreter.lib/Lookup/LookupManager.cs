@@ -1,5 +1,6 @@
 ﻿using System;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.EventArguments;
@@ -8,7 +9,7 @@ using verse_interpreter.lib.Lookup.EventArguments;
 
 namespace verse_interpreter.lib.Lookup
 {
-	public class LookupManager
+    public class LookupManager
 	{
 		private ILookupTable<Variable> lookupTable;
 		private List<string> valueLessVariables;

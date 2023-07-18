@@ -1,4 +1,9 @@
-fac(x:int):int {
-    if(x=0) then { 1 + 0 } else { fac(x-1) * x}
+data Triangle = Triangle 
+{
+    width:int
+    height:int
 }
-fac(5)
+
+x := instance Triangle(width = 69, height = 12)
+
+x.width + 1

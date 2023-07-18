@@ -8,11 +8,11 @@ namespace verse_interpreter.lib.ParseVisitors
 {
     public class FunctionDeclarationVisitor : AbstractVerseVisitor<Function>{
 
-        private readonly FunctionParser functionDeclarationParser;
+        private readonly ParameterParser functionDeclarationParser;
         private readonly BodyParser bodyParser;
 
         public FunctionDeclarationVisitor(ApplicationState applicationState,
-                                          FunctionParser functionDeclarationParser,
+                                          ParameterParser functionDeclarationParser,
                                           BodyParser bodyParser) : base(applicationState)
         {
             this.functionDeclarationParser = functionDeclarationParser;

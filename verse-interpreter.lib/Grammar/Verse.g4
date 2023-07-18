@@ -105,7 +105,9 @@ param_call_item: value_definition
 
 // Type definition
 constructor_body : INSTANCE ID '('')'
+                 | INSTANCE ID '('param_def_item ')'
                  ;
+
 
 type_header : DATA ID '=' ID NEWLINE '{' type_body NEWLINE '}'
             | DATA ID '=' ID '{' type_body '}'

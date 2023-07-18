@@ -1,4 +1,5 @@
 ﻿using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Exceptions;
@@ -6,7 +7,7 @@ using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib
 {
-	public class ApplicationState
+    public class ApplicationState
 	{
 		public Dictionary<int, IScope<Variable>> Scopes { get; set; }
 		public Dictionary<string, CustomType> Types { get; set; }

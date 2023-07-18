@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Exceptions;
 
@@ -43,7 +42,12 @@ namespace verse_interpreter.lib
             return declarationResult;
         }
 
-        private DeclarationResult IsNumber(DeclarationResult declarationResult)
+		/// <summary>
+		/// Checks if the value of the DeclarationResult object is castable to an integer. If not, it updates the TypeName property to "string".
+		/// </summary>
+		/// <param name="declarationResult"></param>
+		/// <returns></returns>
+		private DeclarationResult IsNumber(DeclarationResult declarationResult)
         {
             if (declarationResult.Value == null)
             {
@@ -60,14 +64,20 @@ namespace verse_interpreter.lib
             return declarationResult;
 		}
 
+		/// <summary>
+		/// Checks if the DeclarationResult object has a custom type assigned. It updates the TypeName property to the name of the custom type and verifies if the type is known in the application state. If the type is not known, it throws an UnknownTypeException.
+		/// </summary>
+		/// <param name="declarationResult"></param>
+		/// <returns></returns>
+		/// <exception cref="UnknownTypeException"></exception>
 		private DeclarationResult IsCustomType(DeclarationResult declarationResult)
         {
-            if (declarationResult.CustomType == null)
+            if (declarationResult.CustomType.HasValue)
             {
                 return declarationResult;
             }
 
-            declarationResult.TypeName = declarationResult.CustomType.Name;
+            declarationResult.TypeName = declarationResult.CustomType.Value.Name;
 
 			if (!_state.Types.ContainsKey(declarationResult.TypeName) && !_state.WellKnownTypes.Any(x => x.Name == declarationResult.TypeName))
 			{
@@ -77,7 +87,12 @@ namespace verse_interpreter.lib
             return declarationResult;
 		}
 
-        private DeclarationResult IsCollection(DeclarationResult declarationResult)
+		/// <summary>
+		/// Checks if the DeclarationResult object represents a collection variable. If so, it updates the TypeName property to "collection".
+		/// </summary>
+		/// <param name="declarationResult"></param>
+		/// <returns></returns>
+		private DeclarationResult IsCollection(DeclarationResult declarationResult)
         {
             if (declarationResult.CollectionVariable == null)
             {

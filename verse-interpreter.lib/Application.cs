@@ -19,6 +19,7 @@ using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Parser.ValueDefinitionParser;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.CustomTypes;
 
 namespace verse_interpreter.lib
 {
@@ -52,7 +53,6 @@ namespace verse_interpreter.lib
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
 			mainVisitor.VisitProgram(parseTree);
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-			Console.ReadKey();
 		}
 
 		private void RunWithErrorHandling(string[] args)
@@ -121,6 +121,7 @@ namespace verse_interpreter.lib
 				.AddTransient<IEvaluator<ComparisonExpression, List<List<ExpressionResult>>>, ComparisonEvaluator>()
 				.AddTransient<IValidator<List<List<ExpressionResult>>>, ExpressionValidator>()
 				.AddTransient<IValidator<FunctionCall>, ParameterValidator>()
+				.AddTransient<CustomTypeFactory>()
 				.AddTransient<ExpressionValidator>()
 				.AddTransient<DeclarationParser>()
 				.AddTransient<TypeMemberVisitor>()
@@ -130,7 +131,7 @@ namespace verse_interpreter.lib
 				.AddTransient<TypeHandlingWrapper>()
 				.AddTransient<FunctionWrapper>()
 				.AddTransient<PrimaryRuleParser>()
-				.AddTransient<FunctionParser>()
+				.AddTransient<ParameterParser>()
 				.AddTransient<FunctionCallPreprocessor>()
 				.AddSingleton<GeneralEvaluator>()
 				.AddTransient<BodyParser>()

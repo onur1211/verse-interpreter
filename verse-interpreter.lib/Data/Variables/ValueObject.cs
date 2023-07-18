@@ -1,8 +1,9 @@
-﻿using verse_interpreter.lib.Data.Variables;
+﻿using verse_interpreter.lib.Data.CustomTypes;
+using verse_interpreter.lib.Data.Variables;
 
 namespace verse_interpreter.lib.Data
 {
-	public class ValueObject
+    public class ValueObject
 	{
 		public ValueObject(string typeName)
 		{

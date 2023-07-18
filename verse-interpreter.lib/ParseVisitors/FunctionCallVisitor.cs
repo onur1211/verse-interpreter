@@ -21,7 +21,7 @@ namespace verse_interpreter.lib.ParseVisitors
 {
 	public class FunctionCallVisitor : AbstractVerseVisitor<FunctionCallResult>
 	{
-		private readonly FunctionParser _functionParser;
+		private readonly ParameterParser _functionParser;
 		private readonly GeneralEvaluator _evaluator;
 		private readonly FunctionCallPreprocessor _functionCallPreprocessor;
 		private readonly DeclarationVisitor _declarationVisitor;
@@ -29,7 +29,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly FunctionFactory _functionFactory;
 
 		public FunctionCallVisitor(ApplicationState applicationState,
-								   FunctionParser functionParser,
+								   ParameterParser functionParser,
 								   GeneralEvaluator evaluator,
 								   FunctionCallPreprocessor functionCallPreprocessor,
 								   DeclarationVisitor declarationVisitor,

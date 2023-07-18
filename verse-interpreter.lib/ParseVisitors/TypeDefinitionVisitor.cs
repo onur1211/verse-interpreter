@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib.ParseVisitors
@@ -17,7 +18,7 @@ namespace verse_interpreter.lib.ParseVisitors
                                      DeclarationVisitor declarationVisitor) : base(applicationState)
         {
             _declarationVisitor = declarationVisitor;
-            _customType = null!;
+            _customType = default!;
         }
 
 
@@ -42,5 +43,6 @@ namespace verse_interpreter.lib.ParseVisitors
             _customType.AddScopedVariable(res);
             return this.VisitChildren(context);
         }
+
     }
 }

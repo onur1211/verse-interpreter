@@ -29,7 +29,7 @@ namespace verse_interpreter.lib.ParseVisitors
             value.Name = identfier.PropertyName;
 
             var instance = _applicationState.CurrentScope.LookupManager.GetVariable(identfier.VariableName).Value.CustomType;
-            instance.LookupManager.UpdateVariable(value);
+            instance.Value.LookupManager.UpdateVariable(value);
             return base.VisitType_member_definition(context);
         }
 

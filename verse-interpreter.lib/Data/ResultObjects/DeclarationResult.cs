@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data.Expressions;
-using verse_interpreter.lib.Data.Interfaces;
+﻿using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Data.ResultObjects;
-using verse_interpreter.lib.Factories;
 
 namespace verse_interpreter.lib.Data
 {
@@ -14,7 +7,7 @@ namespace verse_interpreter.lib.Data
     {
         public string Value { get; set; } = null!;
 
-        public CustomType? CustomType { get; set; } = null!;
+        public CustomType? CustomType { get; set; }
 
         public VerseCollection CollectionVariable { get; set; } = null!;
 

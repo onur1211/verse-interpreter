@@ -97,7 +97,7 @@ namespace verse_interpreter.lib.Evaluators
                     {
                         var identfieres = subExpression.ValueIdentifier.Split('.');
                         var instanceVariable = _applicationState.CurrentScope.LookupManager.GetVariable(identfieres[0]).Value.CustomType;
-                        string result = _applicationState.CurrentScope.LookupManager.GetMemberVariable(instanceVariable, identfieres[0], identfieres[1]).Value.StringValue;
+                        string result = _applicationState.CurrentScope.LookupManager.GetMemberVariable(instanceVariable.Value, identfieres[0], identfieres[1]).Value.StringValue;
                         if (result == null)
                         {
                             return false;

@@ -6,7 +6,7 @@ using verse_interpreter.lib.ParseVisitors;
 
 namespace verse_interpreter.lib.Visitors
 {
-    public class FunctionParser
+    public class ParameterParser
     {
         private readonly ApplicationState _applicationState;
         private readonly DeclarationVisitor _declarationVisitor;
@@ -14,7 +14,7 @@ namespace verse_interpreter.lib.Visitors
         private readonly PropertyResolver _resolver;
         private FunctionParameters _result;
 
-        public FunctionParser(ApplicationState applicationState,
+        public ParameterParser(ApplicationState applicationState,
                               DeclarationVisitor declarationVisitor,
                               ValueDefinitionVisitor valueDefinitionVisitor,
                               PropertyResolver resolver)
