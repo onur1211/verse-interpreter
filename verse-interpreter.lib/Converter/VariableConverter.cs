@@ -44,7 +44,7 @@ namespace verse_interpreter.lib.Converter
 		}
         public static DeclarationResult ConvertBack(Variable variable)
         {
-          switch (variable.ValueObject.TypeData.Name)
+          switch (variable.Value.TypeData.Name)
           {
                 case "int":
                     return new DeclarationResult()

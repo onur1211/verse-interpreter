@@ -47,7 +47,7 @@ namespace verse_interpreter.lib.Parser
             string name = context.ID().GetText();
             string type = context.type().GetText();
 
-            if (!(_state.Types.ContainsKey(type) || _state.WellKnownTypes.Contains(type)))
+            if (!(_state.Types.ContainsKey(type) || _state.WellKnownTypes.Any(x => x.Name == type)))
             {
                 throw new InvalidOperationException($"The specified type \"{type}\" does not exist!");
             }
@@ -124,21 +124,21 @@ namespace verse_interpreter.lib.Parser
             if (declarationResult.IndexedVariable.Value.IntValue != null)
             {
                 declarationResult.Value = declarationResult.IndexedVariable.Value.IntValue.ToString();
-                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
                 return declarationResult;
             }
 
             if (declarationResult.IndexedVariable.Value.StringValue != null)
             {
                 declarationResult.Value = declarationResult.IndexedVariable.Value.StringValue;
-                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
                 return declarationResult; 
             }
 
             if (declarationResult.CollectionVariable.Values != null)
             {
                 declarationResult.CollectionVariable = new VerseCollection(declarationResult.CollectionVariable.Values);
-                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeName;
+                declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
                 return declarationResult;
             }
 

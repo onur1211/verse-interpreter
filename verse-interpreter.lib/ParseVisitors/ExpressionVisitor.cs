@@ -23,6 +23,7 @@ namespace verse_interpreter.lib.ParseVisitors
 				_stack.Push(value);
 			}
 		}
+
 		private Stack<List<List<ExpressionResult>>> _stack;
 		private readonly PrimaryRuleParser _primaryRuleParser;
 
@@ -66,7 +67,7 @@ namespace verse_interpreter.lib.ParseVisitors
             if (expressionContext != null)
             {
                 this.VisitExpression(expressionContext);
-                _expressions.Add(new List<ExpressionResult>());
+                Expressions.Add(new List<ExpressionResult>());
                 return null;
             }
 
@@ -88,21 +89,6 @@ namespace verse_interpreter.lib.ParseVisitors
 				Expressions.Add(new List<ExpressionResult>());
 			}
 			Expressions.Last().Add(args!.ExpressionResult);
-		}
-
-		public override List<List<ExpressionResult>> VisitPrimary([NotNull] Verse.PrimaryContext context)
-		{
-			var expressionContext = context.expression();
-			if (expressionContext != null)
-			{
-				this.VisitExpression(expressionContext);
-				Expressions.Add(new List<ExpressionResult>());
-				return null;
-			}
-			var expressionResult = _primaryRuleParser.ParsePrimary(context);
-			// When the instance is finalized the event is triggered to append it to the final result set
-			this.ExpressionTerminalVisited?.Invoke(this, new ExpressionTerminalVisited(expressionResult));
-			return base.VisitChildren(context);
 		}
 
 		public override List<List<ExpressionResult>> VisitOperator([NotNull] Verse.OperatorContext context)

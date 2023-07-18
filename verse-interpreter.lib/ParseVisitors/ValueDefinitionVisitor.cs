@@ -12,6 +12,7 @@ namespace verse_interpreter.lib.ParseVisitors
 	public class ValueDefinitionVisitor : AbstractVerseVisitor<DeclarationResult?>
     {
         private readonly TypeInferencer _typeInferencer;
+        private readonly GeneralEvaluator _evaluator;
         private readonly ExpressionVisitor _expressionVisitor;
         private readonly TypeConstructorVisitor _constructorVisitor;
         private readonly Lazy<TypeMemberVisitor> _memberVisitor;
@@ -23,6 +24,7 @@ namespace verse_interpreter.lib.ParseVisitors
         
 
         public ValueDefinitionVisitor(ApplicationState applicationState,
+                                      GeneralEvaluator evaluator,
                                       TypeInferencer typeInferencer,
                                       Lazy<FunctionCallVisitor> functionVisitor,
                                       Lazy<DeclarationParser> declarationParser,
@@ -34,6 +36,7 @@ namespace verse_interpreter.lib.ParseVisitors
                                       PropertyResolver resolver) : base(applicationState)
         {
             _typeInferencer = typeInferencer;
+            _evaluator = evaluator;
             _expressionVisitor = expressionVisitor;
             _constructorVisitor = constructorVisitor;
             _memberVisitor = memberVisitor;
@@ -375,7 +378,7 @@ namespace verse_interpreter.lib.ParseVisitors
             {
                 // Get the single variable from the list
                 declarationResult.IndexedVariable = variables[indexNumber];
-                declarationResult.TypeName = variables[indexNumber].Value.TypeName;
+                declarationResult.TypeName = variables[indexNumber].Value.TypeData.Name;
             }
 
             // Get the value of the variable depending on its variable type

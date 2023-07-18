@@ -48,12 +48,6 @@ namespace verse_interpreter.lib.ParseVisitors
 				return;
 			}
 
-      if (declaredVariable.Value.TypeName != "undefined")
-      {
-         ApplicationState.CurrentScope.AddScopedVariable(declaredVariable);
-         return;
-      }
-       
 			Printer.PrintResult(e.Result);
 		}
 
@@ -66,7 +60,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			}
 
 			Printer.PrintResult(e.Result);
-     }
+		}
 
 		private void FunctionRequestedExecutionCallback(object? sender, FunctionRequestedExecutionEventArgs e)
 		{
@@ -99,8 +93,8 @@ namespace verse_interpreter.lib.ParseVisitors
 			return null!;
 		}
 
-    public override object VisitIf_block(Verse.If_blockContext context)
-    {
+		public override object VisitIf_block(Verse.If_blockContext context)
+		{
            var result =  _ifExpressionVisitor.Visit(context);
            foreach (var value in result)
            {
@@ -108,7 +102,6 @@ namespace verse_interpreter.lib.ParseVisitors
            }
            return null!;
         }
-    }
 
 		public override object VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
 		{
@@ -138,16 +131,6 @@ namespace verse_interpreter.lib.ParseVisitors
 		public override object VisitType_member_definition([NotNull] Verse.Type_member_definitionContext context)
 		{
 			this._typeHandlingWrapper.TypeMemberVisitor.Visit(context);
-			return null!;
-		}
-
-		public override IPrintable VisitIf_block(Verse.If_blockContext context)
-		{
-			var result = _ifExpressionVisitor.Visit(context);
-			foreach (var value in result)
-			{
-				value.Accept(this);
-			}
 			return null!;
 		}
 	}

@@ -62,7 +62,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
                     foreach (var value in arrayIndex)
                     {
-                        if (_propertyResolver.ResolveProperty(value.ValueIdentifier).Value.TypeName == "false?")
+                        if (_propertyResolver.ResolveProperty(value.ValueIdentifier).Value.TypeData.Name == "false?")
                         {
                             ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
                             return;
