@@ -1,3 +1,5 @@
+# This is my hanoi function in Verse code
+
 hanoi(count:int, start:string, end:string, temp:string):void {
     if(count > 0)
         then {
@@ -9,5 +11,11 @@ hanoi(count:int, start:string, end:string, temp:string):void {
             Print("")
         }
 }
+
+#* Summary
+This is a
+multiline
+comment
+End *#
 
 hanoi(3, "A", "B", "C")

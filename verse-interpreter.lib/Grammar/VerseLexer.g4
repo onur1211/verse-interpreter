@@ -48,5 +48,7 @@ INDENT: '    ';
 INT : [0-9]+ ;
 SEARCH_TYPE : '"' (~["\\] | '\\' .)* '"';
 ID: [a-zA-Z_][a-zA-Z_0-9]* ;
+COMMENT : '#' ~[\r\n]* -> skip;
+MULTILINECOMMENT : '#*' .*? '*#' -> skip;
 WHITESPACE: [ \t\f]+ -> skip ;
 NEWLINE: '\r'? '\n';
