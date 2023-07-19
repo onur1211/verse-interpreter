@@ -20,6 +20,7 @@ using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Parser.ValueDefinitionParser;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.CustomTypes;
+using Microsoft.Extensions.Options;
 
 namespace verse_interpreter.lib
 {
@@ -44,7 +45,11 @@ namespace verse_interpreter.lib
 				return;
 			}
 			_services = BuildService();
-			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+
+            string libraryPath = "..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
+            this.LoadStandardLibrary(libraryPath);
+
+            ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 			var inputCode = options.Code != null ? options.Code :
 				options.Path != null ? _reader.ReadFileToEnd(options.Path) :
 				throw new ArgumentException("You have to specify either the path or add code!");
@@ -53,6 +58,7 @@ namespace verse_interpreter.lib
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
 			mainVisitor.VisitProgram(parseTree);
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
+			Console.ReadKey();
 		}
 
 		private void RunWithErrorHandling(string[] args)
@@ -65,6 +71,10 @@ namespace verse_interpreter.lib
 					return;
 				}
 				_services = BuildService();
+
+				string libraryPath = "..\\..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
+                this.LoadStandardLibrary(libraryPath);
+
 				ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 
 				var inputCode = options.Code != null ? options.Code :
@@ -82,8 +92,16 @@ namespace verse_interpreter.lib
 				Console.WriteLine("Error: " + ex.Message);
 				Console.ResetColor();
 			}
-
 		}
+
+		private void LoadStandardLibrary(string libraryPath)
+		{
+            ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+			var inputCode = _reader.ReadFileToEnd(libraryPath);
+            var parseTree = generator.GenerateParseTree(inputCode);
+            var mainVisitor = _services.GetRequiredService<MainVisitor>();
+            mainVisitor.VisitProgram(parseTree);
+        }
 
 		private CommandLineOptions GetPath(string[] args)
 		{
