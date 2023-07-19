@@ -72,12 +72,7 @@ namespace verse_interpreter.lib
 		/// <exception cref="UnknownTypeException"></exception>
 		private DeclarationResult IsCustomType(DeclarationResult declarationResult)
         {
-            if (declarationResult.CustomType == null)
-            {
-                return declarationResult;
-            }
-
-            if (declarationResult.CustomType.HasValue)
+            if (!declarationResult.CustomType.HasValue)
             {
                 return declarationResult;
             }
