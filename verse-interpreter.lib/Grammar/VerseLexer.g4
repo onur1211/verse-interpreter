@@ -39,8 +39,6 @@ NOVALUE : 'false?';
 IF: 'if';
 THEN: 'then';
 ELSE: 'else';
-FST: 'fst';
-ARRAY: 'array';
 INSTANCE: 'instance';
 RETURN : 'return';
 
