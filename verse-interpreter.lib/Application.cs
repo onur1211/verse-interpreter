@@ -46,8 +46,8 @@ namespace verse_interpreter.lib
 			}
 			_services = BuildService();
 
-			string libraryPath = "..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
-			this.LoadStandardLibrary(libraryPath);
+			//string libraryPath = "..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
+			//this.LoadStandardLibrary(libraryPath);
 
 			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 			var inputCode = options.Code != null ? options.Code :
@@ -58,7 +58,7 @@ namespace verse_interpreter.lib
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
 			mainVisitor.VisitProgram(parseTree);
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-			Console.ReadKey();
+			//Console.ReadKey();
 		}
 
 		private void RunWithErrorHandling(string[] args)
