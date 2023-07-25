@@ -55,7 +55,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			{
 				return new DeclarationResult()
 				{
-					Value = maybeInt.GetText(),
+					LiteralValue = maybeInt.GetText(),
 					TypeName = "int"
 				};
 			}
@@ -101,7 +101,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			DeclarationResult declarationResult = new DeclarationResult
 			{
-				Value = context.SEARCH_TYPE().GetText().Replace("\"", ""),
+				LiteralValue = context.SEARCH_TYPE().GetText().Replace("\"", ""),
 				TypeName = "string"
 			};
 
@@ -148,11 +148,11 @@ namespace verse_interpreter.lib.ParseVisitors
 			switch (variable.Value.TypeData.Name)
 			{
 				case "int":
-					declarationResult.Value = variable.Value.IntValue.ToString()!;
+					declarationResult.LiteralValue = variable.Value.IntValue.ToString()!;
 					break;
 
 				case "string":
-					declarationResult.Value = variable.Value.StringValue;
+					declarationResult.LiteralValue = variable.Value.StringValue;
 					break;
 
 				default: return declarationResult;

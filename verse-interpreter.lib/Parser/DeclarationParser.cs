@@ -132,11 +132,11 @@ namespace verse_interpreter.lib.Parser
 			}
 			_generalEvaluator.ArithmeticExpressionResolved += (sender, args) =>
 			{
-				declarationResult.Value = args.Result.ResultValue.ToString();
+				declarationResult.LiteralValue = args.Result.ResultValue.ToString();
 			};
 			_generalEvaluator.StringExpressionResolved += (sender, args) =>
 			{
-				declarationResult.Value = args.Result.Value;
+				declarationResult.LiteralValue = args.Result.Value;
 			};
 			_generalEvaluator.ExecuteExpression(declarationResult.ExpressionResults, declarationResult.Name);
 
@@ -164,14 +164,14 @@ namespace verse_interpreter.lib.Parser
 
 				if (indexedVar.Value.IntValue != null)
 				{
-					declarationResult.Value = declarationResult.IndexedVariable.Value.IntValue.ToString();
+					declarationResult.LiteralValue = declarationResult.IndexedVariable.Value.IntValue.ToString();
 					declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
 					return declarationResult;
 				}
 
 				if (indexedVar.Value.StringValue != null)
 				{
-					declarationResult.Value = declarationResult.IndexedVariable.Value.StringValue;
+					declarationResult.LiteralValue = declarationResult.IndexedVariable.Value.StringValue;
 					declarationResult.TypeName = declarationResult.IndexedVariable.Value.TypeData.Name;
 					return declarationResult;
 				}

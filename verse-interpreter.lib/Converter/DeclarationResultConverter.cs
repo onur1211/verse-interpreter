@@ -14,15 +14,15 @@ namespace verse_interpreter.lib.Converter
 		{
 			DeclarationResult declarationResult = new DeclarationResult();
 
-			if(result.ArithmeticExpression != null)
+			if (result.ArithmeticExpression != null)
 			{
-				declarationResult.Value = result.ArithmeticExpression.ResultValue.ToString()!;
+				declarationResult.LiteralValue = result.ArithmeticExpression.ResultValue.ToString()!;
 				declarationResult.TypeName = "int";
 			}
 
 			if (result.StringExpression != null)
 			{
-				declarationResult.Value = result.StringExpression.Value;
+				declarationResult.LiteralValue = result.StringExpression.Value;
 				declarationResult.TypeName = "string";
 			}
 

@@ -27,14 +27,14 @@ namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 			};
 			_evaluator.ArithmeticExpressionResolved += (x, y) =>
 			{
-				declarationResult.Value = y.Result.ResultValue.ToString()!;
+				declarationResult.LiteralValue = y.Result.ResultValue.ToString()!;
 				declarationResult.ExpressionResults = null;
 				declarationResult.TypeName = "int";
 			};
 			_evaluator.StringExpressionResolved += (x, y) =>
 			{
 				declarationResult.ExpressionResults = null;
-				declarationResult.Value = y.Result.Value;
+				declarationResult.LiteralValue = y.Result.Value;
 				declarationResult.TypeName = "string";
 			};
 			_evaluator.ExpressionWithNoValueFound += (x, y) =>

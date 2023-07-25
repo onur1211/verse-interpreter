@@ -49,12 +49,12 @@ namespace verse_interpreter.lib
 		/// <returns></returns>
 		private DeclarationResult IsNumber(DeclarationResult declarationResult)
         {
-            if (declarationResult.Value == null)
+            if (declarationResult.LiteralValue == null)
             {
                 return declarationResult;
             }
 
-            if (!int.TryParse(declarationResult.Value, out _))
+            if (!int.TryParse(declarationResult.LiteralValue, out _))
             {
                 declarationResult.TypeName = "string";
                 return declarationResult;

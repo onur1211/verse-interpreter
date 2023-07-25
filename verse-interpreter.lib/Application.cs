@@ -161,6 +161,7 @@ namespace verse_interpreter.lib
 				.AddTransient<IfExpressionVisitor>()
 				.AddTransient<ForVisitor>()
 				.AddTransient<ChoiceVisitor>()
+				.AddTransient<ArrayVisitor>()
 				.AddTransient<PropertyResolver>()
 				.AddTransient<PredefinedFunctionInitializer>()
 				.AddTransient<PredefinedFunctionEvaluator>()

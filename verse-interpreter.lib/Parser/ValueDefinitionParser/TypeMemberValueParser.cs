@@ -26,7 +26,7 @@ namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 			declarationResult.TypeName = variable.Value.TypeData.Name;
 			declarationResult.CollectionVariable = variable.Value.CollectionVariable;
 			declarationResult.CustomType = variable.Value.CustomType;
-			declarationResult.Value =
+			declarationResult.LiteralValue =
 				variable!.Value.TypeData.Name == "int" ? variable!.Value.IntValue.ToString() : variable!.Value.StringValue;
 		}
 	}

@@ -5,7 +5,7 @@ namespace verse_interpreter.lib.Data
 {
     public class DeclarationResult
     {
-        public string Value { get; set; } = null!;
+        public string LiteralValue { get; set; } = null!;
 
         public CustomType? CustomType { get; set; }
 

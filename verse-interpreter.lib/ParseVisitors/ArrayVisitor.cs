@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
@@ -12,23 +13,26 @@ using verse_interpreter.lib.Parser;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
-	public class ArrayIndexingVisitor : AbstractVerseVisitor<DeclarationResult>
+	public class ArrayVisitor : AbstractVerseVisitor<DeclarationResult>
 	{
 		private readonly PropertyResolver _resolver;
 		private readonly TypeInferencer _typeInferencer;
 		private readonly CollectionParser _collectionParser;
-		private readonly DeclarationParser declarationParser;
+		private readonly Lazy<DeclarationParser> _declarationParser;
+		private readonly Lazy<ValueDefinitionVisitor> _valueDefinitionVisitor;
 
-		public ArrayIndexingVisitor(ApplicationState applicationState,
+		public ArrayVisitor(ApplicationState applicationState,
 									PropertyResolver propertyResolver,
 									TypeInferencer typeInferencer,
 									CollectionParser collectionParser,
-									DeclarationParser declarationParser) : base(applicationState)
+									Lazy<DeclarationParser> declarationParser,
+									Lazy<ValueDefinitionVisitor> valueDefinitionVisitor) : base(applicationState)
 		{
 			_resolver = propertyResolver;
 			_typeInferencer = typeInferencer;
 			_collectionParser = collectionParser;
-			this.declarationParser = declarationParser;
+			_declarationParser = declarationParser;
+			_valueDefinitionVisitor = valueDefinitionVisitor;
 		}
 
 		public override DeclarationResult VisitArray_literal([NotNull] Verse.Array_literalContext context)
@@ -43,7 +47,7 @@ namespace verse_interpreter.lib.ParseVisitors
 				foreach (var valueDef in result.ValueElements)
 				{
 					// Accept the range expression
-					rangeExpressionResult = valueDef.Accept(this);
+					rangeExpressionResult = valueDef.Accept(_valueDefinitionVisitor.Value)!;
 
 					// Check if there is a range expression
 					if (rangeExpressionResult.CollectionVariable != null)

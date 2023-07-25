@@ -19,10 +19,10 @@ namespace verse_interpreter.lib.Converter
 			return declarationResult.TypeName switch
 			{
 				"int" => HandleIntVariables(declarationResult),
-				"string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.Value)),
+				"string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.LiteralValue)),
 				"int[]" => HandleExplicitCollectionVariables(declarationResult, "int"),
 				"string[]" => HandleExplicitCollectionVariables(declarationResult, "string"),
-                "false?" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.Value)),
+                "false?" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.LiteralValue)),
                 "collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
 				"undefined" => new Variable(declarationResult.Name, new("undefined")),
 				_ => HandleCustomType(declarationResult)
@@ -34,13 +34,13 @@ namespace verse_interpreter.lib.Converter
 			{
 				return declarationResult.IndexedVariable;
 			}
-			if (declarationResult.Value == null)
+			if (declarationResult.LiteralValue == null)
 			{
 				return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName));
 			}
 			else
 			{
-				return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName, int.Parse(declarationResult.Value)));
+				return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName, int.Parse(declarationResult.LiteralValue)));
 			}
 		}
         public static DeclarationResult ConvertBack(Variable variable)
@@ -51,7 +51,7 @@ namespace verse_interpreter.lib.Converter
                     return new DeclarationResult()
                     {
                         CustomType = variable.Value.CustomType,
-                        Value = variable.Value.IntValue.ToString(),
+						LiteralValue = variable.Value.IntValue.ToString(),
                         TypeName = variable.Value.TypeData.Name,
                     };
 
@@ -59,7 +59,7 @@ namespace verse_interpreter.lib.Converter
                     return new DeclarationResult()
                     {
                         CustomType = variable.Value.CustomType,
-                        Value = variable.Value.StringValue,
+						LiteralValue = variable.Value.StringValue,
                         TypeName = variable.Value.TypeData.Name,
                     };
 
