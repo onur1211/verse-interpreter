@@ -10,9 +10,9 @@ namespace verse_interpreter.lib.Data.ResultObjects
 {
     public class FunctionCallResult
     {
-        public ArithmeticExpression ArithmeticExpression { get; set; }
+        public ArithmeticExpression? ArithmeticExpression { get; set; }
 
-        public StringExpression StringExpression { get; set; }
+        public StringExpression? StringExpression { get; set; }
 
 
         public bool IsVoid { get; set; }

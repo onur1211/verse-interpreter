@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using verse_interpreter.lib.ParseVisitors;
+using verse_interpreter.lib.ParseVisitors.Types;
 using verse_interpreter.lib.Visitors;
 
 namespace verse_interpreter.lib.Wrapper
 {
-	/// <summary>
-	/// Provides a wrapper class for handling various type-related visitors and inferencers.
-	/// </summary>
-	public class TypeHandlingWrapper
+    /// <summary>
+    /// Provides a wrapper class for handling various type-related visitors and inferencers.
+    /// </summary>
+    public class TypeHandlingWrapper
 	{
 		/// <summary>
 		/// Gets the visitor responsible for handling type definitions.

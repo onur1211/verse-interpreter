@@ -45,8 +45,4 @@
 		<PackageReference Include="Z.Expressions.Eval" Version="5.0.6" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Evaluation\FunctionEvaluator\" />
-	</ItemGroup>
-
 </Project>

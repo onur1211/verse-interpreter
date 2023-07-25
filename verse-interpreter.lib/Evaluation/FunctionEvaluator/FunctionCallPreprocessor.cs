@@ -10,7 +10,7 @@ using verse_interpreter.lib.Data.Variables.Utility;
 using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.ParseVisitors;
 
-namespace verse_interpreter.lib.Evaluation.EvaluationManagement
+namespace verse_interpreter.lib.Evaluation.FunctionEvaluator
 {
     public class FunctionCallPreprocessor
     {
@@ -23,11 +23,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
         public void BuildExecutableFunction(FunctionCall item)
         {
-            if(!IsArityEqual(item))
+            if (!IsArityEqual(item))
             {
                 throw new NotEqualArityException($"The arity of the function is {item.Function.ParameterCount}, but only {item.Parameters.ParameterCount} parameters were given!");
             }
-            if(!_functionCallValidator.IsTypeConformityGiven(item))
+            if (!_functionCallValidator.IsTypeConformityGiven(item))
             {
                 throw new InvalidTypeCombinationException("The given parameters do not match the signature of the function!");
             }
@@ -42,7 +42,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
         private void BindValues(FunctionCall item)
         {
-            for(int i = 0; i < item.Function.ParameterCount; i++)
+            for (int i = 0; i < item.Function.ParameterCount; i++)
             {
                 var variable = new Variable()
                 {

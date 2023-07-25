@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Grammar;
 
-namespace verse_interpreter.lib.ParseVisitors
+namespace verse_interpreter.lib.ParseVisitors.Types
 {
     public class TypeDefinitionVisitor : AbstractVerseVisitor<CustomType>
     {
@@ -30,7 +30,7 @@ namespace verse_interpreter.lib.ParseVisitors
             // Fetches the name of the class and it's constructor
             _customType.Name = identfiers[0].GetText();
             _customType.ConstructorName = identfiers[1].GetText();
-            
+
             base.VisitType_header(context);
 
             return _customType;
@@ -39,9 +39,9 @@ namespace verse_interpreter.lib.ParseVisitors
         public override CustomType VisitType_body([NotNull] Verse.Type_bodyContext context)
         {
             // Gets all the variables and adds it to the classes scope
-            var res = context.declaration().Accept(this._declarationVisitor);
+            var res = context.declaration().Accept(_declarationVisitor);
             _customType.AddScopedVariable(res);
-            return this.VisitChildren(context);
+            return VisitChildren(context);
         }
 
     }

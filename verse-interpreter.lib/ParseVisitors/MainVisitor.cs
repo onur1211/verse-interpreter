@@ -6,6 +6,8 @@ using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.IO;
+using verse_interpreter.lib.ParseVisitors.Choice;
+using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.ParseVisitors
@@ -17,6 +19,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly FunctionWrapper _functionWrapper;
 		private readonly TypeHandlingWrapper _typeHandlingWrapper;
 		private readonly GeneralEvaluator _generalEvaluator;
+		private readonly ForVisitor _forVisitor;
 		private readonly IfExpressionVisitor _ifExpressionVisitor;
 
 		public MainVisitor(ApplicationState applicationState,
@@ -25,6 +28,7 @@ namespace verse_interpreter.lib.ParseVisitors
 						   FunctionWrapper functionWrapper,
 						   TypeHandlingWrapper typeHandlingWrapper,
 						   GeneralEvaluator generalEvaluator,
+						   ForVisitor forVisitor,
 						   IfExpressionVisitor ifExpressionVisitor) : base(applicationState)
 		{
 			_declarationVisitor = declarationVisitor;
@@ -33,6 +37,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			_typeHandlingWrapper = typeHandlingWrapper;
 			_functionWrapper.FunctionCallVisitor.FunctionRequestedExecution += FunctionRequestedExecutionCallback;
 			_generalEvaluator = generalEvaluator;
+			_forVisitor = forVisitor;
 			ApplicationState.CurrentScope.LookupManager.VariableBound +=
 				_generalEvaluator.Propagator.HandleVariableBound!;
 			_ifExpressionVisitor = ifExpressionVisitor;
@@ -60,13 +65,13 @@ namespace verse_interpreter.lib.ParseVisitors
 			}
 
 			Printer.PrintResult(e.Result);
-        }
+		}
 
 		private void FunctionRequestedExecutionCallback(object? sender, FunctionRequestedExecutionEventArgs e)
 		{
 			foreach (var block in e.FunctionCall.Function.FunctionBody)
 			{
-				foreach(var child in block.children)
+				foreach (var child in block.children)
 				{
 					child.Accept(this);
 				}
@@ -87,7 +92,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		public override object VisitExpression([NotNull] Verse.ExpressionContext context)
 		{
 			var res = _expressionVisitor.Visit(context);
-            _expressionVisitor.Clean();
+			_expressionVisitor.Clean();
 
 			_generalEvaluator.ExecuteExpression(res);
 			return null!;
@@ -103,7 +108,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
 		{
 			var result = _functionWrapper.FunctionCallVisitor.Visit(context);
-			if(result == null || result.IsVoid)
+			if (result == null || result.IsVoid)
 			{
 				return null;
 			}
@@ -134,6 +139,12 @@ namespace verse_interpreter.lib.ParseVisitors
 			return null!;
 		}
 
+		public override object VisitFor_body([NotNull] Verse.For_bodyContext context)
+		{
+			_forVisitor.Visit(context);
+			return null!;
+		}
+
 		public override object VisitLambdaFunc([NotNull] Verse.LambdaFuncContext context)
 		{
 			var res = _functionWrapper.FunctionDeclarationVisitor.Visit(context);
@@ -146,6 +157,11 @@ namespace verse_interpreter.lib.ParseVisitors
 			var res = _functionWrapper.FunctionDeclarationVisitor.Visit(context);
 			ApplicationState.AddFunction(res);
 			return null!;
+		}
+
+		public override object VisitFor_rule([NotNull] Verse.For_ruleContext context)
+		{
+			return _forVisitor.Visit(context);
 		}
 	}
 }

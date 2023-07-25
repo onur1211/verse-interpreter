@@ -28,5 +28,18 @@ namespace verse_interpreter.lib.Extensions
                 typeof(Lazy<>),
                 typeof(LazilyResolved<>));
         }
+
+        public static bool ContainsWhere<T>(this IEnumerable<T> values, Func<T, bool> predicate)
+        {
+            foreach(var value in values)
+            {
+                if (predicate(value))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

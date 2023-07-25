@@ -11,11 +11,22 @@ declaration : ID ':' type
             ;
 
 
-value_definition : (INT | ID | NOVALUE | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
+value_definition : INT
+                 | ID 
+                 | NOVALUE 
+                 | expression 
+                 | constructor_body 
+                 | string_rule 
+                 | array_literal 
+                 | function_call 
+                 | array_index 
+                 | type_member_access 
+                 | range_expression
                  ;
                  
 
 program : function_definition program
+        | for_rule program
         | declaration program
         | function_call program
         | type_header program
@@ -35,12 +46,14 @@ program : function_definition program
         | array_index
         | if_block
         | value_definition
+        | for_rule
         ;
 
 block : declaration
       | function_call
       | expression
       | if_block
+      | for_rule
       ;
 
 body : inline_body
@@ -74,7 +87,8 @@ array_elements : value_definition (',' array_elements)*
                | ID (',' array_elements)*
                ;
 
-array_index : ID '[' (INT|ID) ']'
+array_index : ID '[' (INT|ID) ']' 
+            | ID '[' declaration ']'
             ;
             
 bracket_body : '{' block+ '}';
@@ -102,6 +116,18 @@ param_call_item: value_definition
                | value_definition ',' param_call_item
                | ID ',' param_call_item
                ;
+
+// For
+for_rule    : 'for' '{'(NEWLINE)* for_body (NEWLINE)* '}'
+            ;
+
+for_body : choice_rule #choiceBody
+         | narrowing_body #narrowingBody
+         ;
+
+narrowing_body : declaration ';' expression
+               ;
+
 
 // Type definition
 constructor_body : INSTANCE ID '('')'
@@ -131,13 +157,12 @@ type_member_access : type_member_access '.' ID
 string_rule : SEARCH_TYPE
             ;
 
-// Choice
-choice_value : (INT | ID ) ;
-
-choice_rule : choice_value '|' choice_value
-            | choice_value '|' choice_rule
-            | '('choice_rule ')'
+choice_rule : value_definition multi_choice_rule
             ;
+
+multi_choice_rule :
+                  | '|' value_definition multi_choice_rule
+                  ;
 
             
 // Conditionals
@@ -185,4 +210,4 @@ primary
 
 
 type : (INTTYPE | STRINGTYPE | COLLECTIONTYPE | ID | VOID ) ;
-operator : ('*' | '/' |'-'|'+'| '>' | '<' | '|' | '=');
+operator : ('*' | '/' |'-'|'+'| '>' | '<' | '=');

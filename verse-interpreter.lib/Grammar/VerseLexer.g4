@@ -37,6 +37,7 @@ NOVALUE : 'false?';
 
 // Keywords
 IF: 'if';
+FOR: 'for';
 THEN: 'then';
 ELSE: 'else';
 INSTANCE: 'instance';

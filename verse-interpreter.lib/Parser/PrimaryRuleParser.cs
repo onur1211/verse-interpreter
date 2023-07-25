@@ -1,11 +1,11 @@
 ﻿using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Grammar;
-using verse_interpreter.lib.ParseVisitors;
+using verse_interpreter.lib.ParseVisitors.Functions;
 using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.Parser
 {
-	public class PrimaryRuleParser
+    public class PrimaryRuleParser
 	{
 		private readonly ApplicationState _applicationState;
 		private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;

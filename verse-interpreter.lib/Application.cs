@@ -21,10 +21,14 @@ using verse_interpreter.lib.Parser.ValueDefinitionParser;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.CustomTypes;
 using Microsoft.Extensions.Options;
+using verse_interpreter.lib.ParseVisitors.Functions;
+using verse_interpreter.lib.ParseVisitors.Types;
+using verse_interpreter.lib.ParseVisitors.Expressions;
+using verse_interpreter.lib.ParseVisitors.Choice;
 
 namespace verse_interpreter.lib
 {
-	public class Application
+    public class Application
 	{
 		private IParserErrorListener _errorListener;
 		private IServiceProvider _services;
@@ -46,8 +50,8 @@ namespace verse_interpreter.lib
 			}
 			_services = BuildService();
 
-			//string libraryPath = "..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
-			//this.LoadStandardLibrary(libraryPath);
+			string libraryPath = "..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
+			this.LoadStandardLibrary(libraryPath);
 
 			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 			var inputCode = options.Code != null ? options.Code :
@@ -155,6 +159,8 @@ namespace verse_interpreter.lib
 				.AddTransient<BodyParser>()
 				.AddSingleton<FunctionCallVisitor>()
 				.AddTransient<IfExpressionVisitor>()
+				.AddTransient<ForVisitor>()
+				.AddTransient<ChoiceVisitor>()
 				.AddTransient<PropertyResolver>()
 				.AddTransient<PredefinedFunctionInitializer>()
 				.AddTransient<PredefinedFunctionEvaluator>()

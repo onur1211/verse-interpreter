@@ -6,7 +6,7 @@ using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
 
-namespace verse_interpreter.lib.ParseVisitors
+namespace verse_interpreter.lib.ParseVisitors.Expressions
 {
     public class IfExpressionVisitor : AbstractVerseVisitor<List<Verse.BlockContext>>
     {
@@ -27,7 +27,7 @@ namespace verse_interpreter.lib.ParseVisitors
 
             _generalEvaluator.ComparisonExpressionResolved += (sender, args) =>
             {
-               var expression = args.Result;
+                var expression = args.Result;
             };
         }
 
