@@ -105,6 +105,10 @@ namespace verse_interpreter.lib.Parser
 			}
 
 			var variable = _state.CurrentScope.LookupManager.GetVariable(declarationResult.Name);
+			if (variable.Value.CollectionVariable == null)
+			{
+				return declarationResult;
+			}
 
 			foreach (var element in declarationResult.CollectionVariable.Values)
 			{
@@ -134,8 +138,8 @@ namespace verse_interpreter.lib.Parser
 			{
 				declarationResult.Value = args.Result.Value;
 			};
-
 			_generalEvaluator.ExecuteExpression(declarationResult.ExpressionResults, declarationResult.Name);
+
 
 			return declarationResult;
 		}

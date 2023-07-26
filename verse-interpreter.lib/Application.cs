@@ -46,10 +46,10 @@ namespace verse_interpreter.lib
 			}
 			_services = BuildService();
 
-            string libraryPath = "..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
-            this.LoadStandardLibrary(libraryPath);
+			//string libraryPath = "..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
+			//this.LoadStandardLibrary(libraryPath);
 
-            ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 			var inputCode = options.Code != null ? options.Code :
 				options.Path != null ? _reader.ReadFileToEnd(options.Path) :
 				throw new ArgumentException("You have to specify either the path or add code!");
@@ -58,7 +58,7 @@ namespace verse_interpreter.lib
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
 			mainVisitor.VisitProgram(parseTree);
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-			Console.ReadKey();
+			//Console.ReadKey();
 		}
 
 		private void RunWithErrorHandling(string[] args)
@@ -132,7 +132,7 @@ namespace verse_interpreter.lib
 				.AddTransient<FunctionDeclarationVisitor>()
 				.AddTransient<TypeDefinitionVisitor>()
 				.AddTransient<TypeConstructorVisitor>()
-				.AddTransient<MainVisitor>()
+				.AddSingleton<MainVisitor>()
 				.AddTransient<TypeInferencer>()
 				.AddTransient<IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
 				.AddTransient<IEvaluator<StringExpression, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
