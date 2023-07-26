@@ -1,3 +1,4 @@
-myArray:=(50,60,70)
-x:=head(myArray)
+myArray:=(1,2,3)
+y:=0
+x:=myArray[y]
 Print(x)

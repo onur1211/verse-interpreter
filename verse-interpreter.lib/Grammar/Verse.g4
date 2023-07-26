@@ -11,7 +11,18 @@ declaration : ID ':' type
             ;
 
 
-value_definition : (INT | ID | NOVALUE | expression | constructor_body | string_rule | choice_rule | array_literal | function_call | array_index | type_member_access | range_expression)
+value_definition : INT #intValueDef 
+                 | ID #variableValueDef 
+                 | NOVALUE #falseValueDef
+                 | expression #expressionValueDef
+                 | constructor_body #constructorValueDef
+                 | string_rule #stringValueDef
+                 | choice_rule #choiceValueDef
+                 | array_literal #arrayValueDef
+                 | function_call #functioncallValueDef
+                 | array_index #arrayindexValueDef
+                 | type_member_access #memberaccessValueDef
+                 | range_expression #rangeValueDef
                  ;
                  
 
@@ -74,9 +85,10 @@ array_elements : value_definition (',' array_elements)*
                | ID (',' array_elements)*
                ;
 
-array_index : ID '[' (INT|ID) ']'
+array_index : ID '[' INT ']' #intArrayIndex
+            | ID '[' ID ']' #variablenameArrayIndex
             ;
-            
+
 bracket_body : '{' block+ '}';
 
 // Functions
