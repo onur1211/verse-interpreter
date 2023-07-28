@@ -87,8 +87,7 @@ array_elements : value_definition (',' array_elements)*
                | ID (',' array_elements)*
                ;
 
-array_index : ID '[' (INT|ID) ']' 
-            | ID '[' declaration ']'
+array_index : ID '[' (INT|ID) ']' #defaultIndexing
             ;
             
 bracket_body : '{' block+ '}';
@@ -118,15 +117,16 @@ param_call_item: value_definition
                ;
 
 // For
-for_rule    : 'for' '{'(NEWLINE)* for_body (NEWLINE)* '}'
+for_rule    : 'for' '{' for_declaration for_expression '}'
             ;
 
-for_body : choice_rule #choiceBody
-         | narrowing_body #narrowingBody
-         ;
-
-narrowing_body : declaration ';' expression
+for_expression : array_index (';' for_expression)? #forArrayIndex
+               | expression (';' for_expression)? #forExpression
+               | choice_rule (';' for_expression)? #forChoice
                ;
+
+for_declaration : declaration ';' for_declaration*
+                  ;
 
 
 // Type definition
@@ -135,15 +135,15 @@ constructor_body : INSTANCE ID '('')'
                  ;
 
 
-type_header : DATA ID '=' ID NEWLINE '{' type_body NEWLINE '}'
-            | DATA ID '=' ID '{' type_body '}'
+type_header : DATA ID '=' ID NEWLINE '{' multi_declaration NEWLINE '}'
+            | DATA ID '=' ID '{' multi_declaration '}'
             ;
             
-type_body : NEWLINE INDENT declaration
-          | NEWLINE INDENT declaration type_body
-          | declaration ',' type_body
-          | declaration
-          ;
+multi_declaration : NEWLINE INDENT declaration
+                  | NEWLINE INDENT declaration multi_declaration
+                  | declaration ',' multi_declaration
+                  | declaration
+                  ;
    
 type_member_definition : type_member_access '=' value_definition
                        ;

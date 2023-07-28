@@ -36,13 +36,12 @@ namespace verse_interpreter.lib.ParseVisitors.Types
             return _customType;
         }
 
-        public override CustomType VisitType_body([NotNull] Verse.Type_bodyContext context)
-        {
-            // Gets all the variables and adds it to the classes scope
-            var res = context.declaration().Accept(_declarationVisitor);
-            _customType.AddScopedVariable(res);
-            return VisitChildren(context);
-        }
-
+		public override CustomType VisitMulti_declaration([NotNull] Verse.Multi_declarationContext context)
+		{
+			// Gets all the variables and adds it to the classes scope
+			var res = context.declaration().Accept(_declarationVisitor);
+			_customType.AddScopedVariable(res);
+			return VisitChildren(context);
+		}
     }
 }

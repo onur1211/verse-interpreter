@@ -139,11 +139,11 @@ namespace verse_interpreter.lib.ParseVisitors
 			return null!;
 		}
 
-		public override object VisitFor_body([NotNull] Verse.For_bodyContext context)
-		{
-			_forVisitor.Visit(context);
-			return null!;
-		}
+		//public override object VisitFor_body([NotNull] Verse.For_bodyContext context)
+		//{
+		//	_forVisitor.Visit(context);
+		//	return null!;
+		//}
 
 		public override object VisitLambdaFunc([NotNull] Verse.LambdaFuncContext context)
 		{

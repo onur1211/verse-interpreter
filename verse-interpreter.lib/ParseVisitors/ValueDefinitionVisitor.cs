@@ -166,7 +166,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			return _arrayVisitor.Visit(context);
 		}
 
-		public override DeclarationResult VisitArray_index([NotNull] Verse.Array_indexContext context)
+		public override DeclarationResult VisitDefaultIndexing([NotNull] Verse.DefaultIndexingContext context)
 		{
 			return _arrayVisitor.Visit(context);
 		}

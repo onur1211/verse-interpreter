@@ -93,10 +93,9 @@ namespace verse_interpreter.lib.ParseVisitors
 			return _typeInferencer.InferGivenType(declarationResult);
 		}
 
-		public override DeclarationResult VisitArray_index([NotNull] Verse.Array_indexContext context)
+		public override DeclarationResult VisitDefaultIndexing([NotNull] Verse.DefaultIndexingContext context)
 		{
 			string index = String.Empty;
-
 			// Check if the given index is a number
 			// Example: myArray[0] -> 0
 			if (context.INT() != null)

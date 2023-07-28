@@ -8,5 +8,11 @@ namespace verse_interpreter.lib.Data.ResultObjects
 {
 	public class ForResult
 	{
+		public List<Variable> LocalVariables { get; set; }
+
+		public ForResult()
+		{
+			LocalVariables = new List<Variable>();
+		}
 	}
 }
