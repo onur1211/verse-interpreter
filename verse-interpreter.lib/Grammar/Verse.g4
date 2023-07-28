@@ -154,7 +154,7 @@ choice_rule : choice_value '|' choice_value
             
 // Conditionals
 
-if_block    : 'if' '(' expression ')' then_block else_block 
+if_block    : 'if' '(' logical_expression ')' then_block else_block 
             ;
 
 then_block : (NEWLINE* INDENT*) 'then' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
@@ -162,6 +162,13 @@ then_block : (NEWLINE* INDENT*) 'then' (NEWLINE* INDENT*) '{' NEWLINE* body NEWL
 
 else_block : (NEWLINE* INDENT*) 'else' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
            ;
+
+
+// Logical operators
+logical_expression: (NOT)? expression (OR expression)*
+                  | (NOT)? expression (AND expression)*
+                  | (NOT)? expression
+                  ;
 
 
 // Math expression rules

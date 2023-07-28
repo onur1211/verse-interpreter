@@ -1,7 +1,5 @@
-x:int
-y:int
-z:int
-x = y + z
-y = 2
-z = 3
-Print(x)
+funkyFunc(x:int,y:int):void {
+    if (x=1 and y=1) then {Print("true")} else {Print("false")}
+}
+
+funkyFunc(1,1)

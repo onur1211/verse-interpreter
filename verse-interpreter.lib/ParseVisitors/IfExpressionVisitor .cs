@@ -33,7 +33,7 @@ namespace verse_interpreter.lib.ParseVisitors
 
         public override List<Verse.BlockContext> VisitIf_block(Verse.If_blockContext context)
         {
-            var result = _expressionVisitor.Visit(context.expression());
+            var result = _expressionVisitor.Visit(context.logical_expression());
             ComparisonExpression expression = null;
             _generalEvaluator.ComparisonExpressionResolved += (sender, args) =>
             {
