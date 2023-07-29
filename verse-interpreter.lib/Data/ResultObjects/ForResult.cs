@@ -9,10 +9,12 @@ namespace verse_interpreter.lib.Data.ResultObjects
 	public class ForResult
 	{
 		public List<Variable> LocalVariables { get; set; }
+		public List<ChoiceResult> Choices { get; set; }
 
 		public ForResult()
 		{
 			LocalVariables = new List<Variable>();
+			Choices = new List<ChoiceResult>();
 		}
 	}
 }

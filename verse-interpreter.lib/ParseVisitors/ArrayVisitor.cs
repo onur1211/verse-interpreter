@@ -131,7 +131,11 @@ namespace verse_interpreter.lib.ParseVisitors
 				// Check if the value of the variable is a number
 				if (variableValue.Value.IntValue == null)
 				{
-					throw new InvalidTypeException(nameof(variableValue));
+					return new DeclarationResult()
+					{
+						IndexedVariable = variableValue,
+						TypeName = variableValue.Value.TypeData.Name
+					};
 				}
 
 				index = variableValue.Value.IntValue.ToString()!;

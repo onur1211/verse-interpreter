@@ -25,6 +25,7 @@ using verse_interpreter.lib.ParseVisitors.Functions;
 using verse_interpreter.lib.ParseVisitors.Types;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.ParseVisitors.Choice;
+using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
 
 namespace verse_interpreter.lib
 {
@@ -141,6 +142,7 @@ namespace verse_interpreter.lib
 				.AddTransient<IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>, ArithmeticEvaluator>()
 				.AddTransient<IEvaluator<StringExpression, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
 				.AddTransient<IEvaluator<ComparisonExpression, List<List<ExpressionResult>>>, ComparisonEvaluator>()
+				.AddTransient<IEvaluator<object, ForResult>, ForEvaluator>()
 				.AddTransient<IValidator<List<List<ExpressionResult>>>, ExpressionValidator>()
 				.AddTransient<IValidator<FunctionCall>, ParameterValidator>()
 				.AddTransient<CustomTypeFactory>()
@@ -161,6 +163,7 @@ namespace verse_interpreter.lib
 				.AddTransient<IfExpressionVisitor>()
 				.AddTransient<ForVisitor>()
 				.AddTransient<ChoiceVisitor>()
+				.AddTransient<ChoiceArrayIndexingVisitor>()
 				.AddTransient<ArrayVisitor>()
 				.AddTransient<PropertyResolver>()
 				.AddTransient<PredefinedFunctionInitializer>()

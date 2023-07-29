@@ -23,20 +23,17 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 
 		private ForResult _result;
 
-		public override ForResult VisitForChoice([NotNull] Verse.ForChoiceContext context)
+		public override ForResult VisitFor_rule([NotNull] Verse.For_ruleContext context)
 		{
-			var res = _choiceVisitor.VisitForChoice(context);
+			VisitChildren(context);
 			return _result;
 		}
 
-		public override ForResult VisitForArrayIndex([NotNull] Verse.ForArrayIndexContext context)
+		public override ForResult VisitForChoice([NotNull] Verse.ForChoiceContext context)
 		{
-			return base.VisitForArrayIndex(context);
-		}
-
-		public override ForResult VisitForExpression([NotNull] Verse.ForExpressionContext context)
-		{
-			return base.VisitForExpression(context);
+			var res = _choiceVisitor.VisitForChoice(context);
+			_result.Choices.Add(res);
+			return _result;
 		}
 
 		public override ForResult VisitFor_declaration([NotNull] Verse.For_declarationContext context)

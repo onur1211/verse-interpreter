@@ -3,6 +3,8 @@ using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
+using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
+using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.IO;
@@ -20,6 +22,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly TypeHandlingWrapper _typeHandlingWrapper;
 		private readonly GeneralEvaluator _generalEvaluator;
 		private readonly ForVisitor _forVisitor;
+		private readonly IEvaluator<object, ForResult> _forEvaluator;
 		private readonly IfExpressionVisitor _ifExpressionVisitor;
 
 		public MainVisitor(ApplicationState applicationState,
@@ -29,6 +32,7 @@ namespace verse_interpreter.lib.ParseVisitors
 						   TypeHandlingWrapper typeHandlingWrapper,
 						   GeneralEvaluator generalEvaluator,
 						   ForVisitor forVisitor,
+						   IEvaluator<object, ForResult> forEvaluator,
 						   IfExpressionVisitor ifExpressionVisitor) : base(applicationState)
 		{
 			_declarationVisitor = declarationVisitor;
@@ -38,6 +42,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			_functionWrapper.FunctionCallVisitor.FunctionRequestedExecution += FunctionRequestedExecutionCallback;
 			_generalEvaluator = generalEvaluator;
 			_forVisitor = forVisitor;
+			_forEvaluator = forEvaluator;
 			ApplicationState.CurrentScope.LookupManager.VariableBound +=
 				_generalEvaluator.Propagator.HandleVariableBound!;
 			_ifExpressionVisitor = ifExpressionVisitor;
@@ -139,11 +144,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			return null!;
 		}
 
-		//public override object VisitFor_body([NotNull] Verse.For_bodyContext context)
-		//{
-		//	_forVisitor.Visit(context);
-		//	return null!;
-		//}
+
 
 		public override object VisitLambdaFunc([NotNull] Verse.LambdaFuncContext context)
 		{
@@ -161,7 +162,9 @@ namespace verse_interpreter.lib.ParseVisitors
 
 		public override object VisitFor_rule([NotNull] Verse.For_ruleContext context)
 		{
-			return _forVisitor.Visit(context);
+			var forExpression = _forVisitor.Visit(context);
+			_forEvaluator.Evaluate(forExpression);
+			return null!;
 		}
 	}
 }

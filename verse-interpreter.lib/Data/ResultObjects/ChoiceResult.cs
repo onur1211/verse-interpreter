@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.ParseVisitors.Choice;
 
 namespace verse_interpreter.lib.Data.ResultObjects
 {
 	public class ChoiceResult
 	{
-		public List<Variable> PossibleValues { get; set; }
-		public string Target { get; set; }
+		public List<ArrayIndexingResult> IndexingResults { get; set; }
 
-        public ChoiceResult(string target)
+        public ChoiceResult()
         {
-			this.Target = target;
-			this.PossibleValues = new List<Variable>();
+			this.IndexingResults = new List<ArrayIndexingResult>();
         }
     }
 }
