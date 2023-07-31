@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
@@ -50,6 +51,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 
         private ArithmeticExpression? ArithmeticExpression { get; set; }
         private StringExpression? StringExpression { get; set; }
+        private ForExpression? ForExpression { get; set; }
 
         public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
         {
@@ -75,6 +77,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
             {
                 ArithmeticExpression = ArithmeticExpression,
                 StringExpression = StringExpression,
+                ForExpression = ForExpression,
                 IsVoid = functionCall.Function.ReturnType == "void",
             };
         }
@@ -115,6 +118,11 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
         public void OnResultEvaluated(StringExpression stringExpression)
         {
             StringExpression = stringExpression;
+        }
+
+        public void OnResultEvaluated(ForExpression forExpression)
+        {
+            ForExpression = forExpression;
         }
     }
 }

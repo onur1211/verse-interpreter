@@ -39,7 +39,6 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 		public override ForResult VisitFor_declaration([NotNull] Verse.For_declarationContext context)
 		{
 			ParseDeclarationsRecursively(context, _result);
-			_result.LocalVariables.ForEach(x => ApplicationState.CurrentScope.AddScopedVariable(x));
 			return _result;
 		}
 

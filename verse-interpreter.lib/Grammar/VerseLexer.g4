@@ -26,6 +26,7 @@ STRINGTYPE: 'string';
 COLLECTIONTYPE: ID'[]';
 DATA : 'data';
 VOID : 'void';
+ARRAY: 'array';
 // Operators
 PLUS : '+' ;
 MINUS : '-' ;

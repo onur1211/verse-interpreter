@@ -1,5 +1,6 @@
 ﻿using Antlr4.Runtime.Misc;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
@@ -22,7 +23,6 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly TypeHandlingWrapper _typeHandlingWrapper;
 		private readonly GeneralEvaluator _generalEvaluator;
 		private readonly ForVisitor _forVisitor;
-		private readonly IEvaluator<object, ForResult> _forEvaluator;
 		private readonly IfExpressionVisitor _ifExpressionVisitor;
 
 		public MainVisitor(ApplicationState applicationState,
@@ -32,7 +32,6 @@ namespace verse_interpreter.lib.ParseVisitors
 						   TypeHandlingWrapper typeHandlingWrapper,
 						   GeneralEvaluator generalEvaluator,
 						   ForVisitor forVisitor,
-						   IEvaluator<object, ForResult> forEvaluator,
 						   IfExpressionVisitor ifExpressionVisitor) : base(applicationState)
 		{
 			_declarationVisitor = declarationVisitor;
@@ -42,12 +41,12 @@ namespace verse_interpreter.lib.ParseVisitors
 			_functionWrapper.FunctionCallVisitor.FunctionRequestedExecution += FunctionRequestedExecutionCallback;
 			_generalEvaluator = generalEvaluator;
 			_forVisitor = forVisitor;
-			_forEvaluator = forEvaluator;
 			ApplicationState.CurrentScope.LookupManager.VariableBound +=
 				_generalEvaluator.Propagator.HandleVariableBound!;
 			_ifExpressionVisitor = ifExpressionVisitor;
 			_generalEvaluator.ArithmeticExpressionResolved += ArithmeticExpressionResolved;
 			_generalEvaluator.StringExpressionResolved += StringExpressionResolved;
+			_generalEvaluator.ForExpressionResolved += ForExpressionResolved;
 		}
 
 		private void StringExpressionResolved(object? sender, StringExpressionResolvedEventArgs e)
@@ -70,6 +69,15 @@ namespace verse_interpreter.lib.ParseVisitors
 			}
 
 			Printer.PrintResult(e.Result);
+		}
+
+		private void ForExpressionResolved(object? sender, ForExpressionResolvedEventArgs eventArgs)
+		{
+			if (ApplicationState.CurrentScopeLevel > 1)
+			{
+				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(eventArgs.ForExpression);
+				return;
+			}
 		}
 
 		private void FunctionRequestedExecutionCallback(object? sender, FunctionRequestedExecutionEventArgs e)
@@ -163,8 +171,8 @@ namespace verse_interpreter.lib.ParseVisitors
 		public override object VisitFor_rule([NotNull] Verse.For_ruleContext context)
 		{
 			var forExpression = _forVisitor.Visit(context);
-			_forEvaluator.Evaluate(forExpression);
-			return null!;
+			_generalEvaluator.ExecuteExpression(forExpression);
+			return null;
 		}
 	}
 }

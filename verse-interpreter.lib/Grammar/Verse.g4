@@ -11,19 +11,18 @@ declaration : ID ':' type
             ;
 
 
-value_definition : INT
-                 | ID 
-                 | NOVALUE 
-                 | expression 
+value_definition :  expression 
                  | constructor_body 
-                 | string_rule 
-                 | array_literal 
+                 | string_rule  
                  | function_call 
                  | array_index 
+                 | array_literal
                  | type_member_access 
                  | range_expression
+                 | INT
+                 | ID 
+                 | NOVALUE 
                  ;
-                 
 
 program : function_definition program
         | for_rule program
@@ -77,8 +76,8 @@ range_expression    : INT RANGE INT
 
 
 // Arrays/Tuples
-array_literal : '(' array_elements ')'
-              | '('')'
+array_literal : 'array''(' array_elements ')'
+              | 'array''('')'
               ;
 
 

@@ -73,5 +73,18 @@ namespace verse_interpreter.lib
 
 			return (Function)function;
 		}
+
+		public void AddScope()
+		{
+			CurrentScopeLevel += 1;
+			var newScope = new CurrentScope(CurrentScopeLevel + 1);
+			Scopes.Add(CurrentScopeLevel, newScope);
+		}
+
+		public void DropScope()
+		{
+			Scopes.Remove(CurrentScopeLevel);
+			CurrentScopeLevel -= 1;
+		}
 	}
 }

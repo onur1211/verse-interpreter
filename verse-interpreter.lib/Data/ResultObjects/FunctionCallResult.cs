@@ -14,6 +14,7 @@ namespace verse_interpreter.lib.Data.ResultObjects
 
         public StringExpression? StringExpression { get; set; }
 
+        public ForExpression? ForExpression { get; set; }
 
         public bool IsVoid { get; set; }
     }

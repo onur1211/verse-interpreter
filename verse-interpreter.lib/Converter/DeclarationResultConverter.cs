@@ -26,6 +26,12 @@ namespace verse_interpreter.lib.Converter
 				declarationResult.TypeName = "string";
 			}
 
+			if(result.ForExpression != null)
+			{
+				declarationResult.CollectionVariable = result.ForExpression.Collection;
+				declarationResult.TypeName = "collection";
+			}
+
 			return declarationResult;
 		}
 	}

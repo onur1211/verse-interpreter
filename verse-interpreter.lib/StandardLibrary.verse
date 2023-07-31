@@ -14,6 +14,10 @@ fac(x:int):int {
     if(x=0) then { 1 + 0 } else { fac(x-1) * x}
 }
 
-head(array:collection):int {
-    array[0]+0
+head(x:collection):int {
+    x[0]+0
+}
+
+append(x:collection, y:collection):collection {
+    for{a:int; b:int; x[a] | y[b] }
 }

@@ -33,6 +33,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         public event EventHandler<StringExpressionResolvedEventArgs>? StringExpressionResolved;
         public event EventHandler<ComparisonExpressionResolvedEventArgs>? ComparisonExpressionResolved;
         public event EventHandler<ExpressionWithNoValueFoundEventArgs>? ExpressionWithNoValueFound;
+        public event EventHandler<ForExpressionResolvedEventArgs>? ForExpressionResolved;
 
         public BackpropagationEventSystem Propagator => _propagator;
 
@@ -95,6 +96,17 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 default:
                     throw new UnknownTypeException(typeName);
             }
+        }
+
+        public void ExecuteExpression(ForResult forExpression, string? identifier = null)
+        {
+            var res = _evaluatorWrapper.ForEvaluator.Evaluate(forExpression);
+            //if(res.PostponedExpression != null)
+            //{
+            //    throw new NotImplementedException();
+            //}
+
+            ForExpressionResolved?.Invoke(this, new ForExpressionResolvedEventArgs(res));
         }
 
         private void HandleComparisonExpression(List<List<ExpressionResult>> expressions, string? identifier)

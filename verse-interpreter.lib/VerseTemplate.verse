@@ -1,5 +1,4 @@
-x := (1,2,3)
-y := (4,5,6)
-for{a:int; b:int; x[a] | y[b]}
-
-# 1 | 2 | 3 | 4 | 5 | 6
+x := array(1,2,3)
+y := array(4,5,6)
+z := append(x,y)
+z[0] + z[4]
