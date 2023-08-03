@@ -165,9 +165,9 @@ else_block : (NEWLINE* INDENT*) 'else' (NEWLINE* INDENT*) '{' NEWLINE* body NEWL
 
 
 // Logical operators
-logical_expression: (NOT)? expression (OR expression)*
+logical_expression: (NOT)? expression
                   | (NOT)? expression (AND expression)*
-                  | (NOT)? expression
+                  | (NOT)? expression (OR expression)*
                   ;
 
 
