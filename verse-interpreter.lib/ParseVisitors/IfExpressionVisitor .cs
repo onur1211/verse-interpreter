@@ -35,6 +35,7 @@ namespace verse_interpreter.lib.ParseVisitors
 
         public override List<Verse.BlockContext> VisitIf_block(Verse.If_blockContext context)
         {
+            bool NOTOperator = false;
             List<ComparisonExpression> compExpressions = new List<ComparisonExpression>();
 
             _generalEvaluator.ComparisonExpressionResolved += (sender, args) =>
@@ -48,6 +49,12 @@ namespace verse_interpreter.lib.ParseVisitors
             if (logicalExpressionContext == null)
             {
                 throw new ArgumentNullException(nameof(logicalExpressionContext), "Error: There was no valid logical expression given in the if statement!");
+            }
+
+            // Check if there is a NOT (!) operator token.
+            if (logicalExpressionContext.NOT() != null)
+            {
+                NOTOperator = true;
             }
 
             // Check if there are AND or OR conjunctions and get all expression results.
@@ -80,17 +87,17 @@ namespace verse_interpreter.lib.ParseVisitors
             switch (true)
             {
                 case bool when logicalExpressionContext.AND().Length > 0:
-                    return EvaluateAndConjunction(context, compExpressions);
+                    return EvaluateAndConjunction(context, compExpressions, NOTOperator);
 
                 case bool when logicalExpressionContext.OR().Length > 0:
-                    return EvaluateOrConjunction(context, compExpressions);
+                    return EvaluateOrConjunction(context, compExpressions, NOTOperator);
 
                 default:
-                    return EvaluateDefaultNoConjunction(context, compExpressions);
+                    return EvaluateDefaultNoConjunction(context, compExpressions, NOTOperator);
             }
         }
 
-        private List<Verse.BlockContext> EvaluateAndConjunction(Verse.If_blockContext context, List<ComparisonExpression> compExpressions)
+        private List<Verse.BlockContext> EvaluateAndConjunction(Verse.If_blockContext context, List<ComparisonExpression> compExpressions, bool NOTOperator)
         {
             // Check if one expression is false
             // If even one expression is false then parse the 'else' block
@@ -106,7 +113,7 @@ namespace verse_interpreter.lib.ParseVisitors
             return ParseThenBlock(context);
         }
 
-        private List<Verse.BlockContext> EvaluateOrConjunction(Verse.If_blockContext context, List<ComparisonExpression> compExpressions)
+        private List<Verse.BlockContext> EvaluateOrConjunction(Verse.If_blockContext context, List<ComparisonExpression> compExpressions, bool NOTOperator)
         {
             // Check if at least one expression is true
             // If true then parse the 'then' block
@@ -122,16 +129,30 @@ namespace verse_interpreter.lib.ParseVisitors
             return ParseElseBlock(context);
         }
 
-        private List<Verse.BlockContext> EvaluateDefaultNoConjunction(Verse.If_blockContext context, List<ComparisonExpression> compExpressions)
+        private List<Verse.BlockContext> EvaluateDefaultNoConjunction(Verse.If_blockContext context, List<ComparisonExpression> compExpressions, bool NOTOperator)
         {
-            // If the expression is true then parse the 'then' block
-            if (compExpressions.First().Value != null)
+            if (NOTOperator)
             {
-                return ParseThenBlock(context);
-            }
+                // If the expression is false then parse the 'then' block
+                if (compExpressions.First().Value == null)
+                {
+                    return ParseThenBlock(context);
+                }
 
-            // Otherwise parse the 'else' block
-            return ParseElseBlock(context);
+                // Otherwise parse the 'else' block
+                return ParseElseBlock(context);
+            }
+            else
+            {
+                // If the expression is true then parse the 'then' block
+                if (compExpressions.First().Value != null)
+                {
+                    return ParseThenBlock(context);
+                }
+
+                // Otherwise parse the 'else' block
+                return ParseElseBlock(context);
+            }
         }
 
         private List<Verse.BlockContext> ParseThenBlock(Verse.If_blockContext context)
