@@ -2,8 +2,10 @@
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Data.ResultObjects.Expressions;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
+using verse_interpreter.lib.ParseVisitors.Expressions;
 
 namespace verse_interpreter.lib.ParseVisitors.Choice
 {
@@ -11,13 +13,19 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 	{
 		private readonly ChoiceVisitor _choiceVisitor;
 		private readonly Lazy<DeclarationParser> _declarationParser;
+		private readonly ExpressionVisitor _expressionVisitor;
+		private readonly PrimaryRuleParser _primaryParser;
 
 		public ForVisitor(ApplicationState applicationState,
 						  ChoiceVisitor choiceVisitor,
-						  Lazy<DeclarationParser> declarationParser) : base(applicationState)
+						  Lazy<DeclarationParser> declarationParser,
+						  ExpressionVisitor expressionVisitor,
+					      PrimaryRuleParser primaryParser) : base(applicationState)
 		{
 			_choiceVisitor = choiceVisitor;
 			_declarationParser = declarationParser;
+			_expressionVisitor = expressionVisitor;
+			_primaryParser = primaryParser;
 			_result = new ForResult();
 		}
 
@@ -32,8 +40,24 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 		public override ForResult VisitForChoice([NotNull] Verse.ForChoiceContext context)
 		{
 			var res = _choiceVisitor.VisitForChoice(context);
-			_result.Choices.Add(res);
+			_result.Choices = res;
 			return _result;
+		}
+
+		public override ForResult VisitForPrimary([NotNull] Verse.ForPrimaryContext context)
+		{
+			var result = _primaryParser.ParsePrimary(context.primary());
+			return base.VisitForPrimary(context);
+		}
+
+		public override ForResult VisitForExpression([NotNull] Verse.ForExpressionContext context)
+		{
+			var resultSet = new ExpressionSet(_expressionVisitor.Visit(context.expression()));
+			if(IsComparisionExpression(resultSet))
+			{
+				_result.Filters.Add(resultSet);
+			}
+			return base.VisitForExpression(context);
 		}
 
 		public override ForResult VisitFor_declaration([NotNull] Verse.For_declarationContext context)
@@ -59,6 +83,19 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 			}
 
 			return initialResult;
+		}
+
+		private bool IsComparisionExpression(ExpressionSet expressionSet)
+		{
+			foreach (var expression in expressionSet.Expressions)
+			{
+				if (expression.Any(x => x.Operator != string.Empty && (x.Operator == ">" || x.Operator == "<" || x.Operator == "=")))
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }

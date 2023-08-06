@@ -34,8 +34,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 			_applicationState.AddScope();
 
 			PrepareLocalVariables(input.LocalVariables);
-			ApplyFilter(input);
-			resultSequence.AddRange(HandleArrayChoices(input));
+			resultSequence.AddRange(TraverseChoices(input));
 
 			_applicationState.DropScope();
 
@@ -57,20 +56,29 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 			}
 		}
 
-		private void ApplyFilter(ForResult input)
+		private bool DoesFilterMatch(Variable input)
 		{
 			// Not implemented yet
+			return true;
 		}
 
-		private List<Variable> HandleArrayChoices(ForResult input)
+		private List<Variable> TraverseChoices(ForResult input)
 		{
 			List<Variable> sequence = new List<Variable>();
-			foreach (var choice in input.Choices)
+			var current = input.Choices;
+
+			while(current != null)
 			{
-				foreach (var indexing in choice.IndexingResults)
+				foreach (var indexing in current.IndexingResults)
 				{
 					sequence.AddRange(ExpandArrayToChoice(indexing.ArrayIdentifier, indexing.Indexer));
 				}
+				foreach(var literal in current.Literals)
+				{
+					sequence.Add(literal);
+				}
+
+				current = current.Next;
 			}
 
 			return sequence;
@@ -90,18 +98,14 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 			List<Variable> result = new List<Variable>();
 			while (indexerVariable.Value.IntValue != array.Value.CollectionVariable.Values.Count)
 			{
-				result.Add(array.Value.CollectionVariable.Values[indexerVariable.Value.IntValue.Value]);
+				if (DoesFilterMatch(indexerVariable))
+				{
+					result.Add(array.Value.CollectionVariable.Values[indexerVariable.Value.IntValue.Value]);
+				}
 				indexerVariable.Value.IntValue++;
 			}
 
 			return result;
 		}
-
-		private List<Variable> HandleExpressionChoice()
-		{
-			return null;
-		}
-		// Check if variables have value or not 
-		// 
 	}
 }

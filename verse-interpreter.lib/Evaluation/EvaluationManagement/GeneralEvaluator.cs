@@ -101,10 +101,10 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         public void ExecuteExpression(ForResult forExpression, string? identifier = null)
         {
             var res = _evaluatorWrapper.ForEvaluator.Evaluate(forExpression);
-            //if(res.PostponedExpression != null)
-            //{
-            //    throw new NotImplementedException();
-            //}
+            if (res.PostponedExpression != null)
+            {
+                throw new NotImplementedException();
+            }
 
             ForExpressionResolved?.Invoke(this, new ForExpressionResolvedEventArgs(res));
         }

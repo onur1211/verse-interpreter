@@ -116,10 +116,10 @@ param_call_item: value_definition
                ;
 
 // For
-for_rule    : 'for' '{' for_declaration for_expression '}'
+for_rule    : 'for' '{' for_declaration? for_expression '}'
             ;
 
-for_expression : array_index (';' for_expression)? #forArrayIndex
+for_expression : primary (';' for_expression)? #forPrimary
                | expression (';' for_expression)? #forExpression
                | choice_rule (';' for_expression)? #forChoice
                ;
@@ -156,12 +156,8 @@ type_member_access : type_member_access '.' ID
 string_rule : SEARCH_TYPE
             ;
 
-choice_rule : value_definition multi_choice_rule
+choice_rule : value_definition ( '|' choice_rule)*
             ;
-
-multi_choice_rule :
-                  | '|' value_definition multi_choice_rule
-                  ;
 
             
 // Conditionals

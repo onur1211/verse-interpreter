@@ -3,6 +3,7 @@ using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data.ResultObjects;
@@ -14,30 +15,60 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 	public class ChoiceVisitor : AbstractVerseVisitor<ChoiceResult>
 	{
 		private readonly ChoiceArrayIndexingVisitor _indexingVisitor;
+		private readonly ValueDefinitionVisitor valueDefinitionVisitor;
 
-		public ChoiceVisitor(ApplicationState applicationState, ChoiceArrayIndexingVisitor indexingVisitor) : base(applicationState)
+		public ChoiceVisitor(ApplicationState applicationState,
+			ChoiceArrayIndexingVisitor indexingVisitor,
+			ValueDefinitionVisitor valueDefinitionVisitor) : base(applicationState)
 		{
 			_indexingVisitor = indexingVisitor;
+			this.valueDefinitionVisitor = valueDefinitionVisitor;
 		}
 
 		public override ChoiceResult VisitChoice_rule([NotNull] Verse.Choice_ruleContext context)
 		{
-			ChoiceResult result = new ChoiceResult();
-			result.IndexingResults.Add(_indexingVisitor.Visit(context.value_definition().array_index()));
-
-			return ParseChoices(context.multi_choice_rule(), result);
+			return GenerateChoiceResult(context, new());
 		}
 
-		private ChoiceResult ParseChoices(Verse.Multi_choice_ruleContext context, ChoiceResult result)
+		private ChoiceResult GenerateChoiceResult(Verse.Choice_ruleContext context, ChoiceResult result)
 		{
-			if (context == null || context.value_definition() == null)
+			ParseChoices(context, result);
+			ParseLiterals(context, result);
+
+			foreach (var childNodes in context.choice_rule())
+			{
+				result.Next = new ChoiceResult();
+				GenerateChoiceResult(childNodes, result.Next);
+			}
+
+			return result;
+		}
+
+		private ChoiceResult ParseChoices([NotNull] Verse.Choice_ruleContext context, ChoiceResult result)
+		{
+			if (context == null ||
+				context.value_definition().array_index() == null)
 			{
 				return result;
 			}
 
 			var arrayIndex = _indexingVisitor.Visit(context.value_definition().array_index());
 			result.IndexingResults.Add(arrayIndex);
-			return ParseChoices(context.multi_choice_rule(), result);
+
+			return result;
+		}
+
+		private ChoiceResult ParseLiterals([NotNull] Verse.Choice_ruleContext context, ChoiceResult result)
+		{
+			if (context == null ||
+				context.value_definition() == null ||
+				context.value_definition().array_index() != null)
+			{
+				return result;
+			}
+
+			result.Literals.Add(Converter.VariableConverter.Convert(valueDefinitionVisitor.Visit(context?.value_definition())));
+			return result;
 		}
 	}
 }

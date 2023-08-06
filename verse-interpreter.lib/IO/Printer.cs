@@ -36,6 +36,15 @@ namespace verse_interpreter.lib.IO
                 PrintResult(result.StringExpression.Value);
                 return;
             }
+            if (result.ForExpression != null)
+            {
+                foreach (var element in result.ForExpression.Collection.Values)
+                {
+                    Console.Write($"{element.Value.IntValue} ");
+					Console.Write($"{element.Value.StringValue} ");
+				}
+                return;
+			}
 
             throw new NotImplementedException();
         }

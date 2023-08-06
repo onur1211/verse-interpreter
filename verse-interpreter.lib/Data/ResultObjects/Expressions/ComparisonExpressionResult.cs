@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace verse_interpreter.lib.Data.ResultObjects
+namespace verse_interpreter.lib.Data.ResultObjects.Expressions
 {
     public class ComparisonExpressionResult
     {

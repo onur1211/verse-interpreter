@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data.ResultObjects.Expressions;
 
 namespace verse_interpreter.lib.Data.ResultObjects
 {
 	public class ForResult
 	{
 		public List<Variable> LocalVariables { get; set; }
-		public List<ChoiceResult> Choices { get; set; }
+		public ChoiceResult Choices { get; set; }
+		public List<ExpressionSet> Filters { get; set; }
 
 		public ForResult()
 		{
 			LocalVariables = new List<Variable>();
-			Choices = new List<ChoiceResult>();
+			Filters = new List<ExpressionSet>();
 		}
 	}
 }

@@ -9,8 +9,8 @@ namespace verse_interpreter.lib.Data.Expressions
 {
 	public class ForExpression : IExpression<ForExpression>
 	{
-		public Func<ForExpression>? PostponedExpression { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public Func<ForExpression>? PostponedExpression { get; set; }
 
-		public VerseCollection Collection { get; internal set; }
-	}
+		public VerseCollection? Collection { get; set; }
+    }
 }
