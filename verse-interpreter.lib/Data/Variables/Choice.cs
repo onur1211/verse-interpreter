@@ -31,7 +31,7 @@ namespace verse_interpreter.lib.Data.Variables
 			if (ValueObject.IntValue == null)
 			{
 				ValueObject.IntValue = value;
-				return; 
+				return;
 			}
 
 			choice.Next = null;
@@ -46,7 +46,17 @@ namespace verse_interpreter.lib.Data.Variables
 
 		public IEnumerable<Choice> AllChoices()
 		{
-			return null;
+			var current = this;
+			if (current.Next == null)
+			{
+				yield return current;
+			}
+
+			while (current.Next != null)
+			{
+				current = current.Next;
+				yield return current;
+			}
 		}
 	}
 }
