@@ -15,16 +15,16 @@ namespace verse_interpreter.lib.ParseVisitors
 {
 	public class ArrayVisitor : AbstractVerseVisitor<DeclarationResult>
 	{
-		private readonly PropertyResolver _resolver;
-		private readonly TypeInferencer _typeInferencer;
-		private readonly CollectionParser _collectionParser;
+		private readonly Lazy<PropertyResolver> _resolver;
+		private readonly Lazy<TypeInferencer> _typeInferencer;
+		private readonly Lazy<CollectionParser> _collectionParser;
 		private readonly Lazy<DeclarationParser> _declarationParser;
 		private readonly Lazy<ValueDefinitionVisitor> _valueDefinitionVisitor;
 
 		public ArrayVisitor(ApplicationState applicationState,
-									PropertyResolver propertyResolver,
-									TypeInferencer typeInferencer,
-									CollectionParser collectionParser,
+									Lazy<PropertyResolver> propertyResolver,
+									Lazy<TypeInferencer> typeInferencer,
+									Lazy<CollectionParser> collectionParser,
 									Lazy<DeclarationParser> declarationParser,
 									Lazy<ValueDefinitionVisitor> valueDefinitionVisitor) : base(applicationState)
 		{
@@ -39,7 +39,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			List<Variable> variables = new List<Variable>();
 			DeclarationResult rangeExpressionResult = new DeclarationResult();
-			var result = _collectionParser.GetParameters(context.array_elements());
+			var result = _collectionParser.Value.GetParameters(context.array_elements());
 			// Check if there are value elements in the collection
 			// Example: myArray:=(1,2,3) => 1,2 and 3 are value elements
 			if (result.ValueElements != null)
@@ -90,7 +90,7 @@ namespace verse_interpreter.lib.ParseVisitors
 				declarationResult = rangeExpressionResult;
 			}
 
-			return _typeInferencer.InferGivenType(declarationResult);
+			return _typeInferencer.Value.InferGivenType(declarationResult);
 		}
 
 		public override DeclarationResult VisitDefaultIndexing([NotNull] Verse.DefaultIndexingContext context)
@@ -126,7 +126,7 @@ namespace verse_interpreter.lib.ParseVisitors
 				}
 
 				// Get the actual variable
-				Variable variableValue = _resolver.ResolveProperty(variableName);
+				Variable variableValue = _resolver.Value.ResolveProperty(variableName);
 
 				// Check if the value of the variable is a number
 				if (variableValue.Value.IntValue == null)
@@ -154,7 +154,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			}
 
 			// Get the array from the lookup manager
-			Variable array = _resolver.ResolveProperty(name);
+			Variable array = _resolver.Value.ResolveProperty(name);
 
 			// If the array has no value or is null then throw exception
 			if (array == null || !array.HasValue())
@@ -219,7 +219,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			declarationResult.CollectionVariable = new VerseCollection(anonymVariables);
 			declarationResult.CollectionVariable.Values = anonymVariables;
 
-			return _typeInferencer.InferGivenType(declarationResult);
+			return _typeInferencer.Value.InferGivenType(declarationResult);
 		}
 
 		private DeclarationResult GetArrayValueAtIndex(string index, Variable array)
@@ -243,7 +243,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			}
 
 			// Get the value of the variable depending on its variable type
-			return _typeInferencer.InferGivenType(declarationResult);
+			return _typeInferencer.Value.InferGivenType(declarationResult);
 		}
 	}
 }

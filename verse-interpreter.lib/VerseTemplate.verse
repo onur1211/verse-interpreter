@@ -1,7 +1,8 @@
-test(x:collection, y:int):collection {
-    for{a:int; 88 | x[a] | 69 | y}
+tail(x:collection):collection {
+    for{i:int; i>0; x[i]}
 }
 
-x := array(1,2,3)
-z := array(4,5,6)
-tail(x)
+x := array(1,2,3,4,5)
+y := tail(x)
+
+

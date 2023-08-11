@@ -1,4 +1,5 @@
 ﻿using verse_interpreter.lib.Data.CustomTypes;
+using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.Variables;
 
 namespace verse_interpreter.lib.Data
@@ -30,6 +31,11 @@ namespace verse_interpreter.lib.Data
 			this.CollectionVariable = collectionVariable;
 		}
 
+		public ValueObject(string typeName, Choice choiceResult) : this(typeName)
+		{
+			this.Choice = choiceResult;
+		}
+
 		public TypeData TypeData { get; set; }
 
 		public string StringValue { get; set; } = null!;
@@ -39,5 +45,7 @@ namespace verse_interpreter.lib.Data
 		public CustomType? CustomType { get; set; } = null!;
 
 		public VerseCollection CollectionVariable { get; set; } = null!;
+
+		public Choice Choice { get; set; } = null!;
 	}
 }

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Data.ResultObjects.Expressions;
+using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Evaluators;
 
 namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
@@ -15,12 +17,17 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 	{
 		private PropertyResolver _propertyResolver;
 		private readonly ApplicationState _applicationState;
+		private readonly FilterApplyer _filterApplyer;
+		private List<ExpressionSet> _filters;
 
 		public ForEvaluator(PropertyResolver resolver,
-							ApplicationState applicationState)
+							ApplicationState applicationState,
+							FilterApplyer filterApplyer)
 		{
 			_propertyResolver = resolver;
 			_applicationState = applicationState;
+			_filterApplyer = filterApplyer;
+			_filters = null!;
 		}
 
 		public bool AreVariablesBoundToValue(ForResult input)
@@ -31,8 +38,10 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 		public ForExpression Evaluate(ForResult input)
 		{
 			List<Variable> resultSequence = new List<Variable>();
-			_applicationState.AddScope();
 
+			_filters = input.Filters;
+
+			_applicationState.AddScope();
 			PrepareLocalVariables(input.LocalVariables);
 			resultSequence.AddRange(TraverseChoices(input));
 
@@ -56,24 +65,18 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 			}
 		}
 
-		private bool DoesFilterMatch(Variable input)
-		{
-			// Not implemented yet
-			return true;
-		}
-
 		private List<Variable> TraverseChoices(ForResult input)
 		{
 			List<Variable> sequence = new List<Variable>();
 			var current = input.Choices;
 
-			while(current != null)
+			while (current != null)
 			{
 				foreach (var indexing in current.IndexingResults)
 				{
 					sequence.AddRange(ExpandArrayToChoice(indexing.ArrayIdentifier, indexing.Indexer));
 				}
-				foreach(var literal in current.Literals)
+				foreach (var literal in current.Literals)
 				{
 					sequence.Add(literal);
 				}
@@ -93,19 +96,53 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 				throw new NotImplementedException();
 			}
 
-			indexerVariable.Value.IntValue = 0;
-
+			indexerVariable = ExpandVariable(indexerVariable, array);
+			var choice = indexerVariable.Value.Choice;
 			List<Variable> result = new List<Variable>();
-			while (indexerVariable.Value.IntValue != array.Value.CollectionVariable.Values.Count)
+
+			while (choice.Next != null)
 			{
-				if (DoesFilterMatch(indexerVariable))
+				indexerVariable.Value.IntValue = choice.ValueObject.IntValue;
+				var returnedValue = array.Value.CollectionVariable.Values[choice.ValueObject.IntValue!.Value];
+				if (_filterApplyer.DoesFilterMatch(this._filters, indexerVariable))
 				{
-					result.Add(array.Value.CollectionVariable.Values[indexerVariable.Value.IntValue.Value]);
+					result.Add(returnedValue);
 				}
-				indexerVariable.Value.IntValue++;
+
+				choice = choice.Next;
+
+				if (choice.Next == null)
+				{
+					indexerVariable.Value.IntValue = choice.ValueObject.IntValue;
+					returnedValue = array.Value.CollectionVariable.Values[choice.ValueObject.IntValue!.Value];
+					if (_filterApplyer.DoesFilterMatch(this._filters, indexerVariable))
+					{
+						result.Add(returnedValue);
+					}
+				}
 			}
 
 			return result;
+		}
+
+		private Variable ExpandVariable(Variable counterVariable, Variable collectionVariable)
+		{
+			if (counterVariable.Value.Choice != null)
+			{
+				return counterVariable;
+			}
+			else
+			{
+				counterVariable.Value.Choice = new Choice(counterVariable.Value);
+			}
+
+			for (int i = 0; i < collectionVariable.Value.CollectionVariable.Values.Count; i++)
+			{
+				counterVariable.Value.Choice.AddValue(i);
+			}
+
+
+			return counterVariable;
 		}
 	}
 }

@@ -111,7 +111,6 @@ namespace verse_interpreter.lib
 		private CommandLineOptions GetPath(string[] args)
 		{
 			CommandLineOptions options = new CommandLineOptions();
-			string path = null;
 
 			CommandLine.Parser.Default.ParseArguments<CommandLineOptions>(args)
 				.WithParsed<CommandLineOptions>(o =>
@@ -170,6 +169,7 @@ namespace verse_interpreter.lib
 				.AddTransient<PredefinedFunctionEvaluator>()
 				.AddTransient<ExpressionValueParser>()
 				.AddTransient<FunctionFactory>()
+				.AddTransient<FilterApplyer>()
 				.AddLazyResolution()
 				.BuildServiceProvider();
 

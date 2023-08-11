@@ -44,12 +44,6 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 			return _result;
 		}
 
-		public override ForResult VisitForPrimary([NotNull] Verse.ForPrimaryContext context)
-		{
-			var result = _primaryParser.ParsePrimary(context.primary());
-			return base.VisitForPrimary(context);
-		}
-
 		public override ForResult VisitForExpression([NotNull] Verse.ForExpressionContext context)
 		{
 			var resultSet = new ExpressionSet(_expressionVisitor.Visit(context.expression()));

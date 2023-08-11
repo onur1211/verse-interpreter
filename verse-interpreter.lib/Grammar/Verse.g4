@@ -4,8 +4,8 @@ options {tokenVocab=VerseLexer;}
 verse_text: ( program ) * EOF;
 
 declaration : ID ':' type
-            | ID ':=' (value_definition | constructor_body)
-            | ID '=' (value_definition | constructor_body)
+            | ID ':=' (value_definition | constructor_body | choice_rule)
+            | ID '=' (value_definition | constructor_body | choice_rule)
             | ID ':=' array_literal
             | ID '=' array_literal
             ;
@@ -119,8 +119,7 @@ param_call_item: value_definition
 for_rule    : 'for' '{' for_declaration? for_expression '}'
             ;
 
-for_expression : primary (';' for_expression)? #forPrimary
-               | expression (';' for_expression)? #forExpression
+for_expression : expression (';' for_expression)? #forExpression
                | choice_rule (';' for_expression)? #forChoice
                ;
 

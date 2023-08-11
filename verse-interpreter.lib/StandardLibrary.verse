@@ -22,6 +22,6 @@ append(x:collection, y:collection):collection {
     for{a:int; b:int; x[a] | y[b] }
 }
 
-tail(x:collection):collection {
-    for{i:int; i>0; x[i]}
-}
+#tail(x:collection):collection {
+#    for{i:int; i>0; x[i]}
+#}
