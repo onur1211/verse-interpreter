@@ -22,6 +22,14 @@ append(x:collection, y:collection):collection {
     for{a:int; b:int; x[a] | y[b] }
 }
 
-#tail(x:collection):collection {
-#    for{i:int; i>0; x[i]}
-#}
+tail(x:collection):collection {
+    for{i:int; i>0; x[i]}
+}
+
+cons(x:int, xs:collection):collection{
+    for{i:int; x | xs[i]}
+}
+
+snoc(xs:collection, x:int):collection{
+    for{i:int; xs[i] | x}
+}
