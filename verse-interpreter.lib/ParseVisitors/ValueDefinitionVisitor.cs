@@ -6,6 +6,7 @@ using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
 using verse_interpreter.lib.Parser.ValueDefinitionParser;
+using verse_interpreter.lib.ParseVisitors.Choice;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.ParseVisitors.Functions;
 using verse_interpreter.lib.ParseVisitors.Types;
@@ -19,6 +20,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly TypeConstructorVisitor _constructorVisitor;
 		private readonly Lazy<TypeMemberVisitor> _memberVisitor;
 		private readonly ExpressionValueParser _expressionValueParser;
+		private readonly Lazy<ForVisitor> _forVisitor;
 		private readonly PropertyResolver _resolver;
 		private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
 		private readonly ArrayVisitor _arrayVisitor;
@@ -31,6 +33,7 @@ namespace verse_interpreter.lib.ParseVisitors
 									  TypeConstructorVisitor constructorVisitor,
 									  Lazy<TypeMemberVisitor> memberVisitor,
 									  ExpressionValueParser expressionValueParser,
+									  Lazy<ForVisitor> forVisitor,
 									  PropertyResolver resolver,
 									  ArrayVisitor arrayVisitor) : base(applicationState)
 		{
@@ -39,6 +42,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			_constructorVisitor = constructorVisitor;
 			_memberVisitor = memberVisitor;
 			_expressionValueParser = expressionValueParser;
+			_forVisitor = forVisitor;
 			_resolver = resolver;
 			_functionCallVisitor = functionVisitor;
 			_arrayVisitor = arrayVisitor;
@@ -169,6 +173,13 @@ namespace verse_interpreter.lib.ParseVisitors
 		public override DeclarationResult VisitDefaultIndexing([NotNull] Verse.DefaultIndexingContext context)
 		{
 			return _arrayVisitor.Visit(context);
+		}
+
+		public override DeclarationResult VisitFor_rule([NotNull] Verse.For_ruleContext context)
+		{
+			var result = _forVisitor.Value.Visit(context);
+
+			return _expressionValueParser.ParseForExpression(result);
 		}
 	}
 }

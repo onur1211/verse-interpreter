@@ -19,6 +19,7 @@ value_definition :  expression
                  | array_literal
                  | type_member_access 
                  | range_expression
+                 | for_rule
                  | INT
                  | ID 
                  | NOVALUE 

@@ -73,7 +73,12 @@ namespace verse_interpreter.lib
 			var identifieres = variableName.Split('[', ']');
 
 			var collection = _applicationState.CurrentScope.LookupManager.GetVariable(identifieres[0]).Value.CollectionVariable.Values;
-			int index = Convert.ToInt32(identifieres[1]);
+			int index;
+			bool isNumber = int.TryParse(identifieres[1], out index);
+			if(!isNumber)
+			{
+				index = ResolveProperty(identifieres[1]).Value.IntValue!.Value;
+			}
 
 			return collection[index];
 		}

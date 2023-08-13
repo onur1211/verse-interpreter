@@ -46,5 +46,18 @@ namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 
 			return declarationResult;
 		}
+
+		public DeclarationResult ParseForExpression(ForResult result)
+		{
+			DeclarationResult declarationResult = new DeclarationResult();
+			_evaluator.ForExpressionResolved += (x, y) =>
+			{
+				declarationResult.CollectionVariable = y.ForExpression.Collection!;
+				declarationResult.TypeName = "collection";
+			};
+			_evaluator.ExecuteExpression(result);
+
+			return declarationResult;
+		}
 	}
 }

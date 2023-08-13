@@ -33,3 +33,13 @@ cons(x:int, xs:collection):collection{
 snoc(xs:collection, x:int):collection{
     for{i:int; xs[i] | x}
 }
+
+length(x:collection, counter:int):int {
+    if(!x[counter]) 
+        then {
+            0 + 0
+        }
+        else {
+            1 + length(x, counter + 1)
+        }
+}
