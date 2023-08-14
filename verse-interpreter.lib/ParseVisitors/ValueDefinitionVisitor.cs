@@ -1,4 +1,7 @@
 using Antlr4.Runtime.Misc;
+using CommandLine.Text;
+using System;
+using System.Reflection;
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
@@ -47,42 +50,51 @@ namespace verse_interpreter.lib.ParseVisitors
 			_functionCallVisitor = functionVisitor;
 			_arrayVisitor = arrayVisitor;
 		}
-
-		public override DeclarationResult VisitValue_definition([NotNull] Verse.Value_definitionContext context)
+		public override DeclarationResult VisitIntValueDef([NotNull] Verse.IntValueDefContext context)
 		{
-			var maybeInt = context.INT();
-			var maybeNoValue = context.NOVALUE();
-			var maybeID = context.ID();
+			var value = context.INT();
 
-			// Check if the value is a number
-			if (maybeInt != null)
+			// Check if the value is not null
+			if (value != null)
 			{
 				return new DeclarationResult()
 				{
-					LiteralValue = maybeInt.GetText(),
+					LiteralValue = value.GetText(),
 					TypeName = "int"
 				};
 			}
 
-			if (maybeNoValue != null)
+			return HandleValueAssignment(context);
+		}
+
+		public override DeclarationResult VisitVariableValueDef([NotNull] Verse.VariableValueDefContext context)
+		{
+			// Get the variable name
+			var variableName = context.ID();
+
+			// Check if the value is a ID which is a variable name
+			if (variableName != null)
+			{
+				// Get the actual variable intance from the lookup table
+				Variable variable = _resolver.ResolveProperty(variableName.GetText());
+
+				// Convert the variable back to a declaration result
+				return VariableConverter.ConvertBack(variable);
+			}
+
+			return HandleValueAssignment(context);
+		}
+
+		public override DeclarationResult VisitFalseValueDef([NotNull] Verse.FalseValueDefContext context)
+		{
+			var value = context.NOVALUE();
+
+			if (value != null)
 			{
 				return new DeclarationResult()
 				{
 					TypeName = "false?"
 				};
-			}
-
-			// Check if the value is a ID which is a variable name
-			if (maybeID != null)
-			{
-				// Get the variable name
-				var variableName = maybeID.GetText();
-
-				// Get the actual variable intance from the lookup table
-				Variable variable = _resolver.ResolveProperty(variableName);
-
-				// Convert the variable back to a declaration result
-				return VariableConverter.ConvertBack(variable);
 			}
 
 			return HandleValueAssignment(context);
@@ -170,7 +182,12 @@ namespace verse_interpreter.lib.ParseVisitors
 			return _arrayVisitor.Visit(context);
 		}
 
-		public override DeclarationResult VisitDefaultIndexing([NotNull] Verse.DefaultIndexingContext context)
+		public override DeclarationResult VisitNumericArrayIndex([NotNull] Verse.NumericArrayIndexContext context)
+		{
+			return _arrayVisitor.Visit(context);
+		}
+
+		public override DeclarationResult VisitVariableNameArrayIndex([NotNull] Verse.VariableNameArrayIndexContext context)
 		{
 			return _arrayVisitor.Visit(context);
 		}

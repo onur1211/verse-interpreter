@@ -2,7 +2,7 @@
 
 AND : 'and' ;
 OR : 'or' ;
-NOT : 'not' ;
+NOT : '!' ;
 ASSN : ':=';
 DEF : ':' ;
 EQ : '=' ;

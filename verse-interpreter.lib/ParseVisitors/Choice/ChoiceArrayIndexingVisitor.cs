@@ -15,7 +15,23 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 		{
 		}
 
-		public override ArrayIndexingResult VisitDefaultIndexing([NotNull] Verse.DefaultIndexingContext context)
+		public override ArrayIndexingResult VisitNumericArrayIndex([NotNull] Verse.NumericArrayIndexContext context)
+		{
+			var identifiers = context.ID();
+			var index = context.INT();
+			if (identifiers == null || index == null)
+			{
+				throw new NotImplementedException("The specified way of indexing is not supported!");
+			}
+
+			return new ArrayIndexingResult()
+			{
+				ArrayIdentifier = identifiers.GetText(),
+				Indexer = index.ToString()!
+			};
+		}
+
+		public override ArrayIndexingResult VisitVariableNameArrayIndex([NotNull] Verse.VariableNameArrayIndexContext context)
 		{
 			var identifiers = context.ID();
 			if (identifiers == null || identifiers.Count() != 2)

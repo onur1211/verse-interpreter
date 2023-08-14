@@ -5,4 +5,5 @@ sort(x:collection, counter:int):collection{
 }
 
 x := array(5,3,2,7,1)
-y := length(x, 0)
+y := array(123123,22)
+z := cons(4, x)

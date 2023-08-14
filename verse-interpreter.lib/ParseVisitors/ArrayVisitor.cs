@@ -93,68 +93,30 @@ namespace verse_interpreter.lib.ParseVisitors
 			return _typeInferencer.Value.InferGivenType(declarationResult);
 		}
 
-		public override DeclarationResult VisitDefaultIndexing([NotNull] Verse.DefaultIndexingContext context)
+
+		public override DeclarationResult VisitNumericArrayIndex([NotNull] Verse.NumericArrayIndexContext context)
 		{
-			string index = String.Empty;
-			// Check if the given index is a number
-			// Example: myArray[0] -> 0
-			if (context.INT() != null)
-			{
-				index = context.INT().GetText();
+			// Example: myArray[0]
+			string index = context.INT().GetText();
+			var arrayName = context.ID().GetText();
 
-				if (index == null || index == String.Empty)
-				{
-					throw new ArgumentNullException(nameof(index), "Error: There was no index given for the array access.");
-				}
+			if (String.IsNullOrEmpty(index))
+			{
+				throw new ArgumentNullException(nameof(index), "Error: There was no index given for the array access.");
 			}
 
-			// Check if the given index is a variable
-			// Example: myArray[x] -> x
-			if (context.ID().Length > 1)
+			if (String.IsNullOrEmpty(arrayName))
 			{
-				// Get the name of the variable
-				string variableName = context.ID().ElementAt(1).GetText();
-
-				if (variableName == null || variableName == String.Empty)
-				{
-					throw new ArgumentNullException(nameof(index), "Error: There was no variable as index given for the array access.");
-				}
-
-				if (!ApplicationState.CurrentScope.LookupManager.IsVariable(variableName))
-				{
-					throw new VariableDoesNotExistException(nameof(variableName));
-				}
-
-				// Get the actual variable
-				Variable variableValue = _resolver.Value.ResolveProperty(variableName);
-
-				// Check if the value of the variable is a number
-				if (variableValue.Value.IntValue == null)
-				{
-					return new DeclarationResult()
-					{
-						IndexedVariable = variableValue,
-						TypeName = variableValue.Value.TypeData.Name
-					};
-				}
-
-				index = variableValue.Value.IntValue.ToString()!;
+				throw new ArgumentNullException(nameof(arrayName), "Error: There was no name given for the array access.");
 			}
 
-			var name = context.ID().First().GetText();
-
-			if (name == null)
+			if (!ApplicationState.CurrentScope.LookupManager.IsVariable(arrayName))
 			{
-				throw new ArgumentNullException(nameof(name), "Error: There was no name given for the array access.");
-			}
-
-			if (!ApplicationState.CurrentScope.LookupManager.IsVariable(name))
-			{
-				throw new VariableDoesNotExistException(nameof(name));
+				throw new VariableDoesNotExistException(nameof(arrayName));
 			}
 
 			// Get the array from the lookup manager
-			Variable array = _resolver.Value.ResolveProperty(name);
+			Variable array = _resolver.Value.ResolveProperty(arrayName);
 
 			// If the array has no value or is null then throw exception
 			if (array == null || !array.HasValue())
@@ -167,6 +129,71 @@ namespace verse_interpreter.lib.ParseVisitors
 			{
 				throw new InvalidTypeException(nameof(array));
 			}
+
+			return this.GetArrayValueAtIndex(index, array);
+		}
+
+		public override DeclarationResult VisitVariableNameArrayIndex([NotNull] Verse.VariableNameArrayIndexContext context)
+		{
+			// Example: myArray[x]
+			var index = context.ID().ElementAt(1).GetText();
+			var arrayName = context.ID().First().GetText();
+
+			// Check if the given array name is not null or empty.
+			if (String.IsNullOrEmpty(arrayName))
+			{
+				throw new ArgumentNullException(nameof(arrayName), "Error: There was no name given for the array access.");
+			}
+
+			// Check the given index for null or empty.
+			if (String.IsNullOrEmpty(index))
+			{
+				throw new ArgumentNullException(nameof(index), "Error: There was no variable as index given for the array access.");
+			}
+
+			// Check if the given index is an actual variable.
+			// No exception needs to be thrown because an invalid access simply results in false?
+			if (!ApplicationState.CurrentScope.LookupManager.IsVariable(index))
+			{
+				return new DeclarationResult()
+				{
+					TypeName = "false?"
+				};
+			}
+
+			// Check if the given array name is an actual array.
+			// No exception needs to be thrown because an invalid access simply results in false?
+			if (!ApplicationState.CurrentScope.LookupManager.IsVariable(arrayName))
+			{
+				return new DeclarationResult()
+				{
+					TypeName = "false?"
+				};
+			}
+
+			// Get the actual variables from index and array name
+			Variable variableValue = _resolver.Value.ResolveProperty(index);
+			Variable array = _resolver.Value.ResolveProperty(arrayName);
+
+			// If the given variable name is not a collection then throw exception
+			if (array.Value.TypeData.Name != "collection")
+			{
+				throw new InvalidTypeException(nameof(array));
+			}
+
+			// If the array has no value or is null then throw exception
+			if (array == null || !array.HasValue())
+			{
+				throw new ArgumentNullException(nameof(array), "Error: The array has no value.");
+			}
+
+			// Check if the value of the index variable is a number
+			if (variableValue.Value.IntValue == null)
+			{
+				throw new InvalidTypeException(nameof(variableValue));
+			}
+
+			index = variableValue.Value.IntValue.ToString()!;
 
 			return this.GetArrayValueAtIndex(index, array);
 		}

@@ -18,8 +18,8 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 		private readonly ValueDefinitionVisitor valueDefinitionVisitor;
 
 		public ChoiceVisitor(ApplicationState applicationState,
-			ChoiceArrayIndexingVisitor indexingVisitor,
-			ValueDefinitionVisitor valueDefinitionVisitor) : base(applicationState)
+							 ChoiceArrayIndexingVisitor indexingVisitor,
+							 ValueDefinitionVisitor valueDefinitionVisitor) : base(applicationState)
 		{
 			_indexingVisitor = indexingVisitor;
 			this.valueDefinitionVisitor = valueDefinitionVisitor;
@@ -47,12 +47,16 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 		private ChoiceResult ParseChoices([NotNull] Verse.Choice_ruleContext context, ChoiceResult result)
 		{
 			if (context == null ||
-				context.value_definition().array_index() == null)
+				context.value_definition() == null)
 			{
 				return result;
 			}
 
-			var arrayIndex = _indexingVisitor.Visit(context.value_definition().array_index());
+			var arrayIndex = _indexingVisitor.Visit(context.value_definition());
+			if (arrayIndex == null)
+			{
+				return result;
+			}
 			result.IndexingResults.Add(arrayIndex);
 
 			return result;
@@ -61,13 +65,17 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 		private ChoiceResult ParseLiterals([NotNull] Verse.Choice_ruleContext context, ChoiceResult result)
 		{
 			if (context == null ||
-				context.value_definition() == null ||
-				context.value_definition().array_index() != null)
+				context.value_definition() == null)
+			{
+				return result;
+			}
+			var declarationResult = valueDefinitionVisitor.Visit(context?.value_definition());
+			if (declarationResult.TypeName == "false?")
 			{
 				return result;
 			}
 
-			result.Literals.Add(Converter.VariableConverter.Convert(valueDefinitionVisitor.Visit(context?.value_definition())));
+			result.Literals.Add(Converter.VariableConverter.Convert(declarationResult));
 			return result;
 		}
 	}

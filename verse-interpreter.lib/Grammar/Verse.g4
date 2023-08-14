@@ -10,19 +10,18 @@ declaration : ID ':' type
             | ID '=' array_literal
             ;
 
-
-value_definition :  expression 
-                 | constructor_body 
-                 | string_rule  
-                 | function_call 
-                 | array_index 
-                 | array_literal
-                 | type_member_access 
-                 | range_expression
-                 | for_rule
-                 | INT
-                 | ID 
-                 | NOVALUE 
+value_definition : INT #intValueDef 
+                 | ID #variableValueDef 
+                 | NOVALUE #falseValueDef
+                 | expression #expressionValueDef
+                 | constructor_body #constructorValueDef
+                 | string_rule #stringValueDef
+                 | array_literal #arrayValueDef
+                 | function_call #functioncallValueDef
+                 | for_rule #forRuleValueDef
+                 | array_index #arrayindexValueDef
+                 | type_member_access #memberaccessValueDef
+                 | range_expression #rangeValueDef
                  ;
 
 program : function_definition program
@@ -87,9 +86,11 @@ array_elements : value_definition (',' array_elements)*
                | ID (',' array_elements)*
                ;
 
-array_index : ID '[' (INT|ID) ']' #defaultIndexing
+
+array_index : ID '[' INT ']' #numericArrayIndex
+            | ID '[' ID ']' #variableNameArrayIndex
             ;
-            
+
 bracket_body : '{' block+ '}';
 
 // Functions
@@ -162,7 +163,7 @@ choice_rule : value_definition ( '|' choice_rule)*
             
 // Conditionals
 
-if_block    : 'if' '(' expression ')' then_block else_block 
+if_block    : 'if' '(' logical_expression ')' then_block else_block 
             ;
 
 then_block : (NEWLINE* INDENT*) 'then' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
@@ -170,6 +171,13 @@ then_block : (NEWLINE* INDENT*) 'then' (NEWLINE* INDENT*) '{' NEWLINE* body NEWL
 
 else_block : (NEWLINE* INDENT*) 'else' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
            ;
+
+
+// Logical operators
+logical_expression: (NOT)? expression
+                  | (NOT)? expression (AND expression)*
+                  | (NOT)? expression (OR expression)*
+                  ;
 
 
 // Math expression rules
