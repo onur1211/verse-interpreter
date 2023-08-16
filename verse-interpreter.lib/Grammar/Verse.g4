@@ -213,4 +213,4 @@ primary
 
 
 type : (INTTYPE | STRINGTYPE | COLLECTIONTYPE | ID | VOID ) ;
-operator : ('*' | '/' |'-'|'+'| '>' | '<' | '=');
+operator : ('*' | '/' |'-'|'+'| '>' | '<' | '=' | '<=' | '>=');

@@ -1,9 +1,15 @@
-sort(x:collection, counter:int):collection{
-     lower := sort(for{a:int; x[counter] <= x[a]; x[a]}, counter + 1)
-     larger := sort(for{a:int; x[counter] > x[a]; x[a]}, counter + 1)
-     append(lower, larger)
+sort(x:collection):collection{
+     xs := tail(x)
+     head := head(x)
+     smaller := for{i:int; xs[i] <= head; xs[i]}
+     larger := for{i:int; xs[i] > head; xs[i]}
+     append(smaller, larger)
 }
 
-x := array(5,3,2,7,1)
-y := array(123123,22)
-z := cons(4, x)
+x := array(6,3,1,6,8)
+xs := tail(x)
+head := head(x)
+smaller := for{i:int; xs[i] <= head; xs[i]}
+larger := for{i:int; xs[i] > head; xs[i]}
+
+test := append(smaller, larger)

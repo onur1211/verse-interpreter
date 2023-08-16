@@ -15,6 +15,8 @@ RCURLY : '}' ;
 LBRACK : '[' ;
 RBRACK : ']' ;
 GT : '>' ;
+GTEQ : '<=';
+LTEQ : '>=';
 LT : '<' ;
 QUOTE : '"';
 DOT: '.';

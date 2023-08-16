@@ -47,6 +47,8 @@ namespace verse_interpreter.lib.Data.Variables
 		public IEnumerable<Choice> AllChoices()
 		{
 			var current = this;
+			yield return current;
+
 			if (current.Next == null)
 			{
 				yield return current;

@@ -3,7 +3,7 @@
 }
 
 head(x:collection):int {
-    x[0]+0
+    x[0] + 0
 }
 
 append(x:collection, y:collection):collection {

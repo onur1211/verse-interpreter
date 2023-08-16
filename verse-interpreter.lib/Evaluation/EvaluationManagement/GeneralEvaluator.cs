@@ -39,11 +39,6 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
         public void ExecuteExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
-            if (!_expressionValidator.IsTypeConformityGiven(expressions))
-            {
-                throw new InvalidTypeCombinationException("The given expression contains multiple types!");
-            }
-
             // Check if false? is contained anywhere in the expression
             // and invoke the event for the value definition visitor.
             if (expressions.Any(x => x.Any(y => y.TypeName == "false?")))

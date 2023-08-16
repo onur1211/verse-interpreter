@@ -14,15 +14,13 @@ namespace verse_interpreter.lib.Converter
 	{
 		public static Variable Convert(DeclarationResult declarationResult)
 		{
-			// Pattern match the type. functional programming <3
-			// => object oriented programming sucks
 			return declarationResult.TypeName switch
 			{
 				"int" => HandleIntVariables(declarationResult),
 				"string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.LiteralValue)),
 				"int[]" => HandleExplicitCollectionVariables(declarationResult, "int"),
 				"string[]" => HandleExplicitCollectionVariables(declarationResult, "string"),
-                "false?" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.LiteralValue)),
+                "false?" => Variable.False,
                 "collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
 				"undefined" => new Variable(declarationResult.Name, new("undefined")),
 				_ => HandleCustomType(declarationResult)

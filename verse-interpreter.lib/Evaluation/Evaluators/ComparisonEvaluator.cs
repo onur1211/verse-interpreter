@@ -52,6 +52,12 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
                             case "=":
                                 lastExpression.Value = EvaluateEqual(subExpression[i - 1], subExpression[i + 1]);
                                 break;
+                            case "<=":
+                                lastExpression.Value = EvaluateSmallerThanOrEqual(subExpression[i - 1], subExpression[i + 1]);
+                                break;
+                            case ">=":
+								lastExpression.Value = EvaluateGreaterThanOrEqual(subExpression[i - 1], subExpression[i + 1]);
+                                break;
                         }
                     }
                 }
@@ -126,5 +132,15 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
             var res =  firstOperand.IntegerValue == secondOperand.IntegerValue ? firstOperand.IntegerValue : null;
             return res;
         }
-    }
+
+        private int? EvaluateGreaterThanOrEqual(ExpressionResult firstOperand, ExpressionResult secondOperand)
+        {
+            return firstOperand.IntegerValue >= secondOperand.IntegerValue ? secondOperand.IntegerValue : null;
+        }
+
+		private int? EvaluateSmallerThanOrEqual(ExpressionResult firstOperand, ExpressionResult secondOperand)
+		{
+			return firstOperand.IntegerValue <= secondOperand.IntegerValue ? secondOperand.IntegerValue : null;
+		}
+	}
 }

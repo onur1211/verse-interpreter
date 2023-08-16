@@ -55,6 +55,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 
         public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
         {
+            ClearResultSet();
             var functionName = context.ID().GetText();
             var parameters = _functionParser.GetCallParameters(context.param_call_item());
             if (TryExecutePredefinedFunction(functionName, context))
@@ -80,6 +81,13 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
                 ForExpression = ForExpression,
                 IsVoid = functionCall.Function.ReturnType == "void",
             };
+        }
+
+        private void ClearResultSet()
+        {
+            ForExpression = null!;
+            ArithmeticExpression = null!;
+            StringExpression = null!;
         }
 
         private bool TryExecutePredefinedFunction(string functionName, Verse.Function_callContext context)
