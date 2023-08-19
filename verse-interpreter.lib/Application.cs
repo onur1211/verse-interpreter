@@ -26,6 +26,8 @@ using verse_interpreter.lib.ParseVisitors.Types;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.ParseVisitors.Choice;
 using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
+using verse_interpreter.lib.Data.Variables;
+using System.Diagnostics;
 
 namespace verse_interpreter.lib
 {
@@ -61,7 +63,11 @@ namespace verse_interpreter.lib
 
 			var parseTree = generator.GenerateParseTree(inputCode);
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
+			Stopwatch stopwatch = new Stopwatch();
+			stopwatch.Start();
 			mainVisitor.VisitProgram(parseTree);
+			stopwatch.Stop();
+			var time = stopwatch.Elapsed.TotalMilliseconds;
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
 			//Console.ReadKey();
 		}
@@ -142,8 +148,9 @@ namespace verse_interpreter.lib
 				.AddTransient<IEvaluator<StringExpression, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
 				.AddTransient<IEvaluator<ComparisonExpression, List<List<ExpressionResult>>>, ComparisonEvaluator>()
 				.AddTransient<IEvaluator<ForExpression, ForResult>, ForEvaluator>()
+				.AddTransient<IEvaluator<bool, IfParseResult>, IfEvaluator>()
 				.AddTransient<IValidator<List<List<ExpressionResult>>>, ExpressionValidator>()
-				.AddTransient<IValidator<FunctionCall>, ParameterValidator>()
+				.AddTransient<ParameterValidator>()
 				.AddTransient<CustomTypeFactory>()
 				.AddTransient<ExpressionValidator>()
 				.AddTransient<DeclarationParser>()
@@ -170,6 +177,7 @@ namespace verse_interpreter.lib
 				.AddTransient<ExpressionValueParser>()
 				.AddTransient<FunctionFactory>()
 				.AddTransient<FilterApplyer>()
+				.AddTransient<LogicalExpressionVisitor>()
 				.AddLazyResolution()
 				.BuildServiceProvider();
 

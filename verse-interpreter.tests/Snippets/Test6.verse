@@ -1,1 +1,1 @@
-﻿myArray:=(1,2,3); x:=5; x+myArray[0]
+﻿myArray:=array(1,2,3); x:=5; x+myArray[0]

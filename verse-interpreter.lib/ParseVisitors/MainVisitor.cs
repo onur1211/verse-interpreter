@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
+using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Interfaces;
@@ -23,6 +24,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly TypeHandlingWrapper _typeHandlingWrapper;
 		private readonly GeneralEvaluator _generalEvaluator;
 		private readonly ForVisitor _forVisitor;
+		private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
 		private readonly IfExpressionVisitor _ifExpressionVisitor;
 
 		public MainVisitor(ApplicationState applicationState,
@@ -32,6 +34,7 @@ namespace verse_interpreter.lib.ParseVisitors
 						   TypeHandlingWrapper typeHandlingWrapper,
 						   GeneralEvaluator generalEvaluator,
 						   ForVisitor forVisitor,
+						   ValueDefinitionVisitor valueDefinitionVisitor,
 						   IfExpressionVisitor ifExpressionVisitor) : base(applicationState)
 		{
 			_declarationVisitor = declarationVisitor;
@@ -41,43 +44,14 @@ namespace verse_interpreter.lib.ParseVisitors
 			_functionWrapper.FunctionCallVisitor.FunctionRequestedExecution += FunctionRequestedExecutionCallback;
 			_generalEvaluator = generalEvaluator;
 			_forVisitor = forVisitor;
+			_valueDefinitionVisitor = valueDefinitionVisitor;
 			ApplicationState.CurrentScope.LookupManager.VariableBound +=
 				_generalEvaluator.Propagator.HandleVariableBound!;
 			_ifExpressionVisitor = ifExpressionVisitor;
 			_generalEvaluator.ArithmeticExpressionResolved += ArithmeticExpressionResolved;
 			_generalEvaluator.StringExpressionResolved += StringExpressionResolved;
 			_generalEvaluator.ForExpressionResolved += ForExpressionResolved;
-		}
-
-		private void StringExpressionResolved(object? sender, StringExpressionResolvedEventArgs e)
-		{
-			if (ApplicationState.CurrentScopeLevel > 1)
-			{
-				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(e.Result);
-				return;
-			}
-
-			Printer.PrintResult(e.Result);
-		}
-
-		private void ArithmeticExpressionResolved(object? sender, ArithmeticExpressionResolvedEventArgs e)
-		{
-			if (ApplicationState.CurrentScopeLevel > 1)
-			{
-				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(e.Result);
-				return;
-			}
-
-			Printer.PrintResult(e.Result);
-		}
-
-		private void ForExpressionResolved(object? sender, ForExpressionResolvedEventArgs eventArgs)
-		{
-			if (ApplicationState.CurrentScopeLevel > 1)
-			{
-				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(eventArgs.ForExpression);
-				return;
-			}
+			_generalEvaluator.ExpressionWithNoValueFound += ValueLessExpressionDetected;
 		}
 
 		private void FunctionRequestedExecutionCallback(object? sender, FunctionRequestedExecutionEventArgs e)
@@ -86,6 +60,14 @@ namespace verse_interpreter.lib.ParseVisitors
 			{
 				foreach (var child in block.children)
 				{
+					// Ugly but due to aliases in the grammar the delegation to the value definition visitor would require
+					// writing out every possible value definition sub rule as a visitor method call in order to make this work
+					if (child is Verse.Value_definitionContext)
+					{
+						var res = VariableConverter.Convert(_valueDefinitionVisitor.Visit(child)!);
+						_functionWrapper.FunctionCallVisitor.OnVariableResolved(res);
+						continue;
+					}
 					child.Accept(this);
 				}
 			}
@@ -142,17 +124,43 @@ namespace verse_interpreter.lib.ParseVisitors
 			return null!;
 		}
 
-		public override IPrintable VisitIf_block(Verse.If_blockContext context)
+		public override object VisitIf_block(Verse.If_blockContext context)
 		{
 			var result = _ifExpressionVisitor.Visit(context);
-			foreach (var value in result)
+			bool isSuccess = false;
+			_generalEvaluator.IfExpressionResolved += (sender, args) =>
 			{
-				value.Accept(this);
+				isSuccess = args.IsSuccess;
+			};
+			_generalEvaluator.ExecuteExpression(result);
+
+			if (isSuccess)
+			{
+				// Add variables from If Head
+				if (result.ScopedVariable != null)
+				{
+					ApplicationState.CurrentScope.AddScopedVariable(result.ScopedVariable);
+				}
+
+				foreach (var element in result.ThenBlock)
+				{
+					element.Accept(this);
+				}
+				// Remove after execution
+				if (result.ScopedVariable != null)
+				{
+					ApplicationState.CurrentScope.LookupManager.RemoveVariable(result.ScopedVariable);
+				}
+			}
+			else
+			{
+				foreach (var element in result.ElseBlock)
+				{
+					element.Accept(this);
+				}
 			}
 			return null!;
 		}
-
-
 
 		public override object VisitLambdaFunc([NotNull] Verse.LambdaFuncContext context)
 		{
@@ -174,5 +182,49 @@ namespace verse_interpreter.lib.ParseVisitors
 			_generalEvaluator.ExecuteExpression(forExpression);
 			return null;
 		}
+
+		#region Callbacks
+		private void StringExpressionResolved(object? sender, StringExpressionResolvedEventArgs e)
+		{
+			if (ApplicationState.CurrentScopeLevel > 1)
+			{
+				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(e.Result);
+				return;
+			}
+
+			Printer.PrintResult(e.Result);
+		}
+
+		private void ArithmeticExpressionResolved(object? sender, ArithmeticExpressionResolvedEventArgs e)
+		{
+			if (ApplicationState.CurrentScopeLevel > 1)
+			{
+				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(e.Result);
+				return;
+			}
+
+			Printer.PrintResult(e.Result);
+		}
+
+		private void ValueLessExpressionDetected(object? sender, ExpressionWithNoValueFoundEventArgs eventArgs)
+		{
+			if (ApplicationState.CurrentScopeLevel > 1)
+			{
+				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(eventArgs);
+				return;
+			}
+
+			Printer.PrintResult("false?");
+		}
+
+		private void ForExpressionResolved(object? sender, ForExpressionResolvedEventArgs eventArgs)
+		{
+			if (ApplicationState.CurrentScopeLevel > 1)
+			{
+				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(eventArgs.ForExpression);
+				return;
+			}
+		}
+		#endregion
 	}
 }

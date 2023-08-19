@@ -81,7 +81,10 @@ namespace verse_interpreter.lib
 			}
 			if(collection.Count <=  index)
 			{
-				return Variable.False;
+				return new Variable()
+				{
+					Value = ValueObject.False
+				};
 			}
 
 			return collection[index];

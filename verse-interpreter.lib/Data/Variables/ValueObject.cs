@@ -4,8 +4,10 @@ using verse_interpreter.lib.Data.Variables;
 
 namespace verse_interpreter.lib.Data
 {
-    public class ValueObject
+	public class ValueObject
 	{
+		private static ValueObject _false;
+
 		public ValueObject(string typeName)
 		{
 			this.TypeData = new TypeData(typeName);
@@ -47,5 +49,18 @@ namespace verse_interpreter.lib.Data
 		public VerseCollection CollectionVariable { get; set; } = null!;
 
 		public Choice Choice { get; set; } = null!;
+
+		public static ValueObject False
+		{
+			get
+			{
+				if (_false == null)
+				{
+					_false = new ValueObject("false?");
+				}
+
+				return _false;
+			}
+		}
 	}
 }

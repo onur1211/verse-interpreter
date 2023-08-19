@@ -20,17 +20,20 @@ namespace verse_interpreter.lib
 		public EvaluatorWrapper(IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> arithmeticEvaluator,
 								IEvaluator<StringExpression, List<List<ExpressionResult>>> stringEvaluator,
 								IEvaluator<ComparisonExpression, List<List<ExpressionResult>>> comparisonEvaluator,
-								IEvaluator<ForExpression, ForResult> forEvaluator)
+								IEvaluator<ForExpression, ForResult> forEvaluator,
+								IEvaluator<bool, IfParseResult> ifParseResultEvaluator)
 		{
 			ArithmeticEvaluator = arithmeticEvaluator;
 			StringEvaluator = stringEvaluator;
 			ComparisonEvaluator = comparisonEvaluator;
 			ForEvaluator = forEvaluator;
+			IfParseResultEvaluator = ifParseResultEvaluator;
 		}
 
 		public IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>> ArithmeticEvaluator { get; }
 		public IEvaluator<StringExpression, List<List<ExpressionResult>>> StringEvaluator { get; }
 		public IEvaluator<ComparisonExpression, List<List<ExpressionResult>>> ComparisonEvaluator { get; }
 		public IEvaluator<ForExpression, ForResult> ForEvaluator { get; }
+		public IEvaluator<bool, IfParseResult> IfParseResultEvaluator { get; }
 	}
 }

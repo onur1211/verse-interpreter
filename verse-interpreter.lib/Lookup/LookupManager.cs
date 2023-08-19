@@ -68,6 +68,15 @@ namespace verse_interpreter.lib.Lookup
 			this.lookupTable.Table[variable.Name] = variable;
 		}
 
+		public void RemoveVariable(Variable variable)
+		{
+			if(IsVariable(variable.Name))
+			{
+				this.lookupTable.Table.Remove(variable.Name);
+			}
+		}
+
+
 		public Variable GetVariable(string variableName)
 		{
 			// Check if variable is in the lookupn table.

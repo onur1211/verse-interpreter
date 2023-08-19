@@ -53,6 +53,7 @@ block : declaration
       | expression
       | if_block
       | for_rule
+      | value_definition
       ;
 
 body : inline_body
@@ -163,10 +164,10 @@ choice_rule : value_definition ( '|' choice_rule)*
             
 // Conditionals
 
-if_block    : 'if' '(' logical_expression ')' then_block else_block 
+if_block    : 'if' '(' (logical_expression | declaration)  ')' then_block else_block 
             ;
 
-then_block : (NEWLINE* INDENT*) 'then' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
+then_block : (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
            ;
 
 else_block : (NEWLINE* INDENT*) 'else' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
@@ -174,9 +175,9 @@ else_block : (NEWLINE* INDENT*) 'else' (NEWLINE* INDENT*) '{' NEWLINE* body NEWL
 
 
 // Logical operators
-logical_expression: (NOT)? expression
-                  | (NOT)? expression (AND expression)*
-                  | (NOT)? expression (OR expression)*
+logical_expression: expression
+                  | expression (AND logical_expression)*
+                  | expression (OR logical_expression)*
                   ;
 
 

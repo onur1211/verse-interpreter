@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
@@ -34,6 +35,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         public event EventHandler<ComparisonExpressionResolvedEventArgs>? ComparisonExpressionResolved;
         public event EventHandler<ExpressionWithNoValueFoundEventArgs>? ExpressionWithNoValueFound;
         public event EventHandler<ForExpressionResolvedEventArgs>? ForExpressionResolved;
+        public event EventHandler<IfExpressionResolvedEventArgs>? IfExpressionResolved;
 
         public BackpropagationEventSystem Propagator => _propagator;
 
@@ -59,7 +61,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
                     foreach (var value in arrayIndex)
                     {
-                        if (_propertyResolver.ResolveProperty(value.ValueIdentifier).Value.TypeData.Name == "false?")
+                        if (_propertyResolver.ResolveProperty(value.ValueIdentifier).Value == ValueObject.False)
                         {
                             ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
                             return;
@@ -103,6 +105,14 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
             ForExpressionResolved?.Invoke(this, new ForExpressionResolvedEventArgs(res));
         }
+
+        public void ExecuteExpression(IfParseResult result)
+        {
+            var res = _evaluatorWrapper.IfParseResultEvaluator.Evaluate(result);
+
+
+            IfExpressionResolved?.Invoke(this, new IfExpressionResolvedEventArgs(result, res));
+		}
 
         private void HandleComparisonExpression(List<List<ExpressionResult>> expressions, string? identifier)
         {
@@ -150,5 +160,5 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
             ArithmeticExpressionResolved?.Invoke(this, new ArithmeticExpressionResolvedEventArgs(result));
         }
-    }
+	}
 }

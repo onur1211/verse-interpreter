@@ -14,6 +14,11 @@ namespace verse_interpreter.lib.Converter
 		{
 			DeclarationResult declarationResult = new DeclarationResult();
 
+			if (!result.WasValueResolved)
+			{
+				declarationResult.TypeName = "false?";
+			}
+
 			if (result.ArithmeticExpression != null)
 			{
 				declarationResult.LiteralValue = result.ArithmeticExpression.ResultValue.ToString()!;
@@ -30,6 +35,10 @@ namespace verse_interpreter.lib.Converter
 			{
 				declarationResult.CollectionVariable = result.ForExpression.Collection;
 				declarationResult.TypeName = "collection";
+			}
+			if(result.Variable != null)
+			{
+				declarationResult = VariableConverter.ConvertBack(result.Variable);
 			}
 
 			return declarationResult;

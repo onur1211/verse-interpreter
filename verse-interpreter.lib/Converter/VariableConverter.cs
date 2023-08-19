@@ -20,7 +20,7 @@ namespace verse_interpreter.lib.Converter
 				"string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.LiteralValue)),
 				"int[]" => HandleExplicitCollectionVariables(declarationResult, "int"),
 				"string[]" => HandleExplicitCollectionVariables(declarationResult, "string"),
-                "false?" => Variable.False,
+                "false?" => new Variable(declarationResult.Name, ValueObject.False),
                 "collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
 				"undefined" => new Variable(declarationResult.Name, new("undefined")),
 				_ => HandleCustomType(declarationResult)

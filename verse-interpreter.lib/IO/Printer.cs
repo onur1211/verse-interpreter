@@ -21,7 +21,7 @@ namespace verse_interpreter.lib.IO
 
         public static void PrintResult(FunctionCallResult result)
         {
-            if (result == null)
+            if (result == null || !result.WasValueResolved)
             {
                 return;
             }
@@ -38,11 +38,6 @@ namespace verse_interpreter.lib.IO
             }
             if (result.ForExpression != null)
             {
-                foreach (var element in result.ForExpression.Collection.Values)
-                {
-                    Console.Write($"{element.Value.IntValue} ");
-					Console.Write($"{element.Value.StringValue} ");
-				}
                 return;
 			}
 

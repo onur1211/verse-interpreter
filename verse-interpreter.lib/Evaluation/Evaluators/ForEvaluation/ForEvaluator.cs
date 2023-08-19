@@ -102,7 +102,12 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 
 			foreach (var choice in indexerChoice.AllChoices())
 			{
+				if (array.Value.CollectionVariable.Values.Count == 0)
+				{
+					break;
+				}
 				indexerVariable.Value.IntValue = choice.ValueObject.IntValue;
+
 				var returnedValue = array.Value.CollectionVariable.Values[choice.ValueObject.IntValue!.Value];
 				if (_filterApplyer.DoesFilterMatch(this._filters, indexerVariable))
 				{

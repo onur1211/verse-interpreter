@@ -7,8 +7,6 @@ namespace verse_interpreter.lib.Data
 {
 	public class Variable : IUnifiable<Variable>
 	{
-		private static Variable _false;
-
 		public Variable(string name, ValueObject value)
 		{
 			this.Name = name;
@@ -17,23 +15,6 @@ namespace verse_interpreter.lib.Data
 
 		public Variable()
 		{
-
-		}
-
-		public static Variable False
-		{
-			get
-			{
-				if (_false == null)
-				{
-					_false = new Variable()
-					{
-						Value = new ValueObject("false?")
-					};
-				}
-
-				return _false;
-			}
 		}
 
 		public string Name { get; set; } = null!;

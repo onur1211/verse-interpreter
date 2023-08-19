@@ -49,11 +49,6 @@ namespace verse_interpreter.lib.Data.Variables
 			var current = this;
 			yield return current;
 
-			if (current.Next == null)
-			{
-				yield return current;
-			}
-
 			while (current.Next != null)
 			{
 				current = current.Next;
