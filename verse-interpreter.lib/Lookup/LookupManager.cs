@@ -50,13 +50,18 @@ namespace verse_interpreter.lib.Lookup
 			{
 				throw new VariableDoesNotExistException(variable.Name);
 			}
+			
 			var existingVariable = GetVariable(variable.Name);
+			
 			if (variable.Value.TypeData != existingVariable.Value.TypeData)
 			{
 				throw new InvalidTypeCombinationException($"The specified variable \"{variable.Name}\" was already declared in this scope with the type {existingVariable.Value.TypeData.Name}");
 			}
 
-			if (variable.HasValue())
+			// Handle partial values if there are any.
+            this.HandlePartialValues(variable, this.lookupTable.Table[variable.Name]);
+
+            if (variable.HasValue())
 			{
 				this.valueLessVariables.Remove(variable.Name);
 				this.lookupTable.Table[variable.Name] = variable;
@@ -68,7 +73,48 @@ namespace verse_interpreter.lib.Lookup
 			this.lookupTable.Table[variable.Name] = variable;
 		}
 
-		public Variable GetVariable(string variableName)
+        public Variable HandlePartialValues(Variable newVariable, Variable oldVariable)
+        {
+            // Check if there is a collection variable.
+            // If not then just return the unchanged new variable.
+            if (oldVariable.Value.CollectionVariable == null || newVariable.Value.CollectionVariable == null)
+            {
+                return newVariable;
+            }
+
+            // Compare the collection count of the two variables and get the smaller one.
+            int valueCount = Math.Min(oldVariable.Value.CollectionVariable.Values.Count(), newVariable.Value.CollectionVariable.Values.Count());
+
+            // There are 2 types of partial values:
+            // Variables with no value like: x:int
+            // Values with no variables like: 1
+            for (int i = 0; i < valueCount; i++)
+            {
+                var oldPartialValue = oldVariable.Value.CollectionVariable.Values[i];
+                var newPartialValue = newVariable.Value.CollectionVariable.Values[i];
+
+                if (!oldPartialValue.HasValue())
+                {
+                    if (newPartialValue.Name == null)
+                    {
+                        newPartialValue.Name = oldPartialValue.Name!;
+                        continue;
+                    }
+                }
+
+                if (oldPartialValue.Name == null)
+                {
+                    if (!newPartialValue.HasValue())
+                    {
+                        newPartialValue.Value = oldPartialValue.Value;
+                    }
+                }
+            }
+
+            return newVariable;
+        }
+
+        public Variable GetVariable(string variableName)
 		{
 			// Check if variable is in the lookupn table.
 			// If false then throw exception.
