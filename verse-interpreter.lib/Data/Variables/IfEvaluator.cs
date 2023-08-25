@@ -35,7 +35,8 @@ namespace verse_interpreter.lib.Data.Variables
 
 		private bool HandleLogicalExpressions(LogicalExpression expression)
 		{
-			return _evaluator.Evaluate(expression.Expressions).Value != null;
+			var res =  _evaluator.Evaluate(expression.Expressions);
+			return res.IntValue != null || res.StringValue != null;
 		}
 	}
 }

@@ -2,7 +2,11 @@
     if(x=0) { 1 + 0 } else { fac(x-1) * x}
 }
 
-head(x:collection):int {
+headInt(x:collection):int {
+    x[0]
+}
+
+headString(x:collection):string{
     x[0]
 }
 
@@ -20,4 +24,13 @@ cons(x:int, xs:collection):collection{
 
 snoc(xs:collection, x:int):collection{
     for{i:int; xs[i] | x}
+}
+
+sort(x:collection):collection{
+     if(head := headInt(x)) {
+         xs := tail(x)
+         smaller := sort(for{i:int; xs[i] <= head; xs[i]})
+         larger := sort(for{i:int; xs[i] > head; xs[i]})
+         append(append(smaller, for{head}), larger)
+     }
 }

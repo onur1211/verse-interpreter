@@ -2,6 +2,7 @@ using Antlr4.Runtime.Misc;
 using CommandLine;
 using System.Diagnostics;
 using verse_interpreter.lib.Converter;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
@@ -56,7 +57,13 @@ namespace verse_interpreter.lib.ParseVisitors
 
 		private List<Verse.BlockContext> ParseElseBlock(Verse.If_blockContext context)
 		{
-			return _parser.GetBody(context.else_block().body());
+			var elseBlock = context.else_block();
+			if( elseBlock != null )
+			{
+				return _parser.GetBody(context.else_block().body());
+			}
+
+			return new List<Verse.BlockContext>();
 		}
 	}
 }

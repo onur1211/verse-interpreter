@@ -105,7 +105,7 @@ namespace verse_interpreter.lib.Parser
 			}
 
 			var variable = _state.CurrentScope.LookupManager.GetVariable(declarationResult.Name);
-			if (variable.Value.CollectionVariable == null)
+			if (variable.Value.CollectionVariable == null || declarationResult.CollectionVariable == null)
 			{
 				return declarationResult;
 			}

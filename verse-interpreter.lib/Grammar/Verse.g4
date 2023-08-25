@@ -164,7 +164,7 @@ choice_rule : value_definition ( '|' choice_rule)*
             
 // Conditionals
 
-if_block    : 'if' '(' (logical_expression | declaration)  ')' then_block else_block 
+if_block    : 'if' '(' (logical_expression | declaration)  ')' then_block (else_block)?
             ;
 
 then_block : (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
@@ -179,7 +179,6 @@ logical_expression: expression
                   | expression (AND logical_expression)*
                   | expression (OR logical_expression)*
                   ;
-
 
 // Math expression rules
 expression

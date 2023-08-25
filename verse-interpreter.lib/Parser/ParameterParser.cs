@@ -12,7 +12,7 @@ namespace verse_interpreter.lib.Visitors
         private readonly DeclarationVisitor _declarationVisitor;
         private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
         private readonly PropertyResolver _resolver;
-        private FunctionParameters _result;
+        private readonly Stack<FunctionParameters> _result;
 
         public ParameterParser(ApplicationState applicationState,
                               DeclarationVisitor declarationVisitor,
@@ -23,23 +23,21 @@ namespace verse_interpreter.lib.Visitors
             _declarationVisitor = declarationVisitor;
             _valueDefinitionVisitor = valueDefinitionVisitor;
             _resolver = resolver;
-            _result = new FunctionParameters();
+            _result = new Stack<FunctionParameters>();
         }
 
         public FunctionParameters GetDefinitionParameters(Verse.Param_def_itemContext function_paramContext)
         {
+            _result.Push(new FunctionParameters());
             ParseParametersRecursivly(function_paramContext);
-            var parameters = _result;
-            _result = new FunctionParameters();
-            return parameters;
+            return _result.Pop();
         }
 
         public FunctionParameters GetCallParameters(Verse.Param_call_itemContext function_paramContext)
         {
-            ParseCallParametersRecursively(function_paramContext);
-            var parameters = _result;
-            _result = new FunctionParameters();
-            return parameters;
+			_result.Push(new FunctionParameters());
+			ParseCallParametersRecursively(function_paramContext);
+            return _result.Pop();
         }
 
         private void ParseParametersRecursivly(Verse.Param_def_itemContext function_paramContext)
@@ -49,7 +47,7 @@ namespace verse_interpreter.lib.Visitors
                 return;
             }
             var declaration = function_paramContext.declaration().Accept(_declarationVisitor);
-            _result.Parameters.Add(declaration);
+            _result.Peek().Parameters.Add(declaration);
             var nextChild = function_paramContext.param_def_item();
             ParseParametersRecursivly(nextChild);
         }
@@ -74,7 +72,7 @@ namespace verse_interpreter.lib.Visitors
                 variable = Converter.VariableConverter.Convert(result.Accept(_valueDefinitionVisitor));
             }
 
-            _result.Parameters.Add(variable!);
+            _result.Peek().Parameters.Add(variable!);
             ParseCallParametersRecursively(call_paramContext.param_call_item());
         }
     }

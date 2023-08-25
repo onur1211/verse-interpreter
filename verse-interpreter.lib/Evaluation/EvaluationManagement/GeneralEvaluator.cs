@@ -110,7 +110,6 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         {
             var res = _evaluatorWrapper.IfParseResultEvaluator.Evaluate(result);
 
-
             IfExpressionResolved?.Invoke(this, new IfExpressionResolvedEventArgs(result, res));
 		}
 

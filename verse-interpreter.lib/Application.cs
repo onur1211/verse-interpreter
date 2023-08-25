@@ -18,20 +18,17 @@ using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Parser.ValueDefinitionParser;
-using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.CustomTypes;
-using Microsoft.Extensions.Options;
 using verse_interpreter.lib.ParseVisitors.Functions;
 using verse_interpreter.lib.ParseVisitors.Types;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.ParseVisitors.Choice;
 using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
 using verse_interpreter.lib.Data.Variables;
-using System.Diagnostics;
 
 namespace verse_interpreter.lib
 {
-    public class Application
+	public class Application
 	{
 		private IParserErrorListener _errorListener;
 		private IServiceProvider _services;
@@ -63,12 +60,11 @@ namespace verse_interpreter.lib
 
 			var parseTree = generator.GenerateParseTree(inputCode);
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
-			Stopwatch stopwatch = new Stopwatch();
-			stopwatch.Start();
 			mainVisitor.VisitProgram(parseTree);
-			stopwatch.Stop();
-			var time = stopwatch.Elapsed.TotalMilliseconds;
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
+
+			var test = manager.GetVariable("t").Value.CollectionVariable.Values;
+			var test2 = manager.GetVariable("z").Value.CollectionVariable.Values;
 			//Console.ReadKey();
 		}
 
@@ -84,7 +80,7 @@ namespace verse_interpreter.lib
 				_services = BuildService();
 
 				string libraryPath = "..\\..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
-                this.LoadStandardLibrary(libraryPath);
+				this.LoadStandardLibrary(libraryPath);
 
 				ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 
@@ -107,12 +103,12 @@ namespace verse_interpreter.lib
 
 		private void LoadStandardLibrary(string libraryPath)
 		{
-            ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 			var inputCode = _reader.ReadFileToEnd(libraryPath);
-            var parseTree = generator.GenerateParseTree(inputCode);
-            var mainVisitor = _services.GetRequiredService<MainVisitor>();
-            mainVisitor.VisitProgram(parseTree);
-        }
+			var parseTree = generator.GenerateParseTree(inputCode);
+			var mainVisitor = _services.GetRequiredService<MainVisitor>();
+			mainVisitor.VisitProgram(parseTree);
+		}
 
 		private CommandLineOptions GetPath(string[] args)
 		{

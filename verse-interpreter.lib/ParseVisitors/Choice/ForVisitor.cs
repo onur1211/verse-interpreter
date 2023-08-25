@@ -53,6 +53,10 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 				_result.Filters.Clear();
 				_result.Filters.Add(resultSet);
 			}
+			else
+			{
+				throw new NotImplementedException("Evaluate the expression prior to using it in the for expression");
+			}
 			return base.VisitForExpression(context);
 		}
 

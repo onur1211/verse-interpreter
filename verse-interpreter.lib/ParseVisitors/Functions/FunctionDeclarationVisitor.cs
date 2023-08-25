@@ -20,11 +20,6 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
             this.bodyParser = bodyParser;
         }
 
-        public override Function VisitFunction_definition([NotNull] Verse.Function_definitionContext context)
-        {
-            return base.VisitFunction_definition(context);
-        }
-
         public override Function VisitLambdaFunc([NotNull] Verse.LambdaFuncContext context)
         {
             var name = context.ID();

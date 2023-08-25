@@ -183,6 +183,11 @@ namespace verse_interpreter.lib.ParseVisitors
 			return null;
 		}
 
+		public override object VisitArray_literal([NotNull] Verse.Array_literalContext context)
+		{
+			return base.VisitArray_literal(context);
+		}
+
 		#region Callbacks
 		private void StringExpressionResolved(object? sender, StringExpressionResolvedEventArgs e)
 		{

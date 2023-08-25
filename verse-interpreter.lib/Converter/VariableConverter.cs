@@ -17,11 +17,11 @@ namespace verse_interpreter.lib.Converter
 			return declarationResult.TypeName switch
 			{
 				"int" => HandleIntVariables(declarationResult),
-				"string" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.LiteralValue)),
+				"string" => HandleStringVariable(declarationResult),
 				"int[]" => HandleExplicitCollectionVariables(declarationResult, "int"),
 				"string[]" => HandleExplicitCollectionVariables(declarationResult, "string"),
-                "false?" => new Variable(declarationResult.Name, ValueObject.False),
-                "collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
+				"false?" => new Variable(declarationResult.Name, ValueObject.False),
+				"collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
 				"undefined" => new Variable(declarationResult.Name, new("undefined")),
 				_ => HandleCustomType(declarationResult)
 			};
@@ -32,7 +32,7 @@ namespace verse_interpreter.lib.Converter
 			{
 				return declarationResult.IndexedVariable;
 			}
-			if (declarationResult.LiteralValue == null)
+			if (string.IsNullOrEmpty(declarationResult.LiteralValue))
 			{
 				return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName));
 			}
@@ -41,35 +41,51 @@ namespace verse_interpreter.lib.Converter
 				return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName, int.Parse(declarationResult.LiteralValue)));
 			}
 		}
-        public static DeclarationResult ConvertBack(Variable variable)
-        {
-            switch (variable.Value.TypeData.Name)
-            {
-                case "int":
-                    return new DeclarationResult()
-                    {
-                        CustomType = variable.Value.CustomType,
+
+		private static Variable HandleStringVariable(DeclarationResult declarationResult)
+		{
+			if (declarationResult.IndexedVariable != null && declarationResult.Name == null)
+			{
+				return declarationResult.IndexedVariable;
+			}
+
+			return new Variable()
+			{
+				Name = declarationResult.Name,
+				Value = new ValueObject(declarationResult.TypeName, declarationResult.LiteralValue)
+			};
+		}
+
+
+		public static DeclarationResult ConvertBack(Variable variable)
+		{
+			switch (variable.Value.TypeData.Name)
+			{
+				case "int":
+					return new DeclarationResult()
+					{
+						CustomType = variable.Value.CustomType,
 						LiteralValue = variable.Value.IntValue.ToString(),
-                        TypeName = variable.Value.TypeData.Name,
-                    };
+						TypeName = variable.Value.TypeData.Name,
+					};
 
-                case "string":
-                    return new DeclarationResult()
-                    {
-                        CustomType = variable.Value.CustomType,
+				case "string":
+					return new DeclarationResult()
+					{
+						CustomType = variable.Value.CustomType,
 						LiteralValue = variable.Value.StringValue,
-                        TypeName = variable.Value.TypeData.Name,
-                    };
+						TypeName = variable.Value.TypeData.Name,
+					};
 
-                default:
-                    return new DeclarationResult()
-                    {
-                        CustomType = variable.Value.CustomType,
-                        CollectionVariable = variable.Value.CollectionVariable,
-                        TypeName = variable.Value.TypeData.Name,
-                    };
-            }
-        }
+				default:
+					return new DeclarationResult()
+					{
+						CustomType = variable.Value.CustomType,
+						CollectionVariable = variable.Value.CollectionVariable,
+						TypeName = variable.Value.TypeData.Name,
+					};
+			}
+		}
 
 		private static Variable HandleExplicitCollectionVariables(DeclarationResult declarationResult, string elementsInCollectionType)
 		{

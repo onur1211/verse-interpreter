@@ -33,7 +33,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 			{	
 				var copiedFilter = CopyFilter(filter);
 				var res = _evaluator.Evaluate(copiedFilter.Expressions);
-                if (res.Value == null)
+                if (res.IntValue == null)
                 {
 					return false;
                 }
