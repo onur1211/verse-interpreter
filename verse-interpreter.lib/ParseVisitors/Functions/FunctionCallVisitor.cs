@@ -65,7 +65,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 			}
 
 			ApplicationState.CurrentScopeLevel += 1;
-			Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 2}");
+			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 2}");
 
 			var functionCall = PrepareFunctionForExecution(functionName, parameters);
 			SetApplicationState(functionCall);
@@ -88,7 +88,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 			ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
 
 			ApplicationState.CurrentScopeLevel -= 1;
-			Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 1}");
+			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 1}");
 			if (!CheckIfReturnedValueMatchesType(functionCall.Function))
 			{
 				throw new InvalidTypeException();

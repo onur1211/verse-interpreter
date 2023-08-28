@@ -107,7 +107,10 @@ namespace verse_interpreter.lib.ParseVisitors
 			{
 				return null;
 			}
-			Printer.PrintResult(result);
+			if (ApplicationState.CurrentScopeLevel == 1)
+			{
+				Printer.PrintResult(result);
+			}
 			return result;
 		}
 

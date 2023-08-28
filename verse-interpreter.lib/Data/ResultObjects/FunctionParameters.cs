@@ -1,4 +1,5 @@
 ﻿using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.Variables;
 
 namespace verse_interpreter.lib.Data.ResultObjects
 {
@@ -9,6 +10,8 @@ namespace verse_interpreter.lib.Data.ResultObjects
             Parameters = new List<Variable>();
         }
         public List<Variable> Parameters { get; set; } = null!;
+
+        public Choice Choice { get; set; }
 
         public int ParameterCount { get {  return Parameters.Count; } }
     }

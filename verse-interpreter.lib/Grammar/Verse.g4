@@ -116,6 +116,8 @@ param_call_item: value_definition
                | ID
                | value_definition ',' param_call_item
                | ID ',' param_call_item
+               | choice_rule
+               | choice_rule ',' param_call_item
                ;
 
 // For

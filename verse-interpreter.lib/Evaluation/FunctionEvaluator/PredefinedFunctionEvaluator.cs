@@ -1,5 +1,6 @@
 ﻿using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Grammar;
+using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Visitors;
 
 namespace verse_interpreter.lib.Evaluation.FunctionEvaluator;
@@ -38,15 +39,19 @@ public class PredefinedFunctionEvaluator
 
         if (parameter.Parameters[0].Value.StringValue != null)
         {
-            function.StatelessFunctionCall.Invoke(parameter.Parameters[0].Value.StringValue);
+            Printer.PrintResult(parameter.Parameters[0].Value.StringValue);
         }
         if (parameter.Parameters[0].Value.IntValue != null)
         {
-            function.StatelessFunctionCall.Invoke(parameter.Parameters[0].Value.IntValue.ToString());
+            Printer.PrintResult(parameter.Parameters[0].Value.IntValue.ToString());
         }
         if (parameter.Parameters[0].Value.TypeData.Name == "false?")
         {
-            function.StatelessFunctionCall.Invoke("false?");
+            Printer.PrintResult("false?");
+        }
+        if (parameter.Parameters[0].Value.CollectionVariable != null)
+        {
+            Printer.PrintResult(parameter.Parameters[0].Value.CollectionVariable);
         }
     }
 }

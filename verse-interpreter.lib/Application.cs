@@ -62,9 +62,6 @@ namespace verse_interpreter.lib
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
 			mainVisitor.VisitProgram(parseTree);
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-
-			var test = manager.GetVariable("t").Value.CollectionVariable.Values;
-			var test2 = manager.GetVariable("z").Value.CollectionVariable.Values;
 			//Console.ReadKey();
 		}
 

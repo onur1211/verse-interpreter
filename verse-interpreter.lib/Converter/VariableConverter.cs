@@ -6,6 +6,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Exceptions;
 
 namespace verse_interpreter.lib.Converter
@@ -26,6 +28,13 @@ namespace verse_interpreter.lib.Converter
 				_ => HandleCustomType(declarationResult)
 			};
 		}
+
+		public static Variable Convert(ChoiceResult choice)
+		{
+			Variable variable = new Variable();
+			return variable;
+		}
+
 		private static Variable HandleIntVariables(DeclarationResult declarationResult)
 		{
 			if (declarationResult.IndexedVariable != null && declarationResult.Name == null)
