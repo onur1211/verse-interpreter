@@ -50,6 +50,7 @@ namespace verse_interpreter.lib.Converter
                 case "int":
                     return new DeclarationResult()
                     {
+                        Name = variable.Name,
                         CustomType = variable.Value.CustomType,
 						LiteralValue = variable.Value.IntValue.ToString(),
                         TypeName = variable.Value.TypeData.Name,
@@ -58,14 +59,23 @@ namespace verse_interpreter.lib.Converter
                 case "string":
                     return new DeclarationResult()
                     {
+                        Name = variable.Name,
                         CustomType = variable.Value.CustomType,
 						LiteralValue = variable.Value.StringValue,
                         TypeName = variable.Value.TypeData.Name,
                     };
 
+				case "false?":
+                    return new DeclarationResult()
+                    {
+						Name = variable.Name,
+						TypeName = variable.Value.TypeData.Name,
+                    };
+
                 default:
                     return new DeclarationResult()
                     {
+                        Name = variable.Name,
                         CustomType = variable.Value.CustomType,
                         CollectionVariable = variable.Value.CollectionVariable,
                         TypeName = variable.Value.TypeData.Name,
