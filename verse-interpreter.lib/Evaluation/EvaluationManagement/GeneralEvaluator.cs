@@ -89,6 +89,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 case "int":
                     HandleArithmeticExpression(expressions, identifier);
                     break;
+
                 case "comparison":
                     HandleComparisonExpression(expressions, identifier);
                     break;

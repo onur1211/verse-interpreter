@@ -33,7 +33,7 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
             _state.CurrentScope.LookupManager.VariableBound += _generalEvaluator.Propagator.HandleVariableBound!;
         }
 
-        public DeclarationResult ParseUnification(Verse.DeclarationContext context)
+        public DeclarationResult ParseEquality(Verse.DeclarationContext context)
         {
             // Check if the variable can be unified with the given value.
             // If true then do nothing.
@@ -63,10 +63,8 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
             {
                 value = valueDef.GetText();
 
-                // Check if the value is not a string like x=y
-                // If true then the value is likely a variable and try getting the value
-                // from the variable
-                if (!value.StartsWith("\"") && !value.EndsWith("\""))
+                // Check if the given value is a variable
+                if (_state.CurrentScope.LookupManager.IsVariable(value))
                 {
                     Variable valueDefVariable = _propertyResolver.ResolveProperty(value);
                     value = this.GetValueAsStringFromVariable(valueDefVariable);

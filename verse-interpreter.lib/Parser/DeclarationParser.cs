@@ -78,11 +78,11 @@ namespace verse_interpreter.lib.Parser
 				throw new InvalidOperationException($"Invalid usage of out of scope variable {nameof(variableName)}");
 			}
 
-            var unificationResult = _equalityVisitor.ParseUnification(context);
+            var equalityResult = _equalityVisitor.ParseEquality(context);
 
-            if (unificationResult != null)
+            if (equalityResult != null)
             {
-                return unificationResult;
+                return equalityResult;
             }
 
             var result = ParseValueAssignment(context);
