@@ -94,6 +94,10 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                     HandleComparisonExpression(expressions, identifier);
                     break;
 
+                case "false?":
+                    ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
+                    return;
+
                 default:
                     throw new UnknownTypeException(typeName);
             }
