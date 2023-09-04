@@ -28,21 +28,24 @@ namespace verse_interpreter.lib.Converter
 				_ => HandleCustomType(declarationResult)
 			};
 		}
+
 		private static Variable HandleIntVariables(DeclarationResult declarationResult)
 		{
-			if (declarationResult.IndexedVariable != null && declarationResult.Name == null)
-			{
-				return declarationResult.IndexedVariable;
-			}
-			if (declarationResult.LiteralValue == null)
-			{
-				return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName));
-			}
-			else
-			{
-				return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName, int.Parse(declarationResult.LiteralValue)));
-			}
-		}
+            if (declarationResult.IndexedVariable != null && declarationResult.Name == null)
+            {
+                return declarationResult.IndexedVariable;
+            }
+
+            if (String.IsNullOrEmpty(declarationResult.LiteralValue))
+            {
+                return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName));
+            }
+            else
+            {
+                return new Variable(declarationResult.Name, new ValueObject(declarationResult.TypeName, int.Parse(declarationResult.LiteralValue)));
+            }
+        }
+
         public static DeclarationResult ConvertBack(Variable variable)
         {
             switch (variable.Value.TypeData.Name)
