@@ -52,10 +52,13 @@ namespace verse_interpreter.lib.Lookup
 			}
 			
 			var existingVariable = GetVariable(variable.Name);
-			
-			if (variable.Value.TypeData != existingVariable.Value.TypeData)
+
+			if (variable.Value.TypeData.Name != "false?")
 			{
-				throw new InvalidTypeCombinationException($"The specified variable \"{variable.Name}\" was already declared in this scope with the type {existingVariable.Value.TypeData.Name}");
+				if (variable.Value.TypeData != existingVariable.Value.TypeData)
+				{
+					throw new InvalidTypeCombinationException($"The specified variable \"{variable.Name}\" was already declared in this scope with the type {existingVariable.Value.TypeData.Name}");
+				}
 			}
 
 			// Handle partial values if there are any.

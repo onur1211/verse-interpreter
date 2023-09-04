@@ -3,6 +3,7 @@ using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.ParseVisitors;
+using verse_interpreter.lib.ParseVisitors.Unification;
 
 namespace verse_interpreter.lib.Parser
 {
@@ -13,6 +14,7 @@ namespace verse_interpreter.lib.Parser
 		private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
 		private readonly Lazy<DeclarationVisitor> _declarationVisitor;
 		private readonly GeneralEvaluator _generalEvaluator;
+		private readonly EqualityVisitor _equalityVisitor;
 
 		public DeclarationParser(ApplicationState applicationState,
 								 TypeInferencer typeInferencer,
@@ -20,13 +22,15 @@ namespace verse_interpreter.lib.Parser
 								 BackpropagationEventSystem backPropagator,
 								 ExpressionValidator validator,
 								 Lazy<DeclarationVisitor> declarationVisitor,
-								 GeneralEvaluator generalEvaluator)
+								 GeneralEvaluator generalEvaluator,
+								 EqualityVisitor equalityVisitor)
 		{
 			_state = applicationState;
 			_inferencer = typeInferencer;
 			_valueDefinitionVisitor = valueDefinitionVisitor;
 			_declarationVisitor = declarationVisitor;
 			_generalEvaluator = generalEvaluator;
+			_equalityVisitor = equalityVisitor;
 			_state.CurrentScope.LookupManager.VariableBound += _generalEvaluator.Propagator.HandleVariableBound!;
 		}
 
@@ -74,8 +78,14 @@ namespace verse_interpreter.lib.Parser
 				throw new InvalidOperationException($"Invalid usage of out of scope variable {nameof(variableName)}");
 			}
 
-			var result = ParseValueAssignment(context);
+            var unificationResult = _equalityVisitor.ParseUnification(context);
 
+            if (unificationResult != null)
+            {
+                return unificationResult;
+            }
+
+            var result = ParseValueAssignment(context);
 			return result;
 		}
 

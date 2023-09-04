@@ -26,6 +26,7 @@ using verse_interpreter.lib.ParseVisitors.Types;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.ParseVisitors.Choice;
 using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
+using verse_interpreter.lib.ParseVisitors.Unification;
 
 namespace verse_interpreter.lib
 {
@@ -170,6 +171,7 @@ namespace verse_interpreter.lib
 				.AddTransient<ExpressionValueParser>()
 				.AddTransient<FunctionFactory>()
 				.AddTransient<FilterApplyer>()
+				.AddTransient<EqualityVisitor>()
 				.AddLazyResolution()
 				.BuildServiceProvider();
 
