@@ -83,10 +83,10 @@ namespace verse_interpreter.lib.ParseVisitors
 
             switch (true)
             {
-                case bool when logicalExpressionContext.AND().Length > 0:
+                case bool when logicalExpressionContext.COMMA().Length > 0:
                     return EvaluateAndConjunction(context, compExpressions, NOTOperator);
 
-                case bool when logicalExpressionContext.OR().Length > 0:
+                case bool when logicalExpressionContext.CHOICE().Length > 0:
                     return EvaluateOrConjunction(context, compExpressions, NOTOperator);
 
                 default:
