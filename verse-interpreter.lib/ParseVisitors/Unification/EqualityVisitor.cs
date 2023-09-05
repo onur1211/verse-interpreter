@@ -46,6 +46,12 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
             }
 
             Variable actualVariable = _propertyResolver.ResolveProperty(variableName);
+
+            if (actualVariable.Value.CollectionVariable != null) 
+            {
+                return null!;
+            }
+
             string value = GetValueFromContext(context);
 
             // If there is no value then return null

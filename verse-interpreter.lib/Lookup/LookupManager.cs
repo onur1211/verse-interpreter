@@ -3,6 +3,7 @@ using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
+using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Lookup.EventArguments;
@@ -13,11 +14,13 @@ namespace verse_interpreter.lib.Lookup
 	{
 		private ILookupTable<Variable> lookupTable;
 		private List<string> valueLessVariables;
+		private readonly PartialValueEvaluator _partialValueEvaluator;
 
 		public LookupManager()
 		{
 			this.lookupTable = new LookupTable<Variable>();
 			this.valueLessVariables = new List<string>();
+			_partialValueEvaluator = new PartialValueEvaluator();
 		}
 
 		public event EventHandler<VariableBoundEventArgs>? VariableBound;
@@ -61,8 +64,8 @@ namespace verse_interpreter.lib.Lookup
 				}
 			}
 
-			// Handle partial values if there are any.
-            this.HandlePartialValues(variable, this.lookupTable.Table[variable.Name]);
+			// Evaluate possible partial values in the variables.
+			variable = _partialValueEvaluator.EvaluatePartialValues(variable, this.lookupTable.Table[variable.Name]);
 
             if (variable.HasValue())
 			{
@@ -75,47 +78,6 @@ namespace verse_interpreter.lib.Lookup
 			// Replace old variable entry with new one.
 			this.lookupTable.Table[variable.Name] = variable;
 		}
-
-        public Variable HandlePartialValues(Variable newVariable, Variable oldVariable)
-        {
-            // Check if there is a collection variable.
-            // If not then just return the unchanged new variable.
-            if (oldVariable.Value.CollectionVariable == null || newVariable.Value.CollectionVariable == null)
-            {
-                return newVariable;
-            }
-
-            // Compare the collection count of the two variables and get the smaller one.
-            int valueCount = Math.Min(oldVariable.Value.CollectionVariable.Values.Count(), newVariable.Value.CollectionVariable.Values.Count());
-
-            // There are 2 types of partial values:
-            // Variables with no value like: x:int
-            // Values with no variables like: 1
-            for (int i = 0; i < valueCount; i++)
-            {
-                var oldPartialValue = oldVariable.Value.CollectionVariable.Values[i];
-                var newPartialValue = newVariable.Value.CollectionVariable.Values[i];
-
-                if (!oldPartialValue.HasValue())
-                {
-                    if (newPartialValue.Name == null)
-                    {
-                        newPartialValue.Name = oldPartialValue.Name!;
-                        continue;
-                    }
-                }
-
-                if (oldPartialValue.Name == null)
-                {
-                    if (!newPartialValue.HasValue())
-                    {
-                        newPartialValue.Value = oldPartialValue.Value;
-                    }
-                }
-            }
-
-            return newVariable;
-        }
 
         public Variable GetVariable(string variableName)
 		{
