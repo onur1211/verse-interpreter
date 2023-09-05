@@ -28,7 +28,7 @@ using verse_interpreter.lib.Data.Variables;
 
 namespace verse_interpreter.lib
 {
-	public class Application
+    public class Application
 	{
 		private IParserErrorListener _errorListener;
 		private IServiceProvider _services;
@@ -63,7 +63,7 @@ namespace verse_interpreter.lib
 			mainVisitor.VisitProgram(parseTree);
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
 			//Console.ReadKey();
-		}
+		 }
 
 		private void RunWithErrorHandling(string[] args)
 		{
@@ -171,6 +171,8 @@ namespace verse_interpreter.lib
 				.AddTransient<FunctionFactory>()
 				.AddTransient<FilterApplyer>()
 				.AddTransient<LogicalExpressionVisitor>()
+				.AddTransient<ChoiceEvaluator>()
+				.AddSingleton<FunctionCallEvaluator>()
 				.AddLazyResolution()
 				.BuildServiceProvider();
 

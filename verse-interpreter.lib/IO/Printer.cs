@@ -22,7 +22,7 @@ namespace verse_interpreter.lib.IO
 
         public static void PrintResult(FunctionCallResult result)
         {
-            if (result == null || !result.WasValueResolved)
+            if (result == null || result.WasValueResolved)
             {
                 return;
             }
@@ -52,15 +52,29 @@ namespace verse_interpreter.lib.IO
 			Console.WriteLine("VERSE CODE RESULT: ");
 			Console.ResetColor();
             Console.Write("array( ");
+            if (collection.Values.Count == 0)
+            {
+                Console.Write(")");
+                return;
+            }
+            var last = collection.Values.Last();
 			foreach (var element in collection.Values)
             {
                 if (element.Value.IntValue != null)
                 {
-					Console.Write($"{element.Value.IntValue}, ");
+					Console.Write($"{element.Value.IntValue}");
 				}
                 if (element.Value.StringValue != null)
                 {
-                    Console.Write($"{element.Value.StringValue}, ");
+                    Console.Write($"{element.Value.StringValue}");
+                }
+                if (element != last)
+                {
+                    Console.Write(", ");
+                }
+                else
+                {
+                    Console.Write(" ");
                 }
             }
             Console.Write(")");

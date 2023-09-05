@@ -1,4 +1,5 @@
-﻿using verse_interpreter.lib.Exceptions;
+﻿using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Visitors;
@@ -16,42 +17,40 @@ public class PredefinedFunctionEvaluator
         _functionParser = functionParser;
     }
 
-    public void Execute(string functionName, Verse.Param_call_itemContext paramCallItemContext)
+    public void Execute(string functionName, FunctionParameters parameters)
     {
         var function = _applicationState.PredefinedFunctions.First(x => x.FunctionName == functionName);
-        var parameter = _functionParser.GetCallParameters(paramCallItemContext);
-        if (function.ParameterCount != parameter.ParameterCount)
+        if (function.ParameterCount != parameters.ParameterCount)
         {
             throw new NotEqualArityException();
         }
 
         switch (function.FunctionName)
         {
-            case "Print": ExecutePrint(functionName, paramCallItemContext);
+            case "Print": ExecutePrint(functionName, parameters);
             break;
         }
     }
 
-    private void ExecutePrint(string functionName, Verse.Param_call_itemContext paramCallItemContext)
+    private void ExecutePrint(string functionName, FunctionParameters parameters)
     {
         var function = _applicationState.PredefinedFunctions.First(x => x.FunctionName == functionName);
-        var parameter = _functionParser.GetCallParameters(paramCallItemContext);
 
-        if (parameter.Parameters[0].Value.StringValue != null)
+        if (parameters.Parameters[0].Value.StringValue != null)
         {
-            Printer.PrintResult(parameter.Parameters[0].Value.StringValue);
+            Printer.PrintResult(parameters.Parameters[0].Value.StringValue);
         }
-        if (parameter.Parameters[0].Value.IntValue != null)
+        if (parameters.Parameters[0].Value.IntValue != null)
         {
-            Printer.PrintResult(parameter.Parameters[0].Value.IntValue.ToString());
+            Printer.PrintResult(parameters.Parameters[0].Value.IntValue.ToString());
         }
-        if (parameter.Parameters[0].Value.TypeData.Name == "false?")
+        if (parameters.Parameters[0].Value.TypeData.Name == "false?")
         {
             Printer.PrintResult("false?");
         }
-        if (parameter.Parameters[0].Value.CollectionVariable != null)
+        if (parameters.Parameters[0].Value.CollectionVariable != null)
         {
-            Printer.PrintResult(parameter.Parameters[0].Value.CollectionVariable);
+            Printer.PrintResult(parameters.Parameters[0].Value.CollectionVariable);
         }
     }
 }

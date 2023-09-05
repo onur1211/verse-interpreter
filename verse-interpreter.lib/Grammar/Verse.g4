@@ -22,6 +22,7 @@ value_definition : INT #intValueDef
                  | array_index #arrayindexValueDef
                  | type_member_access #memberaccessValueDef
                  | range_expression #rangeValueDef
+                 | '(' value_definition ('|' value_definition) ')' #choice
                  ;
 
 program : function_definition program
@@ -161,6 +162,7 @@ string_rule : SEARCH_TYPE
             ;
 
 choice_rule : value_definition ( '|' choice_rule)*
+            | '(' value_definition ( '|' choice_rule)* ')' 
             ;
 
             

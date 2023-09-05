@@ -95,6 +95,11 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 			{
 				throw new NotImplementedException();
 			}
+			if (array.Value.TypeData.Name == "false?")
+			{
+				array.Value.CollectionVariable = new VerseCollection(new(0));
+				array.Value.TypeData.Name = "collection";
+			}
 
 			indexerVariable = ExpandVariable(indexerVariable, array);
 			var indexerChoice = indexerVariable.Value.Choice;

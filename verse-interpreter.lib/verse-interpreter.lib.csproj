@@ -44,6 +44,7 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
 		<PackageReference Include="org.matheval" Version="1.0.0.3" />
 		<PackageReference Include="Z.Expressions.Eval" Version="5.0.7" />
+		<PackageReference Include="System.Net.Primitives" Version="4.3.0" />
 	</ItemGroup>
 
 </Project>

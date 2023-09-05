@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.Metrics;
+using System.Reflection;
 using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.Variables;
@@ -51,6 +52,8 @@ namespace verse_interpreter.lib.Data
 
 		public Choice Choice { get; set; } = null!;
 
+		private static int counter;
+
 		public static ValueObject False
 		{
 			get
@@ -59,7 +62,7 @@ namespace verse_interpreter.lib.Data
 				{
 					_false = new ValueObject("false?");
 				}
-
+				counter += 1;
 				return _false;
 			}
 		}

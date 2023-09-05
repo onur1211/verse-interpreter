@@ -33,19 +33,15 @@ sort(x:collection):collection{
          larger := sort(for{i:int; xs[i] > head; xs[i]})
          append(append(smaller, for{head}), larger)
      }
+     else{
+         array()
+     }
 }
 
-diff(x:collection, y:collection):collection {
-     if(h1 := headString(x)) {
-         if(h2 := headString(y)){
-            if(h1 = h2) {
-                next := diff(tail(x), tail(y))
-                append(for{1}, next)
-            }
-            else {
-                next := diff(tail(x), tail(y))
-                append(for{0}, next)
-            }
-         }
-     }
+hanoi(n:int, first:string, second:string, third:string):void {
+     if(n > 0) {
+	    hanoi(n - 1, first, third, second)
+        Print("Moved disk from " + first + " to " + third)
+        hanoi(n - 1, second, third, first)
+	}
 }

@@ -28,7 +28,11 @@ namespace verse_interpreter.lib.Data
 
 		public bool HasValue()
 		{
-			return Value.IntValue != null || Value.StringValue != null || Value.CustomType.HasValue || Value.CollectionVariable != null;
+			return Value.IntValue != null || 
+				Value.StringValue != null || 
+				Value.CustomType.HasValue || 
+				Value.CollectionVariable != null ||
+				Value.Choice != null;
 		}
 	}
 }

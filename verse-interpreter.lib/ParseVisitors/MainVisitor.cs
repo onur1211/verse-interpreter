@@ -6,17 +6,19 @@ using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
+using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.IO;
 using verse_interpreter.lib.ParseVisitors.Choice;
 using verse_interpreter.lib.ParseVisitors.Expressions;
+using verse_interpreter.lib.Visitors;
 using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
-	public class MainVisitor : AbstractVerseVisitor<object>
+    public class MainVisitor : AbstractVerseVisitor<object>
 	{
 		private readonly DeclarationVisitor _declarationVisitor;
 		private readonly ExpressionVisitor _expressionVisitor;
@@ -26,6 +28,8 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly ForVisitor _forVisitor;
 		private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
 		private readonly IfExpressionVisitor _ifExpressionVisitor;
+		private readonly ParameterParser _parameterParser;
+		private readonly FunctionCallEvaluator _functionCallEvaluator;
 
 		public MainVisitor(ApplicationState applicationState,
 						   DeclarationVisitor declarationVisitor,
@@ -35,7 +39,9 @@ namespace verse_interpreter.lib.ParseVisitors
 						   GeneralEvaluator generalEvaluator,
 						   ForVisitor forVisitor,
 						   ValueDefinitionVisitor valueDefinitionVisitor,
-						   IfExpressionVisitor ifExpressionVisitor) : base(applicationState)
+						   IfExpressionVisitor ifExpressionVisitor,
+						   ParameterParser parameterParser,
+						   FunctionCallEvaluator functionCallEvaluator) : base(applicationState)
 		{
 			_declarationVisitor = declarationVisitor;
 			_expressionVisitor = expressionVisitor;
@@ -48,6 +54,9 @@ namespace verse_interpreter.lib.ParseVisitors
 			ApplicationState.CurrentScope.LookupManager.VariableBound +=
 				_generalEvaluator.Propagator.HandleVariableBound!;
 			_ifExpressionVisitor = ifExpressionVisitor;
+			_parameterParser = parameterParser;
+			_functionCallEvaluator = functionCallEvaluator;
+			_functionCallEvaluator.FunctionRequestedExecution += FunctionRequestedExecutionCallback;
 			_generalEvaluator.ArithmeticExpressionResolved += ArithmeticExpressionResolved;
 			_generalEvaluator.StringExpressionResolved += StringExpressionResolved;
 			_generalEvaluator.ForExpressionResolved += ForExpressionResolved;
@@ -65,7 +74,7 @@ namespace verse_interpreter.lib.ParseVisitors
 					if (child is Verse.Value_definitionContext)
 					{
 						var res = VariableConverter.Convert(_valueDefinitionVisitor.Visit(child)!);
-						_functionWrapper.FunctionCallVisitor.OnVariableResolved(res);
+						_functionCallEvaluator.ReturnValueManager.OnVariableResolved(res);
 						continue;
 					}
 					child.Accept(this);
@@ -73,7 +82,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			}
 		}
 
-		public override object VisitDeclaration([NotNull] Verse.DeclarationContext context)
+		public override Variable VisitDeclaration([NotNull] Verse.DeclarationContext context)
 		{
 			var declaredVariable = context.Accept(_declarationVisitor);
 
@@ -81,7 +90,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			{
 				ApplicationState.CurrentScope.AddScopedVariable(declaredVariable);
 			}
-			return null!;
+			return declaredVariable;
 		}
 
 		public override object VisitExpression([NotNull] Verse.ExpressionContext context)
@@ -102,7 +111,10 @@ namespace verse_interpreter.lib.ParseVisitors
 
 		public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
 		{
-			var result = _functionWrapper.FunctionCallVisitor.Visit(context);
+			var functionName = context.ID().GetText();
+			var parameters = _parameterParser.GetCallParameters(context.param_call_item());
+			var result = _functionCallEvaluator.CallFunction(parameters, functionName);
+
 			if (result == null || result.IsVoid)
 			{
 				return null;
@@ -196,7 +208,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			if (ApplicationState.CurrentScopeLevel > 1)
 			{
-				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(e.Result);
+				_functionCallEvaluator.ReturnValueManager.OnResultEvaluated(e.Result);
 				return;
 			}
 
@@ -207,7 +219,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			if (ApplicationState.CurrentScopeLevel > 1)
 			{
-				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(e.Result);
+				_functionCallEvaluator.ReturnValueManager.OnResultEvaluated(e.Result);
 				return;
 			}
 
@@ -218,7 +230,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			if (ApplicationState.CurrentScopeLevel > 1)
 			{
-				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(eventArgs);
+				_functionCallEvaluator.ReturnValueManager.OnResultEvaluated(eventArgs);
 				return;
 			}
 
@@ -229,9 +241,11 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			if (ApplicationState.CurrentScopeLevel > 1)
 			{
-				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(eventArgs.ForExpression);
+				_functionCallEvaluator.ReturnValueManager.OnResultEvaluated(eventArgs.ForExpression);
 				return;
 			}
+
+			Printer.PrintResult(eventArgs.ForExpression.Collection!);
 		}
 		#endregion
 	}

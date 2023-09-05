@@ -1,6 +1,8 @@
 ﻿using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.ParseVisitors.Functions;
+using verse_interpreter.lib.Visitors;
 using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.Parser
@@ -8,12 +10,16 @@ namespace verse_interpreter.lib.Parser
     public class PrimaryRuleParser
 	{
 		private readonly ApplicationState _applicationState;
-		private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
+		private readonly Lazy<FunctionCallEvaluator> _functionEvaluator;
+		private readonly Lazy<ParameterParser> _parameterParser;
 
-		public PrimaryRuleParser(ApplicationState applicationState, Lazy<FunctionCallVisitor> functionCallVisitor)
+		public PrimaryRuleParser(ApplicationState applicationState, 
+								 Lazy<FunctionCallEvaluator> functionCallVisitor,
+								 Lazy<ParameterParser> parameterParser)
 		{
 			_applicationState = applicationState;
-			_functionCallVisitor = functionCallVisitor;
+			_functionEvaluator = functionCallVisitor;
+			_parameterParser = parameterParser;
 		}
 
 		public ExpressionResult ParsePrimary([Antlr4.Runtime.Misc.NotNull] Verse.PrimaryContext context)
@@ -71,7 +77,10 @@ namespace verse_interpreter.lib.Parser
 
 			if (fetchedFunctionCall != null)
 			{
-				var returnedFunctionValue = fetchedFunctionCall.Accept(_functionCallVisitor.Value);
+				var name = fetchedFunctionCall.ID().GetText();
+				var parameters = _parameterParser.Value.GetCallParameters(fetchedFunctionCall.param_call_item());
+				var returnedFunctionValue = _functionEvaluator.Value.CallFunction(parameters, name);
+
 				result = HandleIntResult(returnedFunctionValue, result);
 				result = HandleStringResult(returnedFunctionValue, result);
 				return result;

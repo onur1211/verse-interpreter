@@ -5,6 +5,7 @@ using System.Reflection;
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
+using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
@@ -13,6 +14,7 @@ using verse_interpreter.lib.ParseVisitors.Choice;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.ParseVisitors.Functions;
 using verse_interpreter.lib.ParseVisitors.Types;
+using verse_interpreter.lib.Visitors;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
@@ -25,20 +27,23 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly ExpressionValueParser _expressionValueParser;
 		private readonly Lazy<ForVisitor> _forVisitor;
 		private readonly PropertyResolver _resolver;
-		private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
+		private readonly Lazy<FunctionCallEvaluator> _functionEvaluator;
+		private readonly Lazy<ParameterParser> _parameterParser;
 		private readonly ArrayVisitor _arrayVisitor;
-
+		private readonly Lazy<ChoiceVisitor> _choiceVisitor;
 
 		public ValueDefinitionVisitor(ApplicationState applicationState,
 									  TypeInferencer typeInferencer,
-									  Lazy<FunctionCallVisitor> functionVisitor,
+									  Lazy<FunctionCallEvaluator> functionEvaluator,
+									  Lazy<ParameterParser> parameterParser,
 									  ExpressionVisitor expressionVisitor,
 									  TypeConstructorVisitor constructorVisitor,
 									  Lazy<TypeMemberVisitor> memberVisitor,
 									  ExpressionValueParser expressionValueParser,
 									  Lazy<ForVisitor> forVisitor,
 									  PropertyResolver resolver,
-									  ArrayVisitor arrayVisitor) : base(applicationState)
+									  ArrayVisitor arrayVisitor,
+									  Lazy<ChoiceVisitor> choiceVisitor) : base(applicationState)
 		{
 			_typeInferencer = typeInferencer;
 			_expressionVisitor = expressionVisitor;
@@ -47,8 +52,10 @@ namespace verse_interpreter.lib.ParseVisitors
 			_expressionValueParser = expressionValueParser;
 			_forVisitor = forVisitor;
 			_resolver = resolver;
-			_functionCallVisitor = functionVisitor;
+			_functionEvaluator = functionEvaluator;
+			_parameterParser = parameterParser;
 			_arrayVisitor = arrayVisitor;
+			_choiceVisitor = choiceVisitor;
 		}
 		public override DeclarationResult VisitIntValueDef([NotNull] Verse.IntValueDefContext context)
 		{
@@ -146,7 +153,9 @@ namespace verse_interpreter.lib.ParseVisitors
 
 		public override DeclarationResult VisitFunction_call(Verse.Function_callContext context)
 		{
-			var functionCallResult = _functionCallVisitor.Value.Visit(context);
+			var functionName = context.ID().GetText();
+			var parameter = _parameterParser.Value.GetCallParameters(context.param_call_item());
+			var functionCallResult = _functionEvaluator.Value.CallFunction(parameter, functionName);
 
 			return _typeInferencer.InferGivenType(DeclarationResultConverter.ConvertFunctionResult(functionCallResult));
 		}
@@ -197,6 +206,14 @@ namespace verse_interpreter.lib.ParseVisitors
 			var result = _forVisitor.Value.Visit(context);
 
 			return _expressionValueParser.ParseForExpression(result);
+		}
+
+		public override DeclarationResult VisitChoice([NotNull] Verse.ChoiceContext context)
+		{
+			DeclarationResult declarationResult = new DeclarationResult();
+			declarationResult.ChoiceResult = _choiceVisitor.Value.Visit(context);
+
+			return _typeInferencer.InferGivenType(declarationResult);
 		}
 	}
 }

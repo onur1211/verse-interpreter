@@ -11,8 +11,6 @@ namespace verse_interpreter.lib.Data.ResultObjects
         }
         public List<Variable> Parameters { get; set; } = null!;
 
-        public Choice Choice { get; set; }
-
         public int ParameterCount { get {  return Parameters.Count; } }
     }
 }
