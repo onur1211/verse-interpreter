@@ -35,65 +35,35 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
 
         public DeclarationResult ParseEquality(Verse.DeclarationContext context)
         {
-            // Check if the variable can be unified with the given value.
-            // If true then do nothing.
-            // If false then return false?
+            // Get the name of the variable
+            // Example: x=2 or x=y then get 'x'
             var variableName = context.ID().GetText();
 
+            // Check if the name is a variable
             if (!_state.CurrentScope.LookupManager.IsVariable(variableName))
             {
-                throw new InvalidOperationException($"Invalid usage of out of scope variable {nameof(variableName)}");
+                throw new InvalidOperationException($"Invalid usage of out-of-scope variable {variableName}");
             }
 
             Variable actualVariable = _propertyResolver.ResolveProperty(variableName);
+            string value = GetValueFromContext(context);
 
-            // If the variable has no value like x:int then return null and let
-            // the declaration parser assign the value.
-            if (!actualVariable.HasValue())
-            {
-                return null!;
-            }
-
-            var valueDef = context.value_definition();
-            var arrayLiteral = context.array_literal();
-            var choice = context.choice_rule();
-            string value = String.Empty;
-
-            if (valueDef != null)
-            {
-                value = valueDef.GetText();
-
-                // Check if the given value is a variable
-                if (_state.CurrentScope.LookupManager.IsVariable(value))
-                {
-                    Variable valueDefVariable = _propertyResolver.ResolveProperty(value);
-                    value = this.GetValueAsStringFromVariable(valueDefVariable);
-                }
-            }
-            else if (arrayLiteral != null)
-            {
-                value = arrayLiteral.GetText();
-            }
-            else if (choice != null)
-            {
-                value = choice.GetText();
-            }
-
+            // If there is no value then return null
             if (String.IsNullOrEmpty(value))
             {
                 return null!;
             }
 
-            // If the unification fails then return false?
+            // Try to unify the variable with the given value
             if (!TryUnification(actualVariable, value))
             {
-                DeclarationResult declarationResult = new DeclarationResult();
-                declarationResult.Name = variableName;
-                declarationResult.TypeName = "false?";
-                return declarationResult;
+                return new DeclarationResult
+                {
+                    Name = variableName,
+                    TypeName = "false?"
+                };
             }
 
-            // Otherwise return nothing.
             return null!;
         }
 
@@ -128,6 +98,34 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                 default:
                     return false;
             }
+        }
+
+        private string GetValueFromContext(Verse.DeclarationContext context)
+        {
+            if (context.value_definition() != null)
+            {
+                string value = context.value_definition().GetText();
+
+                // Check if the value is a variable and if true get the value from it
+                // Example: x=y then y is the value as a variable
+                if (_state.CurrentScope.LookupManager.IsVariable(value))
+                {
+                    Variable valueDefVariable = _propertyResolver.ResolveProperty(value);
+                    return GetValueAsStringFromVariable(valueDefVariable);
+                }
+
+                return value;
+            }
+            else if (context.array_literal() != null)
+            {
+                return context.array_literal().GetText();
+            }
+            else if (context.choice_rule() != null)
+            {
+                return context.choice_rule().GetText();
+            }
+
+            return String.Empty;
         }
 
         private string GetValueAsStringFromVariable(Variable variable)
