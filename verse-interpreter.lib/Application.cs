@@ -27,6 +27,9 @@ using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.ParseVisitors.Choice;
 using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
 using verse_interpreter.lib.ParseVisitors.Unification;
+using verse_interpreter.lib.Lookup;
+using System.Text;
+using System.Xml.Linq;
 
 namespace verse_interpreter.lib
 {
@@ -43,7 +46,9 @@ namespace verse_interpreter.lib
 			_reader = new FileReader();
 		}
 
-		public void Run(string[] args)
+        public bool IsDebug { get; private set; }
+
+        public void Run(string[] args)
 		{
 			var options = GetPath(args);
 			if (options.Code == null && options.Path == null)
@@ -64,6 +69,11 @@ namespace verse_interpreter.lib
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
 			mainVisitor.VisitProgram(parseTree);
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
+
+			if (IsDebug)
+			{
+                PrintDebugInformation(manager);
+            }
 		}
 
 		private void RunWithErrorHandling(string[] args)
@@ -99,7 +109,80 @@ namespace verse_interpreter.lib
 			}
 		}
 
-		private void LoadStandardLibrary(string libraryPath)
+		private void PrintDebugInformation(LookupManager manager)
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				Console.WriteLine(".");
+			}
+
+			Console.ForegroundColor = ConsoleColor.DarkYellow;
+			Console.WriteLine("DEBUG INFO:");
+			Console.ResetColor();
+
+			foreach (var variable in manager.GetAllVariables())
+			{
+				switch (variable.Value)
+				{
+					case object when variable.Value!.IntValue != null:
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.IntValue}");
+						break;
+
+					case object when variable.Value.StringValue != null:
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.StringValue}");
+						break;
+
+					case object when variable.Value.CollectionVariable != null:
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {PrintCollectionValues(variable.Value.CollectionVariable)}");
+						break;
+
+					case object when variable.Value.TypeData.Name == "false?":
+                        Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
+                        break;
+
+					default:
+						Console.WriteLine("null");
+						break;
+				}
+			}
+		}
+
+        public static string PrintCollectionValues(VerseCollection collection)
+        {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append("array( ");
+
+            if (collection.Values.Count == 0)
+            {
+                stringBuilder.Append(")");
+                return stringBuilder.ToString();
+            }
+
+            var last = collection.Values.Last();
+            foreach (var element in collection.Values)
+            {
+                if (element.Value.IntValue != null)
+                {
+                    stringBuilder.Append($"{element.Value.IntValue}");
+                }
+                if (element.Value.StringValue != null)
+                {
+                    stringBuilder.Append($"{element.Value.StringValue}");
+                }
+                if (element != last)
+                {
+                    stringBuilder.Append(", ");
+                }
+                else
+                {
+                    stringBuilder.Append(" ");
+                }
+            }
+            stringBuilder.Append(")");
+			return stringBuilder.ToString();
+        }
+
+        private void LoadStandardLibrary(string libraryPath)
 		{
             ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 			var inputCode = _reader.ReadFileToEnd(libraryPath);
@@ -121,7 +204,13 @@ namespace verse_interpreter.lib
 					}
 					options.Path = o.Path;
 					options.Code = o.Code;
+					options.Debug = o.Debug;
 				});
+
+			if (options.Debug)
+			{
+				this.IsDebug = true;
+			}
 
 			return options;
 		}

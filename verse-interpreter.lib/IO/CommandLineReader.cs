@@ -15,5 +15,8 @@ namespace verse_interpreter.lib.IO
 
         [Option('c', "Code", Required = false, HelpText = "Set the verse code directly!")]
         public string? Code { get; set; }
+
+        [Option('d', "Debug", Required = false, HelpText = "Debug Mode will print all variables")]
+        public bool Debug { get; set; }
     }
 }
