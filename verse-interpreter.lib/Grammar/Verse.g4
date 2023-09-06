@@ -23,6 +23,7 @@ value_definition : INT #intValueDef
                  | type_member_access #memberaccessValueDef
                  | range_expression #rangeValueDef
                  | '(' value_definition ('|' value_definition) ')' #choice
+                 | questionmark_operator #ChoiceConversion
                  ;
 
 program : function_definition program
@@ -47,6 +48,7 @@ program : function_definition program
         | if_block
         | value_definition
         | for_rule
+        | questionmark_operator
         ;
 
 block : declaration
@@ -138,6 +140,10 @@ constructor_body : INSTANCE ID '('')'
                  | INSTANCE ID '('param_def_item ')'
                  ;
 
+
+questionmark_operator : array_literal '?'
+                      | ID '?' 
+                      ;
 
 type_header : DATA ID '=' ID NEWLINE '{' multi_declaration NEWLINE '}'
             | DATA ID '=' ID '{' multi_declaration '}'

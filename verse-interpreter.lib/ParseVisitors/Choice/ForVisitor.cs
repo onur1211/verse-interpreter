@@ -7,7 +7,7 @@ using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 
-namespace verse_interpreter.lib.ParseVisitors.Choice
+namespace verse_interpreter.lib.ParseVisitors
 {
 	public class ForVisitor : AbstractVerseVisitor<ForResult>
 	{

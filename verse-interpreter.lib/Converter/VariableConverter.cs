@@ -97,7 +97,9 @@ namespace verse_interpreter.lib.Converter
 		{
 			if (declarationResult.ChoiceResult != null)
 			{
-				throw new NotImplementedException();
+				var variable = Convert(declarationResult.ChoiceResult);
+				variable.Name = declarationResult.Name;
+				return variable;
 			}
 			if (declarationResult.IndexedVariable != null && declarationResult.Name == null)
 			{
@@ -142,6 +144,7 @@ namespace verse_interpreter.lib.Converter
 						CustomType = variable.Value.CustomType,
 						LiteralValue = variable.Value.StringValue,
 						TypeName = variable.Value.TypeData.Name,
+						CollectionVariable = variable.Value.CollectionVariable,
 					};
 
 				default:

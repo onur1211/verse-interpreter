@@ -10,7 +10,7 @@ using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Extensions;
 using verse_interpreter.lib.Grammar;
 
-namespace verse_interpreter.lib.ParseVisitors.Choice
+namespace verse_interpreter.lib.ParseVisitors
 {
 	public class ChoiceVisitor : AbstractVerseVisitor<ChoiceResult>
 	{

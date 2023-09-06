@@ -37,6 +37,7 @@ DIV : '/' ;
 LAMBDA : '=>' ;
 CHOICE : '|' ;
 NOVALUE : 'false?';
+QUESTIONMARK: '?';
 
 // Keywords
 IF: 'if';

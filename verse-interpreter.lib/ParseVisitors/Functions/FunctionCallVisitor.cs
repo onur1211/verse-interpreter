@@ -11,7 +11,6 @@ using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
-using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Exceptions;
@@ -35,6 +34,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 								   ParameterParser functionParser,
 								   GeneralEvaluator evaluator,
 								   FunctionCallPreprocessor functionCallPreprocessor,
+								   DeclarationVisitor declarationVisitor,
 								   PredefinedFunctionEvaluator functionEvaluator,
 								   FunctionFactory functionFactory) : base(applicationState)
 		{
@@ -56,34 +56,43 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 
 		public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
 		{
+			ClearResultSet();
+			var functionName = context.ID().GetText();
+			var parameters = _functionParser.GetCallParameters(context.param_call_item());
+			if (TryExecutePredefinedFunction(functionName, context))
+			{
+				return null!;
+			}
+
 			ApplicationState.CurrentScopeLevel += 1;
 			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 2}");
 
-			//var functionCall = PrepareFunctionForExecution(functionName, parameters);
-			//SetApplicationState(functionCall);
+			var functionCall = PrepareFunctionForExecution(functionName, parameters);
+			SetApplicationState(functionCall);
 
-			// Inidicates that no value (false?) was resolved
-			//if (!WasValueResolved)
-			//{
-			//	ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
-			//	ApplicationState.CurrentScopeLevel -= 1;
-			//	return new FunctionCallResult()
-			//	{
-			//		WasValueResolved = WasValueResolved,
-			//		IsVoid = functionCall.Function.ReturnType == "void",
-			//	};
-			//}
+			if (!WasValueResolved)
+			{
+				ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
+				ApplicationState.CurrentScopeLevel -= 1;
+				return new FunctionCallResult()
+				{
+					ArithmeticExpression = ArithmeticExpression,
+					StringExpression = StringExpression,
+					ForExpression = ForExpression,
+					WasValueResolved = WasValueResolved,
+					Variable = Variable,
+					IsVoid = functionCall.Function.ReturnType == "void",
+				};
+			}
+			FunctionRequestedExecution?.Invoke(this, new FunctionRequestedExecutionEventArgs(functionCall));
+			ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
 
-			//FunctionRequestedExecution?.Invoke(this, new FunctionRequestedExecutionEventArgs(functionCall));
-			//ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
-
-			//ApplicationState.CurrentScopeLevel -= 1;
-			////Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 1}");
-			//if (!CheckIfReturnedValueMatchesType(functionCall.Function))
-			//{
-			//	throw new InvalidTypeException();
-			//}
-			throw new NotImplementedException("Currently updating this class");
+			ApplicationState.CurrentScopeLevel -= 1;
+			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 1}");
+			if (!CheckIfReturnedValueMatchesType(functionCall.Function))
+			{
+				throw new InvalidTypeException();
+			}
 			return new FunctionCallResult()
 			{
 				ArithmeticExpression = ArithmeticExpression,
@@ -91,7 +100,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 				ForExpression = ForExpression,
 				WasValueResolved = WasValueResolved,
 				Variable = Variable,
-				//IsVoid = functionCall.Function.ReturnType == "void",
+				IsVoid = functionCall.Function.ReturnType == "void",
 			};
 		}
 
@@ -106,11 +115,6 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 
 		private bool CheckIfReturnedValueMatchesType(Function function)
 		{
-			if (function.ReturnType == "void")
-			{
-				return true;
-			}
-
 			if (ForExpression != null)
 			{
 				return function.ReturnType == "collection";
@@ -137,11 +141,12 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 			return true;
 		}
 
-		private bool TryExecutePredefinedFunction(string functionName, FunctionParameters parameters)
+		private bool TryExecutePredefinedFunction(string functionName, Verse.Function_callContext context)
 		{
 			if (ApplicationState.PredefinedFunctions.ContainsWhere(x => x.FunctionName == functionName))
 			{
-				_functionEvaluator.Execute(functionName, parameters);
+				var test = _functionParser.GetCallParameters(context.param_call_item());
+				_functionEvaluator.Execute(functionName, test);
 				return true;
 			}
 
@@ -169,7 +174,6 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 			});
 		}
 
-		#region ValueAssignments
 		public void OnResultEvaluated(ArithmeticExpression arithmeticExpression)
 		{
 			ArithmeticExpression = arithmeticExpression;
@@ -194,6 +198,5 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 		{
 			WasValueResolved = false;
 		}
-		#endregion
 	}
 }

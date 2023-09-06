@@ -1,4 +1,4 @@
-﻿namespace verse_interpreter.lib.ParseVisitors.Choice
+﻿namespace verse_interpreter.lib.ParseVisitors
 {
 	public class ArrayIndexingResult
 	{

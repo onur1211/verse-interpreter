@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
+using System;
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
@@ -11,7 +12,6 @@ using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.IO;
-using verse_interpreter.lib.ParseVisitors.Choice;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.Visitors;
 using verse_interpreter.lib.Wrapper;
@@ -28,8 +28,8 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly ForVisitor _forVisitor;
 		private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
 		private readonly IfExpressionVisitor _ifExpressionVisitor;
-		private readonly ParameterParser _parameterParser;
 		private readonly FunctionCallEvaluator _functionCallEvaluator;
+		private readonly ChoiceConversionVisitor _choiceConversionVisitor;
 
 		public MainVisitor(ApplicationState applicationState,
 						   DeclarationVisitor declarationVisitor,
@@ -40,8 +40,8 @@ namespace verse_interpreter.lib.ParseVisitors
 						   ForVisitor forVisitor,
 						   ValueDefinitionVisitor valueDefinitionVisitor,
 						   IfExpressionVisitor ifExpressionVisitor,
-						   ParameterParser parameterParser,
-						   FunctionCallEvaluator functionCallEvaluator) : base(applicationState)
+						   FunctionCallEvaluator functionCallEvaluator,
+						   ChoiceConversionVisitor choiceConversionVisitor) : base(applicationState)
 		{
 			_declarationVisitor = declarationVisitor;
 			_expressionVisitor = expressionVisitor;
@@ -54,8 +54,8 @@ namespace verse_interpreter.lib.ParseVisitors
 			ApplicationState.CurrentScope.LookupManager.VariableBound +=
 				_generalEvaluator.Propagator.HandleVariableBound!;
 			_ifExpressionVisitor = ifExpressionVisitor;
-			_parameterParser = parameterParser;
 			_functionCallEvaluator = functionCallEvaluator;
+			_choiceConversionVisitor = choiceConversionVisitor;
 			_functionCallEvaluator.FunctionRequestedExecution += FunctionRequestedExecutionCallback;
 			_generalEvaluator.ArithmeticExpressionResolved += ArithmeticExpressionResolved;
 			_generalEvaluator.StringExpressionResolved += StringExpressionResolved;
@@ -74,7 +74,7 @@ namespace verse_interpreter.lib.ParseVisitors
 					if (child is Verse.Value_definitionContext)
 					{
 						var res = VariableConverter.Convert(_valueDefinitionVisitor.Visit(child)!);
-						_functionCallEvaluator.ReturnValueManager.OnVariableResolved(res);
+						_functionWrapper.FunctionCallVisitor.OnVariableResolved(res);
 						continue;
 					}
 					child.Accept(this);
@@ -111,9 +111,10 @@ namespace verse_interpreter.lib.ParseVisitors
 
 		public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
 		{
-			var functionName = context.ID().GetText();
-			var parameters = _parameterParser.GetCallParameters(context.param_call_item());
-			var result = _functionCallEvaluator.CallFunction(parameters, functionName);
+			//var functionName = context.ID().GetText();
+			//var parameters = _parameterParser.GetCallParameters(context.param_call_item());
+			var result = _functionWrapper.FunctionCallVisitor.Visit(context);
+			//var result = _functionCallEvaluator.CallFunction(parameters, functionName);
 
 			if (result == null || result.IsVoid)
 			{
@@ -198,9 +199,10 @@ namespace verse_interpreter.lib.ParseVisitors
 			return null;
 		}
 
-		public override object VisitArray_literal([NotNull] Verse.Array_literalContext context)
+		public override object VisitQuestionmark_operator([NotNull] Verse.Questionmark_operatorContext context)
 		{
-			return base.VisitArray_literal(context);
+			var result = _choiceConversionVisitor.Visit(context);
+			return result;
 		}
 
 		#region Callbacks
@@ -219,7 +221,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			if (ApplicationState.CurrentScopeLevel > 1)
 			{
-				_functionCallEvaluator.ReturnValueManager.OnResultEvaluated(e.Result);
+				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(e.Result);
 				return;
 			}
 
@@ -230,7 +232,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			if (ApplicationState.CurrentScopeLevel > 1)
 			{
-				_functionCallEvaluator.ReturnValueManager.OnResultEvaluated(eventArgs);
+				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(eventArgs);
 				return;
 			}
 
@@ -241,7 +243,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			if (ApplicationState.CurrentScopeLevel > 1)
 			{
-				_functionCallEvaluator.ReturnValueManager.OnResultEvaluated(eventArgs.ForExpression);
+				_functionWrapper.FunctionCallVisitor.OnResultEvaluated(eventArgs.ForExpression);
 				return;
 			}
 

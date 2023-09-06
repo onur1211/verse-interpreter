@@ -13,7 +13,11 @@ namespace verse_interpreter.lib.Evaluation.FunctionEvaluator
 {
 	public class ReturnValueManager
 	{
-		private ArithmeticExpression? ArithmeticExpression { get; set; }
+        public ReturnValueManager()
+        {
+        }
+
+        private ArithmeticExpression? ArithmeticExpression { get; set; }
 		private StringExpression? StringExpression { get; set; }
 		private ForExpression? ForExpression { get; set; }
 		private Variable? Variable { get; set; }

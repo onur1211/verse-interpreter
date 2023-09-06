@@ -22,7 +22,6 @@ using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.ParseVisitors.Functions;
 using verse_interpreter.lib.ParseVisitors.Types;
 using verse_interpreter.lib.ParseVisitors.Expressions;
-using verse_interpreter.lib.ParseVisitors.Choice;
 using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
 using verse_interpreter.lib.Data.Variables;
 
@@ -173,6 +172,7 @@ namespace verse_interpreter.lib
 				.AddTransient<LogicalExpressionVisitor>()
 				.AddTransient<ChoiceEvaluator>()
 				.AddSingleton<FunctionCallEvaluator>()
+				.AddTransient<ChoiceConversionVisitor>()
 				.AddLazyResolution()
 				.BuildServiceProvider();
 

@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.Expressions;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Extensions;
-using verse_interpreter.lib.Factories;
-using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.ParseVisitors;
-using verse_interpreter.lib.ParseVisitors.Functions;
 
 namespace verse_interpreter.lib.Evaluation.FunctionEvaluator
 {
@@ -43,30 +34,29 @@ namespace verse_interpreter.lib.Evaluation.FunctionEvaluator
 		public FunctionCallResult CallFunction(FunctionParameters parameters, string functionName)
 		{
 			_returnValueManagerStack.Push(new ReturnValueManager());
-			if (IsNoValueResolved())
-			{
-				_applicationState.Scopes.Remove(_applicationState.CurrentScopeLevel);
-				_applicationState.CurrentScopeLevel -= 1;
-				return _returnValueManagerStack.Pop().BuildResult();
-			}
 			if (TryExecutePredefinedFunction(parameters, functionName))
 			{
-				return new FunctionCallResult()
-				{
-					IsVoid = true,
-				};
+				return null!;
 			}
 
 			_applicationState.CurrentScopeLevel += 1;
 			//Console.WriteLine($"Recursion depth: {_applicationState.CurrentScopeLevel - 1}");
 			var callItem = PrepareFunctionForExecution(parameters, functionName);
+			SetApplicationState(callItem);
 
+			if (IsNoValueResolved())
+			{
+				_applicationState.Scopes.Remove(_applicationState.CurrentScopeLevel);
+				var result = ReturnValueManager.BuildResult();
+				_returnValueManagerStack.Pop();
+				_applicationState.CurrentScopeLevel -= 1;
+				return result;
+			}
 			if (TryExecuteChoice(parameters, functionName))
 			{
 				// Return the functionCallResult with a Choice as value
 			}
 
-			SetApplicationState(callItem);
 			FunctionRequestedExecution?.Invoke(this, new FunctionRequestedExecutionEventArgs(callItem));
 
 			_applicationState.Scopes.Remove(_applicationState.CurrentScopeLevel);

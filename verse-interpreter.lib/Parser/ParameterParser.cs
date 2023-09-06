@@ -4,7 +4,6 @@ using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Extensions;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.ParseVisitors;
-using verse_interpreter.lib.ParseVisitors.Choice;
 
 namespace verse_interpreter.lib.Visitors
 {
