@@ -2,7 +2,7 @@
   "profiles": {
     "verse-interpreter.exe": {
       "commandName": "Project",
-      "commandLineArgs": "-p \"../../../../verse-interpreter.lib/VerseTemplate.verse\" -d"
+      "commandLineArgs": "-d -p \"../../../../verse-interpreter.lib/VerseTemplate.verse\""
     }
   }
 }

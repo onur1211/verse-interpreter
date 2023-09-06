@@ -14,3 +14,4 @@ y:="World"
 z:=x+y
 myArray:=array(1,2,3)
 test:=false?
+y=1

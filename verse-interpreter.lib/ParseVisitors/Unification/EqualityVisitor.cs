@@ -18,12 +18,14 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
         private readonly TypeInferencer _inferencer;
         private readonly GeneralEvaluator _generalEvaluator;
         private readonly PropertyResolver _propertyResolver;
+        private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
 
 
         public EqualityVisitor(ApplicationState applicationState,
                                  TypeInferencer typeInferencer,
                                  GeneralEvaluator generalEvaluator,
-                                 PropertyResolver propertyResolver)
+                                 PropertyResolver propertyResolver,
+                                 ValueDefinitionVisitor valueDefinitionVisitor)
 
         {
             _state = applicationState;
@@ -31,6 +33,7 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
             _generalEvaluator = generalEvaluator;
             _propertyResolver = propertyResolver;
             _state.CurrentScope.LookupManager.VariableBound += _generalEvaluator.Propagator.HandleVariableBound!;
+            _valueDefinitionVisitor = valueDefinitionVisitor;
         }
 
         public DeclarationResult ParseEquality(Verse.DeclarationContext context)
@@ -52,15 +55,17 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                 return null!;
             }
 
-            string value = GetValueFromContext(context);
+            Variable value = GetValueFromContext(context);
 
-            // If there is no value then return null
-            if (String.IsNullOrEmpty(value))
+            // If there is no value then return null and let the
+            // declaration parser handle the value assignement.
+            if (value == null)
             {
                 return null!;
             }
 
             // Try to unify the variable with the given value
+            // If the unification fails then return false?
             if (!TryUnification(actualVariable, value))
             {
                 return new DeclarationResult
@@ -73,93 +78,65 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
             return null!;
         }
 
-        private bool TryUnification(Variable variable, string value)
+        private bool TryUnification(Variable variable, Variable secondVariable)
         {
-            if (String.IsNullOrEmpty(value) || variable == null)
+            if (variable == null || secondVariable == null)
             {
                 return false;
             }
 
-            string variableType = variable.Value.TypeData.Name;
+            if (variable.Value.TypeData.Name != secondVariable.Value.TypeData.Name) 
+            { 
+                return false; 
+            }
 
-            switch (variableType)
+            switch (variable.Value)
             {
-                case "int":
-                    int number;
-                    bool isValid = int.TryParse(value, out number);
+                case object when variable.Value!.IntValue != null && secondVariable.Value.IntValue != null:
+                    return variable.Value.IntValue.Value == secondVariable.Value.IntValue.Value;
 
-                    if (!isValid)
+                case object when variable.Value!.StringValue != null && secondVariable.Value.StringValue != null:
+                    return variable.Value.StringValue == secondVariable.Value.StringValue;
+
+                case object when variable.Value.TypeData.Name == "false?" && secondVariable.Value.TypeData.Name == "false?":
+                    return true;
+
+                case object when variable.Value.CollectionVariable != null && secondVariable.Value.CollectionVariable != null:
+                    if (variable.Value.CollectionVariable.Values.Count != secondVariable.Value.CollectionVariable.Values.Count)
                     {
                         return false;
                     }
-
-                    return variable.Value.IntValue!.Value.Equals(number);
-
-                case "string":
-                    return variable.Value.StringValue.Equals(value);
-
-                case "false?":
-                    return variable.Value.TypeData.Name.Equals(value);
+                    return true;
 
                 default:
                     return false;
             }
         }
 
-        private string GetValueFromContext(Verse.DeclarationContext context)
+        private Variable GetValueFromContext(Verse.DeclarationContext context)
         {
             if (context.value_definition() != null)
             {
+                Variable anonymVariable = VariableConverter.Convert(context.value_definition().Accept(_valueDefinitionVisitor)!);
                 string value = context.value_definition().GetText();
 
                 // Check if the value is a variable and if true get the value from it
                 // Example: x=y then y is the value as a variable
                 if (_state.CurrentScope.LookupManager.IsVariable(value))
                 {
-                    Variable valueDefVariable = _propertyResolver.ResolveProperty(value);
-                    return GetValueAsStringFromVariable(valueDefVariable);
+                    return _propertyResolver.ResolveProperty(value);
                 }
-
-                return value;
-            }
-            else if (context.array_literal() != null)
-            {
-                return context.array_literal().GetText();
+                else
+                {
+                    return anonymVariable;
+                }
             }
             else if (context.choice_rule() != null)
             {
-                return context.choice_rule().GetText();
+                return null!;
             }
 
-            return String.Empty;
-        }
-
-        private string GetValueAsStringFromVariable(Variable variable)
-        {
-            if (variable == null)
-            {
-                return String.Empty;
-            }
-
-            if (!variable.HasValue())
-            {
-                return String.Empty;
-            }
-
-            switch (variable.Value.TypeData.Name)
-            {
-                case "int":
-                    return variable.Value.IntValue!.Value.ToString();
-
-                case "string":
-                    return variable.Value.StringValue;
-
-                case "false?":
-                    return variable.Value.TypeData.Name;
-
-                default:
-                    return String.Empty;
-            }
+            return null!;
         }
     }
 }
