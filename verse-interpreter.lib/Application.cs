@@ -57,7 +57,8 @@ namespace verse_interpreter.lib
 			}
 			_services = BuildService();
 
-			string libraryPath = "..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
+			string seperator = Path.DirectorySeparatorChar.ToString();
+			string libraryPath = $"..{seperator}..{seperator}..{seperator}..{seperator}verse-interpreter.lib{seperator}StandardLibrary.verse";
 			this.LoadStandardLibrary(libraryPath);
 
 			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
@@ -87,10 +88,11 @@ namespace verse_interpreter.lib
 				}
 				_services = BuildService();
 
-				string libraryPath = "..\\..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
+                string seperator = Path.DirectorySeparatorChar.ToString();
+                string libraryPath = $"..{seperator}..{seperator}..{seperator}..{seperator}verse-interpreter.lib{seperator}StandardLibrary.verse";
                 this.LoadStandardLibrary(libraryPath);
 
-				ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+                ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 
 				var inputCode = options.Code != null ? options.Code :
 					options.Path != null ? _reader.ReadFileToEnd(options.Path) :
@@ -100,7 +102,12 @@ namespace verse_interpreter.lib
 				var mainVisitor = _services.GetRequiredService<MainVisitor>();
 				mainVisitor.VisitProgram(parseTree);
 				var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-			}
+
+                if (IsDebug)
+                {
+                    PrintDebugInformation(manager);
+                }
+            }
 			catch (Exception ex)
 			{
 				Console.ForegroundColor = ConsoleColor.Red;
