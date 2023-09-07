@@ -42,24 +42,21 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
             // Example: x=2 or x=y then get 'x'
             var variableName = context.ID().GetText();
 
-            // Check if the name is a variable
+            // Check if the name is a declared variable.
             if (!_state.CurrentScope.LookupManager.IsVariable(variableName))
             {
                 throw new InvalidOperationException($"Invalid usage of out-of-scope variable {variableName}");
             }
 
+            // Get the variable on the left side.
             Variable actualVariable = _propertyResolver.ResolveProperty(variableName);
 
-            if (actualVariable.Value.CollectionVariable != null) 
-            {
-                return null!;
-            }
-
+            // Get the value from the right side as an anonym variable.
             Variable value = GetValueFromContext(context);
 
-            // If there is no value then return null and let the
+            // If there is no variable or value then return null and let the
             // declaration parser handle the value assignement.
-            if (value == null)
+            if (actualVariable == null || value == null)
             {
                 return null!;
             }
@@ -90,27 +87,96 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                 return false; 
             }
 
-            switch (variable.Value)
+            switch (true)
             {
-                case object when variable.Value!.IntValue != null && secondVariable.Value.IntValue != null:
+                case true when variable.Value!.IntValue != null && secondVariable.Value.IntValue != null:
                     return variable.Value.IntValue.Value == secondVariable.Value.IntValue.Value;
 
-                case object when variable.Value!.StringValue != null && secondVariable.Value.StringValue != null:
+                case true when variable.Value!.StringValue != null && secondVariable.Value.StringValue != null:
                     return variable.Value.StringValue == secondVariable.Value.StringValue;
 
-                case object when variable.Value.TypeData.Name == "false?" && secondVariable.Value.TypeData.Name == "false?":
+                case true when variable.Value.TypeData.Name == "false?" && secondVariable.Value.TypeData.Name == "false?":
                     return true;
 
-                case object when variable.Value.CollectionVariable != null && secondVariable.Value.CollectionVariable != null:
-                    if (variable.Value.CollectionVariable.Values.Count != secondVariable.Value.CollectionVariable.Values.Count)
-                    {
-                        return false;
-                    }
-                    return true;
+                case true when variable.Value.CollectionVariable != null && secondVariable.Value.CollectionVariable != null:
+                    return TryUnificationWithArray(variable.Value.CollectionVariable, secondVariable.Value.CollectionVariable);
 
                 default:
                     return false;
             }
+        }
+
+        private bool TryUnificationWithArray(VerseCollection collection, VerseCollection secondCollection)
+        {
+            // Check if the collections have the same count.
+            // If not then unifications fails and return false.
+            if (collection.Values.Count != collection.Values.Count)
+            {
+                return false;
+            }
+
+            // Check the types of the elements in the collections.
+            // If there is at least one element which doesnt match
+            // then unification fails and return false.
+            for (int i = 0; i < collection.Values.Count; i++)
+            {
+                if (collection.Values[i].Value.TypeData.Name != secondCollection.Values[i].Value.TypeData.Name)
+                {
+                    return false;
+                }
+            }
+
+            // Check if the types of the elements are the same.
+            // If there is at least one element which doesnt match
+            // then unification fails and return false.
+            for (int i = 0; i < collection.Values.Count; i++)
+            {
+                if (collection.Values[i].Value.TypeData.Name != secondCollection.Values[i].Value.TypeData.Name)
+                {
+                    return false;
+                }
+            }
+
+            // Check if the values of the elements are the same.
+            // If there is at least one element which doesnt match
+            // then unification fails and return false.
+            for (int i = 0; i < collection.Values.Count; i++)
+            {
+                Variable variable = collection.Values[i];
+                Variable secondVariable = secondCollection.Values[i];
+
+                switch (true)
+                {
+                    case true when variable.Value!.IntValue != null && secondVariable.Value.IntValue != null:
+                        if (variable.Value.IntValue.Value != secondVariable.Value.IntValue.Value)
+                        {
+                            return false;
+                        }
+                        break;
+
+                    case true when variable.Value!.StringValue != null && secondVariable.Value.StringValue != null:
+                        if (variable.Value.StringValue != secondVariable.Value.StringValue)
+                        {
+                            return false;
+                        }
+                        break;
+
+                    case true when variable.Value.TypeData.Name == "false?" && secondVariable.Value.TypeData.Name == "false?":
+                        break;
+
+                    case true when variable.Value.CollectionVariable != null && secondVariable.Value.CollectionVariable != null:
+                        if (!TryUnificationWithArray(variable.Value.CollectionVariable, secondVariable.Value.CollectionVariable))
+                        {
+                            return false;
+                        }
+                        break;
+
+                    default:
+                        return false;
+                }
+            }
+
+            return true;
         }
 
         private Variable GetValueFromContext(Verse.DeclarationContext context)

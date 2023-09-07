@@ -9,9 +9,6 @@ y := array(123123,22)
 z := cons(4, x) *#
 
 
-x:="Hello"
-y:="World"
-z:=x+y
-myArray:=array(1,2,3)
-test:=false?
-y=1
+firstArray:=array(1,2,x:=array(4,5), 9)
+secondArray:=array(1,2,x:=array(4,5), false?)
+firstArray=secondArray

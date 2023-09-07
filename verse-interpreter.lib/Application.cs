@@ -122,21 +122,21 @@ namespace verse_interpreter.lib
 
 			foreach (var variable in manager.GetAllVariables())
 			{
-				switch (variable.Value)
+				switch (true)
 				{
-					case object when variable.Value!.IntValue != null:
+					case true when variable.Value!.IntValue != null:
 						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.IntValue}");
 						break;
 
-					case object when variable.Value.StringValue != null:
+					case true when variable.Value.StringValue != null:
 						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.StringValue}");
 						break;
 
-					case object when variable.Value.CollectionVariable != null:
+					case true when variable.Value.CollectionVariable != null:
 						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {PrintCollectionValues(variable.Value.CollectionVariable)}");
 						break;
 
-					case object when variable.Value.TypeData.Name == "false?":
+					case true when variable.Value.TypeData.Name == "false?":
                         Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
                         break;
 
@@ -159,6 +159,7 @@ namespace verse_interpreter.lib
             }
 
             var last = collection.Values.Last();
+
             foreach (var element in collection.Values)
             {
                 if (element.Value.IntValue != null)
@@ -169,6 +170,14 @@ namespace verse_interpreter.lib
                 {
                     stringBuilder.Append($"{element.Value.StringValue}");
                 }
+				if (element.Value.TypeData.Name == "false?")
+				{
+                    stringBuilder.Append($"{element.Value.TypeData.Name}");
+                }
+				if (element.Value.CollectionVariable != null)
+				{
+					stringBuilder.Append(PrintCollectionValues(element.Value.CollectionVariable));
+				}
                 if (element != last)
                 {
                     stringBuilder.Append(", ");
