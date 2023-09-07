@@ -9,12 +9,10 @@ namespace verse_interpreter.lib.Evaluation.FunctionEvaluator;
 public class PredefinedFunctionEvaluator
 {
     private readonly ApplicationState _applicationState;
-    private readonly ParameterParser _functionParser;
 
     public PredefinedFunctionEvaluator(ApplicationState applicationState, ParameterParser functionParser)
     {
         _applicationState = applicationState;
-        _functionParser = functionParser;
     }
 
     public void Execute(string functionName, FunctionParameters parameters)

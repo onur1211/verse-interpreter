@@ -22,7 +22,7 @@ namespace verse_interpreter.lib.IO
 
         public static void PrintResult(FunctionCallResult result)
         {
-            if (result == null || result.WasValueResolved)
+            if (result == null && !result.WasValueResolved)
             {
                 return;
             }

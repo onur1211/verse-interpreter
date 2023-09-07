@@ -171,7 +171,6 @@ namespace verse_interpreter.lib
 				.AddTransient<FilterApplyer>()
 				.AddTransient<LogicalExpressionVisitor>()
 				.AddTransient<ChoiceEvaluator>()
-				.AddSingleton<FunctionCallEvaluator>()
 				.AddTransient<ChoiceConversionVisitor>()
 				.AddLazyResolution()
 				.BuildServiceProvider();

@@ -34,7 +34,6 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 								   ParameterParser functionParser,
 								   GeneralEvaluator evaluator,
 								   FunctionCallPreprocessor functionCallPreprocessor,
-								   DeclarationVisitor declarationVisitor,
 								   PredefinedFunctionEvaluator functionEvaluator,
 								   FunctionFactory functionFactory) : base(applicationState)
 		{
@@ -51,7 +50,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 		private ArithmeticExpression? ArithmeticExpression { get; set; }
 		private StringExpression? StringExpression { get; set; }
 		private ForExpression? ForExpression { get; set; }
-		private Variable Variable { get; set; }
+		private Variable? Variable { get; set; }
 		private bool WasValueResolved { get; set; }
 
 		public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
@@ -98,7 +97,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 				ArithmeticExpression = ArithmeticExpression,
 				StringExpression = StringExpression,
 				ForExpression = ForExpression,
-				WasValueResolved = WasValueResolved,
+				WasValueResolved = true,
 				Variable = Variable,
 				IsVoid = functionCall.Function.ReturnType == "void",
 			};
@@ -115,6 +114,11 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 
 		private bool CheckIfReturnedValueMatchesType(Function function)
 		{
+			if (function.ReturnType == "void")
+			{
+				return true;
+			}
+
 			if (ForExpression != null)
 			{
 				return function.ReturnType == "collection";

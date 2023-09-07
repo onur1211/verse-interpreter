@@ -53,10 +53,10 @@ diff(x:collection, y:collection):collection {
      }
 }
 
-hanoi(n:int, start:string, end:string, temp:string):void {
+hanoi(n:int, first:string, second:string, third:string):void {
      if(n > 0) {
-	    hanoi(n - 1, start, temp, end)
-        Print("Moved disk from " + start + " to " + end)
-        hanoi(n - 1, temp, end, start)
+	    hanoi(n - 1, first, third, second)
+        Print("Moved disk from " + first + " to " + third)
+        hanoi(n - 1, second, third, first)
 	}
 }
