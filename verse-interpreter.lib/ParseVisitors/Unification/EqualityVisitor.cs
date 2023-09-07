@@ -9,6 +9,7 @@ using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Grammar;
 using System.Diagnostics.CodeAnalysis;
+using verse_interpreter.lib.Data.Variables;
 
 namespace verse_interpreter.lib.ParseVisitors.Unification
 {
@@ -99,11 +100,24 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                     return true;
 
                 case true when variable.Value.CollectionVariable != null && secondVariable.Value.CollectionVariable != null:
-                    return TryUnificationWithArray(variable.Value.CollectionVariable, secondVariable.Value.CollectionVariable);
+                    if (!TryUnificationWithArray(variable.Value.CollectionVariable, secondVariable.Value.CollectionVariable))
+                    {
+                        return false;
+                    }
+                    break;
+
+                case true when variable.Value!.Choice != null && secondVariable.Value.Choice != null:
+                    if (!TryUnificationWithChoice(variable.Value.Choice.AllChoices(), secondVariable.Value.Choice.AllChoices()))
+                    {
+                        return false;
+                    }
+                    break;
 
                 default:
                     return false;
             }
+
+            return true;
         }
 
         private bool TryUnificationWithArray(VerseCollection collection, VerseCollection secondCollection)
@@ -171,12 +185,24 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                         }
                         break;
 
+                    case true when variable.Value!.Choice != null && secondVariable.Value.Choice != null:
+                        if (!TryUnificationWithChoice(variable.Value.Choice.AllChoices(), secondVariable.Value.Choice.AllChoices()))
+                        {
+                            return false;
+                        }
+                        break;
+
                     default:
                         return false;
                 }
             }
 
             return true;
+        }
+
+        private bool TryUnificationWithChoice(IEnumerable<Data.Variables.Choice> choice, IEnumerable<Data.Variables.Choice> secondChoice)
+        {
+            return false;
         }
 
         private Variable GetValueFromContext(Verse.DeclarationContext context)

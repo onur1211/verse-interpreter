@@ -9,6 +9,6 @@ y := array(123123,22)
 z := cons(4, x) *#
 
 
-firstArray:=array(1,2,x:=array(4,5), 9)
-secondArray:=array(1,2,x:=array(4,5), false?)
+firstArray:=array(1,2,x:=array(4,5), 10)
+secondArray:=array(1,2,x:=array(4,5), 10)
 firstArray=secondArray
