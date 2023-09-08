@@ -4,8 +4,8 @@ options {tokenVocab=VerseLexer;}
 verse_text: ( program ) * EOF;
 
 declaration : ID ':' type
-            | ID ':=' (value_definition | constructor_body | choice_rule)
-            | ID '=' (value_definition | constructor_body | choice_rule)
+            | ID ':=' (value_definition | constructor_body)
+            | ID '=' (value_definition | constructor_body)
             | ID ':=' array_literal
             | ID '=' array_literal
             ;
@@ -22,7 +22,7 @@ value_definition : INT #intValueDef
                  | array_index #arrayindexValueDef
                  | type_member_access #memberaccessValueDef
                  | range_expression #rangeValueDef
-                 | '(' value_definition ('|' value_definition) ')' #choice
+                 | '(' value_definition ('|' value_definition)* ')' #choice
                  | questionmark_operator #ChoiceConversion
                  ;
 

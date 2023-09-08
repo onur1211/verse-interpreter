@@ -50,5 +50,9 @@ public class PredefinedFunctionEvaluator
         {
             Printer.PrintResult(parameters.Parameters[0].Value.CollectionVariable);
         }
+        if (parameters.Parameters[0].Value.Choice != null)
+        {
+            Printer.PrintResult(parameters.Parameters[0].Value.Choice);
+        }
     }
 }

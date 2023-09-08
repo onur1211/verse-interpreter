@@ -38,6 +38,21 @@ sort(x:collection):collection{
      }
 }
 
+isSorted(x:collection):int {
+  if(h := headInt(x)) {
+      if(t := tail(x)) {
+          if(h1 := headInt(t)) {
+              if(h > h1) {
+                 isSorted(t)
+              }
+              else {
+                 1 + 0
+              }
+          }
+      }
+  }
+}
+
 diff(x:collection, y:collection):collection {
      if(h1 := headString(x)) {
          if(h2 := headString(y)){
