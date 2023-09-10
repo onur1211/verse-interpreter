@@ -4,6 +4,7 @@ using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
+using verse_interpreter.lib.ParseVisitors.Functions;
 using static verse_interpreter.lib.Grammar.Verse;
 
 namespace verse_interpreter.lib.ParseVisitors.Expressions
@@ -24,15 +25,18 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
             }
         }
         private Stack<List<List<ExpressionResult>>> _stack;
-        private readonly PrimaryRuleParser _primaryRuleParser;
+        private readonly Lazy<PrimaryRuleParser> _primaryRuleParser;
+		private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
 
-        public ExpressionVisitor(ApplicationState applicationState,
-                                 PrimaryRuleParser primaryRuleParser) : base(applicationState)
+		public ExpressionVisitor(ApplicationState applicationState,
+                                 Lazy<PrimaryRuleParser> primaryRuleParser,
+                                 Lazy<FunctionCallVisitor> functionCallVisitor) : base(applicationState)
         {
             _stack = new Stack<List<List<ExpressionResult>>>();
             ExpressionTerminalVisited += TerminalNodeVisitedCallback;
             _primaryRuleParser = primaryRuleParser;
-        }
+			_functionCallVisitor = functionCallVisitor;
+		}
 
         private event EventHandler<ExpressionTerminalVisited> ExpressionTerminalVisited = null!;
         public event EventHandler<ExpressionParsedSucessfullyEventArgs> ExpressionParsedSucessfully = null!;
@@ -82,7 +86,7 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
                 Expressions.Add(new List<ExpressionResult>());
                 return null;
             }
-            var expressionResult = _primaryRuleParser.ParsePrimary(context);
+            var expressionResult = _primaryRuleParser.Value.ParsePrimary(context);
             // When the instance is finalized the event is triggered to append it to the final result set
             ExpressionTerminalVisited?.Invoke(this, new ExpressionTerminalVisited(expressionResult));
             return base.VisitChildren(context);
@@ -98,5 +102,21 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
             ExpressionTerminalVisited?.Invoke(this, new ExpressionTerminalVisited(operatorResult));
             return base.VisitChildren(context);
         }
-    }
+
+		public override List<List<ExpressionResult>> VisitFunction_call([NotNull] Function_callContext context)
+		{
+            var result = _functionCallVisitor.Value.Visit(context);
+			if (Expressions.Count == 0)
+			{
+				Expressions.Add(new List<ExpressionResult>());
+			}
+			Expressions.Last().Add(new ExpressionResult()
+            {
+                IntegerValue = result.ArithmeticExpression?.ResultValue,
+                StringValue = result.StringExpression?.Value,
+                TypeName = result.StringExpression != null ? "string" : "int"
+            });
+			return base.VisitChildren(context);
+		}
+	}
 }

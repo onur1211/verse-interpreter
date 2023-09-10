@@ -166,6 +166,12 @@ namespace verse_interpreter.lib.ParseVisitors
 			{
 				foreach (var element in result.ElseBlock)
 				{
+					if (element.value_definition() != null)
+					{
+						var res = VariableConverter.Convert(_valueDefinitionVisitor.Value.Visit(element.value_definition())!);
+						_functionWrapper.Value.FunctionCallVisitor.OnVariableResolved(res);
+						continue;
+					}
 					element.Accept(this);
 				}
 			}

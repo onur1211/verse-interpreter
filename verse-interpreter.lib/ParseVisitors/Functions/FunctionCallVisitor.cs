@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
@@ -53,6 +54,8 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 		private Variable? Variable { get; set; }
 		private bool WasValueResolved { get; set; }
 
+		public FunctionCall Test { get; set; }
+
 		public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
 		{
 			ClearResultSet();
@@ -67,6 +70,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 2}");
 
 			var functionCall = PrepareFunctionForExecution(functionName, parameters);
+			Test = functionCall;
 			SetApplicationState(functionCall);
 
 			if (!WasValueResolved)
@@ -92,7 +96,8 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 			{
 				throw new InvalidTypeException();
 			}
-			return new FunctionCallResult()
+
+			var test = new FunctionCallResult()
 			{
 				ArithmeticExpression = ArithmeticExpression,
 				StringExpression = StringExpression,
@@ -101,6 +106,8 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 				Variable = Variable,
 				IsVoid = functionCall.Function.ReturnType == "void",
 			};
+
+			return test;
 		}
 
 		private void ClearResultSet()
@@ -180,22 +187,26 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 
 		public void OnResultEvaluated(ArithmeticExpression arithmeticExpression)
 		{
+			//Console.WriteLine($"Current depth ArithmeticExpression {ApplicationState.CurrentScopeLevel}. Name:{Test.Function.FunctionName} Return Type:{Test.Function.ReturnType}");
 			ArithmeticExpression = arithmeticExpression;
 		}
 
 		public void OnResultEvaluated(StringExpression stringExpression)
 		{
+			//Console.WriteLine($"Current depth StringExpression {ApplicationState.CurrentScopeLevel}. Name:{Test.Function.FunctionName} Return Type:{Test.Function.ReturnType}");
 			StringExpression = stringExpression;
 		}
 
 		public void OnResultEvaluated(ForExpression forExpression)
 		{
+			//Console.WriteLine($"Current depth FOREXPRESSION {ApplicationState.CurrentScopeLevel}. Name:{Test.Function.FunctionName} Return Type:{Test.Function.ReturnType}");
 			ForExpression = forExpression;
 		}
 
 		public void OnVariableResolved(Variable variable)
 		{
-			this.Variable = variable;
+            //Console.WriteLine($"Current depth VARIABLE      {ApplicationState.CurrentScopeLevel}. Name:{Test.Function.FunctionName} Return Type:{Test.Function.ReturnType}");
+            this.Variable = variable;
 		}
 
 		public void OnResultEvaluated(ExpressionWithNoValueFoundEventArgs eventArgs)

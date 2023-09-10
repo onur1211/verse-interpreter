@@ -78,10 +78,25 @@ namespace verse_interpreter.lib.Parser
 
 				result = HandleIntResult(returnedFunctionValue, result);
 				result = HandleStringResult(returnedFunctionValue, result);
+				result = HandleVariable(returnedFunctionValue, result);
 				return result;
 			}
 
 			throw new NotImplementedException();
+		}
+
+		private ExpressionResult HandleVariable(FunctionCallResult result, ExpressionResult expressionResult)
+		{
+			if (result.Variable == null)
+			{
+				return expressionResult;
+			}
+
+			expressionResult.IntegerValue = result.Variable.Value.IntValue;
+			expressionResult.StringValue = result.Variable.Value.StringValue;
+			expressionResult.TypeName = result.Variable.Value.TypeData.Name;
+
+			return expressionResult;
 		}
 
 		private ExpressionResult HandleStringResult(FunctionCallResult result, ExpressionResult expressionResult)
