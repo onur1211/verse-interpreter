@@ -84,61 +84,48 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                 return false;
             }
 
-            if (variable.Value.TypeData.Name != secondVariable.Value.TypeData.Name) 
-            { 
-                return false; 
+            if (variable.Value.TypeData.Name != secondVariable.Value.TypeData.Name)
+            {
+                return false;
             }
 
             switch (true)
             {
+                case true when (!variable.HasValue() || !secondVariable.HasValue()) && variable.Value.TypeData.Name == secondVariable.Value.TypeData.Name:
+                    return true;
+
+                // Int value equality
                 case true when variable.Value!.IntValue != null && secondVariable.Value.IntValue != null:
                     return variable.Value.IntValue.Value == secondVariable.Value.IntValue.Value;
 
+                // String value equality
                 case true when variable.Value!.StringValue != null && secondVariable.Value.StringValue != null:
                     return variable.Value.StringValue == secondVariable.Value.StringValue;
 
+                // false? equality
                 case true when variable.Value.TypeData.Name == "false?" && secondVariable.Value.TypeData.Name == "false?":
                     return true;
 
+                // Collection equality
                 case true when variable.Value.CollectionVariable != null && secondVariable.Value.CollectionVariable != null:
-                    if (!TryUnificationWithArray(variable.Value.CollectionVariable, secondVariable.Value.CollectionVariable))
-                    {
-                        return false;
-                    }
-                    break;
+                    return TryUnificationWithArray(variable.Value.CollectionVariable, secondVariable.Value.CollectionVariable);
 
+                // Choice equality
                 case true when variable.Value!.Choice != null && secondVariable.Value.Choice != null:
-                    if (!TryUnificationWithChoice(variable.Value.Choice.AllChoices(), secondVariable.Value.Choice.AllChoices()))
-                    {
-                        return false;
-                    }
-                    break;
+                    return TryUnificationWithChoice(variable.Value.Choice.AllChoices(), secondVariable.Value.Choice.AllChoices());
 
                 default:
                     return false;
             }
-
-            return true;
         }
 
         private bool TryUnificationWithArray(VerseCollection collection, VerseCollection secondCollection)
         {
             // Check if the collections have the same count.
             // If not then unifications fails and return false.
-            if (collection.Values.Count != collection.Values.Count)
+            if (collection.Values.Count != secondCollection.Values.Count)
             {
                 return false;
-            }
-
-            // Check the types of the elements in the collections.
-            // If there is at least one element which doesnt match
-            // then unification fails and return false.
-            for (int i = 0; i < collection.Values.Count; i++)
-            {
-                if (collection.Values[i].Value.TypeData.Name != secondCollection.Values[i].Value.TypeData.Name)
-                {
-                    return false;
-                }
             }
 
             // Check if the values of the elements are the same.
@@ -156,6 +143,9 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                         {
                             return false;
                         }
+                        break;
+
+                    case true when (!variable.HasValue() || !secondVariable.HasValue()) && variable.Value.TypeData.Name == secondVariable.Value.TypeData.Name:
                         break;
 
                     case true when variable.Value!.StringValue != null && secondVariable.Value.StringValue != null:

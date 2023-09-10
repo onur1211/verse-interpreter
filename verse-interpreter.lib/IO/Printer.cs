@@ -60,7 +60,6 @@ namespace verse_interpreter.lib.IO
 			Console.ForegroundColor = ConsoleColor.Blue;
 			Console.WriteLine("VERSE CODE RESULT: ");
 			Console.ResetColor();
-		
 			Console.WriteLine(StringifyCollectionContent(collection));
 		}
 
@@ -188,13 +187,20 @@ namespace verse_interpreter.lib.IO
 
 			Console.ForegroundColor = ConsoleColor.DarkYellow;
 			Console.WriteLine("DEBUG INFO:");
+			Console.WriteLine("'x:int': declared variable, but no value assigned.");
+            Console.WriteLine("'null': error case. Can not be printed.");
+            Console.WriteLine();
 			Console.ResetColor();
 
-			foreach (var variable in manager.GetAllVariables())
+            foreach (var variable in manager.GetAllVariables())
 			{
 				switch (true)
 				{
-					case true when variable.Value!.IntValue != null:
+					case true when !variable.HasValue():
+                        Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
+                        break;
+
+                    case true when variable.Value!.IntValue != null:
 						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.IntValue}");
 						break;
 
@@ -215,6 +221,6 @@ namespace verse_interpreter.lib.IO
 						break;
 				}
 			}
-		}
+    }
 	}
 }
