@@ -55,58 +55,12 @@ namespace verse_interpreter.lib.IO
             throw new NotImplementedException();
         }
 
-		public static string PrintResult(VerseCollection collection)
+		public static void PrintResult(VerseCollection collection)
 		{
 			Console.ForegroundColor = ConsoleColor.Blue;
 			Console.WriteLine("VERSE CODE RESULT: ");
 			Console.ResetColor();
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append("array( ");
-
-			if (collection.Values.Count == 0)
-			{
-				stringBuilder.Append(")");
-                Console.WriteLine(stringBuilder.ToString());
-				return stringBuilder.ToString();
-            }
-
-			var last = collection.Values.Last();
-
-			foreach (var element in collection.Values)
-			{
-				if (!element.HasValue() && element.Value.TypeData.Name != "false?" 
-				&& string.IsNullOrEmpty(element.Name) == false && string.IsNullOrEmpty(element.Value.TypeData.Name) == false)
-				{
-                    stringBuilder.Append($"{element.Name}:{element.Value.TypeData.Name}");
-                }
-				if (element.Value.IntValue != null)
-				{
-					stringBuilder.Append($"{element.Value.IntValue}");
-				}
-				if (element.Value.StringValue != null)
-				{
-					stringBuilder.Append($"{element.Value.StringValue}");
-				}
-				if (element.Value.TypeData.Name == "false?")
-				{
-					stringBuilder.Append($"{element.Value.TypeData.Name}");
-				}
-				if (element.Value.CollectionVariable != null)
-				{
-					stringBuilder.Append(PrintResult(element.Value.CollectionVariable));
-				}
-				if (element != last)
-				{
-					stringBuilder.Append(", ");
-				}
-				else
-				{
-					stringBuilder.Append(" ");
-				}
-			}
-			stringBuilder.Append(")");
-            Console.WriteLine(stringBuilder.ToString());
-            return stringBuilder.ToString();
+			Console.WriteLine(StringifyCollectionContent(collection));
 		}
 
 		public static void PrintResult(ArithmeticExpression arithmeticExpression)
@@ -131,6 +85,11 @@ namespace verse_interpreter.lib.IO
 
         public static void PrintResult(Variable variable)
         {
+			if (variable.Value == ValueObject.False)
+			{
+				PrintResult("false?");
+			}
+
 			switch (variable.Value)
 			{
 				case { IntValue: not null }:
@@ -174,6 +133,51 @@ namespace verse_interpreter.lib.IO
             Console.Write(")");
 		}
 
+		private static string StringifyCollectionContent(VerseCollection collection)
+		{
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append("array( ");
+
+			if (collection.Values.Count == 0)
+			{
+				stringBuilder.Append(")");
+				Console.WriteLine(stringBuilder.ToString());
+				return stringBuilder.ToString();
+			}
+
+			var last = collection.Values.Last();
+
+			foreach (var element in collection.Values)
+			{
+				if (element.Value.IntValue != null)
+				{
+					stringBuilder.Append($"{element.Value.IntValue}");
+				}
+				if (element.Value.StringValue != null)
+				{
+					stringBuilder.Append($"{element.Value.StringValue}");
+				}
+				if (element.Value.TypeData.Name == "false?")
+				{
+					stringBuilder.Append($"{element.Value.TypeData.Name}");
+				}
+				if (element.Value.CollectionVariable != null)
+				{
+					stringBuilder.Append(StringifyCollectionContent(element.Value.CollectionVariable));
+				}
+				if (element != last)
+				{
+					stringBuilder.Append(", ");
+				}
+				else
+				{
+					stringBuilder.Append(" ");
+				}
+			}
+			stringBuilder.Append(")");
+			return stringBuilder.ToString();
+		}
+
 		public static void PrintDebugInformation(LookupManager manager)
 		{
 			for (int i = 0; i < 5; i++)
@@ -205,7 +209,7 @@ namespace verse_interpreter.lib.IO
 						break;
 
 					case true when variable.Value.CollectionVariable != null:
-						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {PrintResult(variable.Value.CollectionVariable)}");
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {StringifyCollectionContent(variable.Value.CollectionVariable)}");
 						break;
 
 					case true when variable.Value.TypeData.Name == "false?":
@@ -217,6 +221,6 @@ namespace verse_interpreter.lib.IO
 						break;
 				}
 			}
-        }
+    }
 	}
 }

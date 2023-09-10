@@ -22,7 +22,7 @@ value_definition : INT #intValueDef
                  | array_index #arrayindexValueDef
                  | type_member_access #memberaccessValueDef
                  | range_expression #rangeValueDef
-                 | '(' value_definition ('|' value_definition)* ')' #choice
+                 | '(' value_definition ('|' value_definition)+ ')' #choice
                  | questionmark_operator #ChoiceConversion
                  ;
 

@@ -33,20 +33,21 @@ snoc(xs:collection, x:int):collection{
     for{i:int; xs[i] | x}
 }
 
-# Was
+# Sorts a list of integers using the quicksort approach
 sort(x:collection):collection{
      if(head := headInt(x)) {
          xs := tail(x)
          smaller := sort(for{i:int; xs[i] <= head; xs[i]})
          larger := sort(for{i:int; xs[i] > head; xs[i]})
-         append(append(smaller, for{head}), larger)
+         left := append(smaller, for{head})
+         append(left, larger)
      }
-     else{
+     else {
          array()
      }
 }
 
-# BRuder
+# Checks which elements of two collections of strings match and returns a list of 0s and 1s.
 diff(x:collection, y:collection):collection {
      if(h1 := headString(x)) {
          if(h2 := headString(y)){
@@ -62,7 +63,7 @@ diff(x:collection, y:collection):collection {
      }
 }
 
-# TEst
+# Solves the towers of hanoi problem using three pegs and an arbitrary number of disks.
 hanoi(n:int, start:string, end:string, temp:string):void {
      if(n > 0) {
 	    hanoi(n - 1, start, temp, end)
