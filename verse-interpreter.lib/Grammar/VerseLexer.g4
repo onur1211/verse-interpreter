@@ -13,6 +13,8 @@ RCURLY : '}' ;
 LBRACK : '[' ;
 RBRACK : ']' ;
 GT : '>' ;
+GTEQ : '<=';
+LTEQ : '>=';
 LT : '<' ;
 QUOTE : '"';
 DOT: '.';
@@ -33,6 +35,7 @@ DIV : '/' ;
 LAMBDA : '=>' ;
 CHOICE : '|' ;
 NOVALUE : 'false?';
+QUESTIONMARK: '?';
 
 // Keywords
 IF: 'if';

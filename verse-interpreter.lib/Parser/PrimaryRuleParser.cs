@@ -1,6 +1,8 @@
 ﻿using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.ParseVisitors.Functions;
+using verse_interpreter.lib.Visitors;
 using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.Parser
@@ -10,7 +12,8 @@ namespace verse_interpreter.lib.Parser
 		private readonly ApplicationState _applicationState;
 		private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
 
-		public PrimaryRuleParser(ApplicationState applicationState, Lazy<FunctionCallVisitor> functionCallVisitor)
+		public PrimaryRuleParser(ApplicationState applicationState, 
+								 Lazy<FunctionCallVisitor> functionCallVisitor)
 		{
 			_applicationState = applicationState;
 			_functionCallVisitor = functionCallVisitor;
@@ -71,7 +74,8 @@ namespace verse_interpreter.lib.Parser
 
 			if (fetchedFunctionCall != null)
 			{
-				var returnedFunctionValue = fetchedFunctionCall.Accept(_functionCallVisitor.Value);
+				var returnedFunctionValue = _functionCallVisitor.Value.Visit(fetchedFunctionCall);
+
 				result = HandleIntResult(returnedFunctionValue, result);
 				result = HandleStringResult(returnedFunctionValue, result);
 				return result;

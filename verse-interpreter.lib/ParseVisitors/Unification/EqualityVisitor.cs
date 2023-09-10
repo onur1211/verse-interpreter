@@ -10,6 +10,7 @@ using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Grammar;
 using System.Diagnostics.CodeAnalysis;
 using verse_interpreter.lib.Data.Variables;
+using System.Xml.Serialization;
 
 namespace verse_interpreter.lib.ParseVisitors.Unification
 {
@@ -140,17 +141,6 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                 }
             }
 
-            // Check if the types of the elements are the same.
-            // If there is at least one element which doesnt match
-            // then unification fails and return false.
-            for (int i = 0; i < collection.Values.Count; i++)
-            {
-                if (collection.Values[i].Value.TypeData.Name != secondCollection.Values[i].Value.TypeData.Name)
-                {
-                    return false;
-                }
-            }
-
             // Check if the values of the elements are the same.
             // If there is at least one element which doesnt match
             // then unification fails and return false.
@@ -211,6 +201,10 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
             {
                 Variable anonymVariable = VariableConverter.Convert(context.value_definition().Accept(_valueDefinitionVisitor)!);
                 string value = context.value_definition().GetText();
+                if (anonymVariable.Value.Choice != null)
+                {
+                    return null!;
+                }
 
                 // Check if the value is a variable and if true get the value from it
                 // Example: x=y then y is the value as a variable
@@ -222,10 +216,6 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                 {
                     return anonymVariable;
                 }
-            }
-            else if (context.choice_rule() != null)
-            {
-                return null!;
             }
 
             return null!;

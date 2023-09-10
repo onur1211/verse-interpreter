@@ -32,6 +32,10 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
 
                 foreach (var exp in expression)
                 {
+                    if (currentIterationType == "false?")
+                    {
+                        continue;
+                    }
                     if (!string.IsNullOrEmpty(exp.StringValue))
                     {
                         currentIterationType = "string";
@@ -47,6 +51,10 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
                     if (!string.IsNullOrEmpty(exp.ValueIdentifier))
                     {
                         currentIterationType = _resolver.ResolveProperty(exp.ValueIdentifier).Value.TypeData.Name;
+                        if (currentIterationType == "false?")
+                        {
+                            continue;
+                        }
                         typeName ??= currentIterationType;
                     }
 

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace verse_interpreter.lib.Data.Interfaces
+namespace verse_interpreter.lib.Evaluation.Evaluators
 {
-	public interface IPrintable
+	public class ChoiceConversionEvaluator
 	{
-		string ToString();
+
 	}
 }

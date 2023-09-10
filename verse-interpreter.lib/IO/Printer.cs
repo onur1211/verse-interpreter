@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Factories;
+using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib.IO
 {
@@ -21,7 +26,7 @@ namespace verse_interpreter.lib.IO
 
         public static void PrintResult(FunctionCallResult result)
         {
-            if (result == null)
+            if (result == null && !result.WasValueResolved)
             {
                 return;
             }
@@ -38,18 +43,68 @@ namespace verse_interpreter.lib.IO
             }
             if (result.ForExpression != null)
             {
-                foreach (var element in result.ForExpression.Collection.Values)
-                {
-                    Console.Write($"{element.Value.IntValue} ");
-					Console.Write($"{element.Value.StringValue} ");
-				}
+                PrintResult(result.ForExpression.Collection!);
                 return;
 			}
+            if (result.Variable != null)
+            {
+                PrintResult(result.Variable);
+                return;
+            }
 
             throw new NotImplementedException();
         }
 
-        public static void PrintResult(ArithmeticExpression arithmeticExpression)
+		public static string PrintResult(VerseCollection collection)
+		{
+			Console.ForegroundColor = ConsoleColor.Blue;
+			Console.WriteLine("VERSE CODE RESULT: ");
+			Console.ResetColor();
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append("array( ");
+
+			if (collection.Values.Count == 0)
+			{
+				stringBuilder.Append(")");
+                Console.WriteLine(stringBuilder.ToString());
+				return stringBuilder.ToString();
+            }
+
+			var last = collection.Values.Last();
+
+			foreach (var element in collection.Values)
+			{
+				if (element.Value.IntValue != null)
+				{
+					stringBuilder.Append($"{element.Value.IntValue}");
+				}
+				if (element.Value.StringValue != null)
+				{
+					stringBuilder.Append($"{element.Value.StringValue}");
+				}
+				if (element.Value.TypeData.Name == "false?")
+				{
+					stringBuilder.Append($"{element.Value.TypeData.Name}");
+				}
+				if (element.Value.CollectionVariable != null)
+				{
+					stringBuilder.Append(PrintResult(element.Value.CollectionVariable));
+				}
+				if (element != last)
+				{
+					stringBuilder.Append(", ");
+				}
+				else
+				{
+					stringBuilder.Append(" ");
+				}
+			}
+			stringBuilder.Append(")");
+            Console.WriteLine(stringBuilder.ToString());
+            return stringBuilder.ToString();
+		}
+
+		public static void PrintResult(ArithmeticExpression arithmeticExpression)
         {
             if(arithmeticExpression.PostponedExpression != null)
             {
@@ -68,5 +123,88 @@ namespace verse_interpreter.lib.IO
 
             PrintResult(stringExpression.Value);
         }
-    }
+
+        public static void PrintResult(Variable variable)
+        {
+			switch (variable.Value)
+			{
+				case { IntValue: not null }:
+                    PrintResult(variable.Value.IntValue.ToString()!);
+					break;
+				case { StringValue: not null }:
+					PrintResult(variable.Value.StringValue.ToString()!);
+					break;
+                case { CollectionVariable: not null }:
+                    PrintResult(variable.Value.CollectionVariable);
+                    break;
+                case { Choice: not null }:
+                    PrintResult(variable.Value.Choice);
+                    break;
+			}
+		}
+
+		public static void PrintResult(Choice choice)
+		{
+			Console.ForegroundColor = ConsoleColor.Blue;
+			Console.WriteLine("VERSE CODE RESULT: ");
+			Console.ResetColor();
+            Console.Write("(");
+            var choices = choice.AllChoices();
+            var last = choices.LastOrDefault();
+			foreach (var element in choices)
+            {
+                if (element.ValueObject.IntValue != null)
+                {
+					Console.Write($"{element.ValueObject.IntValue}");
+				}
+				if (element.ValueObject.StringValue != null)
+				{
+					Console.Write($"{element.ValueObject.StringValue}");
+				}
+                if (element != last)
+                {
+                    Console.Write("|");
+                }
+			}
+            Console.Write(")");
+		}
+
+		public static void PrintDebugInformation(LookupManager manager)
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				Console.WriteLine(".");
+			}
+
+			Console.ForegroundColor = ConsoleColor.DarkYellow;
+			Console.WriteLine("DEBUG INFO:");
+			Console.ResetColor();
+
+			foreach (var variable in manager.GetAllVariables())
+			{
+				switch (true)
+				{
+					case true when variable.Value!.IntValue != null:
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.IntValue}");
+						break;
+
+					case true when variable.Value.StringValue != null:
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.StringValue}");
+						break;
+
+					case true when variable.Value.CollectionVariable != null:
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {PrintResult(variable.Value.CollectionVariable)}");
+						break;
+
+					case true when variable.Value.TypeData.Name == "false?":
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
+						break;
+
+					default:
+						Console.WriteLine("null");
+						break;
+				}
+			}
+		}
+	}
 }

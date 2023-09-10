@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
@@ -34,16 +35,12 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         public event EventHandler<ComparisonExpressionResolvedEventArgs>? ComparisonExpressionResolved;
         public event EventHandler<ExpressionWithNoValueFoundEventArgs>? ExpressionWithNoValueFound;
         public event EventHandler<ForExpressionResolvedEventArgs>? ForExpressionResolved;
+        public event EventHandler<IfExpressionResolvedEventArgs>? IfExpressionResolved;
 
         public BackpropagationEventSystem Propagator => _propagator;
 
         public void ExecuteExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
-            if (!_expressionValidator.IsTypeConformityGiven(expressions))
-            {
-                throw new InvalidTypeCombinationException("The given expression contains multiple types!");
-            }
-
             // Check if false? is contained anywhere in the expression
             // and invoke the event for the value definition visitor.
             if (expressions.Any(x => x.Any(y => y.TypeName == "false?")))
@@ -64,7 +61,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
                     foreach (var value in arrayIndex)
                     {
-                        if (_propertyResolver.ResolveProperty(value.ValueIdentifier).Value.TypeData.Name == "false?")
+                        if (_propertyResolver.ResolveProperty(value.ValueIdentifier).Value == ValueObject.False)
                         {
                             ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
                             return;
@@ -95,10 +92,10 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                     break;
 
                 case "false?":
-                    ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
-                    return;
+					ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
+                    break;
 
-                default:
+				default:
                     throw new UnknownTypeException(typeName);
             }
         }
@@ -113,6 +110,13 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
             ForExpressionResolved?.Invoke(this, new ForExpressionResolvedEventArgs(res));
         }
+
+        public void ExecuteExpression(IfParseResult result)
+        {
+            var res = _evaluatorWrapper.IfParseResultEvaluator.Evaluate(result);
+
+            IfExpressionResolved?.Invoke(this, new IfExpressionResolvedEventArgs(result, res));
+		}
 
         private void HandleComparisonExpression(List<List<ExpressionResult>> expressions, string? identifier)
         {
@@ -146,7 +150,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
         private void HandleArithmeticExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
-            var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
+			foreach (var variable in GetChoices(expressions))
+			{
+			}
+			var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
+
             if (result.PostponedExpression != null && identifier != null)
             {
                 _propagator.AddExpression(identifier, result);
@@ -160,5 +168,23 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
             ArithmeticExpressionResolved?.Invoke(this, new ArithmeticExpressionResolvedEventArgs(result));
         }
-    }
+
+        private IEnumerable<Variable> GetChoices(List<List<ExpressionResult>> expressions)
+        {
+            foreach (var subExpressions in expressions)
+            {
+                foreach(var elements in subExpressions)
+                {
+                    if (!string.IsNullOrEmpty(elements.ValueIdentifier))
+                    {
+                        var variable = _propertyResolver.ResolveProperty(elements.ValueIdentifier);
+                        if (variable.Value.Choice != null)
+                        {
+                            yield return variable;
+                        }
+                    }
+                }
+            }
+        }
+	}
 }

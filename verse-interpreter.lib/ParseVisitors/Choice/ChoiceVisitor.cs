@@ -10,7 +10,7 @@ using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Extensions;
 using verse_interpreter.lib.Grammar;
 
-namespace verse_interpreter.lib.ParseVisitors.Choice
+namespace verse_interpreter.lib.ParseVisitors
 {
 	public class ChoiceVisitor : AbstractVerseVisitor<ChoiceResult>
 	{
@@ -30,10 +30,15 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 			return GenerateChoiceResult(context, new());
 		}
 
+		public override ChoiceResult VisitChoice([NotNull] Verse.ChoiceContext context)
+		{
+			return GenerateChoiceResult(context, new());
+		}
+
 		private ChoiceResult GenerateChoiceResult(Verse.Choice_ruleContext context, ChoiceResult result)
 		{
-			ParseChoices(context, result);
-			ParseLiterals(context, result);
+			ParseChoices(context.value_definition(), result);
+			ParseLiterals(context.value_definition(), result);
 
 			foreach (var childNodes in context.choice_rule())
 			{
@@ -44,15 +49,38 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 			return result;
 		}
 
-		private ChoiceResult ParseChoices([NotNull] Verse.Choice_ruleContext context, ChoiceResult result)
+		private ChoiceResult GenerateChoiceResult(Verse.ChoiceContext context, ChoiceResult result)
 		{
-			if (context == null ||
-				context.value_definition() == null)
+			var current = result;
+
+			// later used in order to determine if a new "next" object is needed within the choice;
+			var last = context.value_definition().Last();
+			foreach (var element in context.value_definition())
+			{
+				while (current.Next != null)
+				{
+					current = current.Next;
+				}
+
+				current = ParseChoices(element, current);
+				current = ParseLiterals(element, current);
+				if (element != last)
+				{
+					current.Next = new ChoiceResult();
+				}
+			}
+
+			return result;
+		}
+
+		private ChoiceResult ParseChoices(Verse.Value_definitionContext context, ChoiceResult result)
+		{
+			if (context == null)
 			{
 				return result;
 			}
 
-			var arrayIndex = _indexingVisitor.Visit(context.value_definition());
+			var arrayIndex = _indexingVisitor.Visit(context);
 			if (arrayIndex == null)
 			{
 				return result;
@@ -62,14 +90,13 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 			return result;
 		}
 
-		private ChoiceResult ParseLiterals([NotNull] Verse.Choice_ruleContext context, ChoiceResult result)
+		private ChoiceResult ParseLiterals(Verse.Value_definitionContext context, ChoiceResult result)
 		{
-			if (context == null ||
-				context.value_definition() == null)
+			if (context == null)
 			{
 				return result;
 			}
-			var declarationResult = valueDefinitionVisitor.Visit(context?.value_definition());
+			var declarationResult = valueDefinitionVisitor.Visit(context);
 			if (declarationResult.TypeName == "false?")
 			{
 				return result;

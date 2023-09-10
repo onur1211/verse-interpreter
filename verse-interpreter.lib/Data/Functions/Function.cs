@@ -10,7 +10,6 @@ namespace verse_interpreter.lib.Data.Functions
             Parameters = new List<Variable>();
             LookupManager = new LookupManager();
             SubScope = new Dictionary<int, IScope<Variable>>();
-            StatelessFunctionCall = null;
         }
 
         public string FunctionName { get; set; } = null!;
@@ -26,8 +25,6 @@ namespace verse_interpreter.lib.Data.Functions
         public Dictionary<int, IScope<Variable>> SubScope { get; }
 
         public LookupManager LookupManager { get; set; }
-
-        public Action<string>? StatelessFunctionCall { get; set; }
 
         public void AddScopedVariable(Variable variable)
         {

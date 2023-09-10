@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace verse_interpreter.lib.Parser.ValueDefinitionParser
+namespace verse_interpreter.lib.Data.Expressions
 {
-	internal class ValueDefinitionParser
+	public enum LogicalOperators
 	{
+		AND,
+		OR,
 	}
 }

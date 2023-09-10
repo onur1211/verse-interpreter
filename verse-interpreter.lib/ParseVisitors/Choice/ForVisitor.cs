@@ -7,7 +7,7 @@ using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 
-namespace verse_interpreter.lib.ParseVisitors.Choice
+namespace verse_interpreter.lib.ParseVisitors
 {
 	public class ForVisitor : AbstractVerseVisitor<ForResult>
 	{
@@ -33,6 +33,7 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 
 		public override ForResult VisitFor_rule([NotNull] Verse.For_ruleContext context)
 		{
+			_result = new ForResult();
 			VisitChildren(context);
 			return _result;
 		}
@@ -49,7 +50,12 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 			var resultSet = new ExpressionSet(_expressionVisitor.Visit(context.expression()));
 			if(IsComparisionExpression(resultSet))
 			{
+				_result.Filters.Clear();
 				_result.Filters.Add(resultSet);
+			}
+			else
+			{
+				throw new NotImplementedException("Evaluate the expression prior to using it in the for expression");
 			}
 			return base.VisitForExpression(context);
 		}
@@ -83,7 +89,7 @@ namespace verse_interpreter.lib.ParseVisitors.Choice
 		{
 			foreach (var expression in expressionSet.Expressions)
 			{
-				if (expression.Any(x => x.Operator != string.Empty && (x.Operator == ">" || x.Operator == "<" || x.Operator == "=")))
+				if (expression.Any(x => x.Operator != string.Empty && (x.Operator == ">" || x.Operator == "<" || x.Operator == "=" || x.Operator == "<=" || x.Operator == ">=")))
 				{
 					return true;
 				}

@@ -18,18 +18,17 @@ using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Parser.ValueDefinitionParser;
-using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.CustomTypes;
-using Microsoft.Extensions.Options;
 using verse_interpreter.lib.ParseVisitors.Functions;
 using verse_interpreter.lib.ParseVisitors.Types;
 using verse_interpreter.lib.ParseVisitors.Expressions;
-using verse_interpreter.lib.ParseVisitors.Choice;
 using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
+using verse_interpreter.lib.Data.Variables;
+using verse_interpreter.lib.Properties;
+using System.Text;
 using verse_interpreter.lib.ParseVisitors.Unification;
 using verse_interpreter.lib.Lookup;
-using System.Text;
-using System.Xml.Linq;
+using verse_interpreter.lib.Data;
 
 namespace verse_interpreter.lib
 {
@@ -56,10 +55,7 @@ namespace verse_interpreter.lib
 				return;
 			}
 			_services = BuildService();
-
-			string seperator = Path.DirectorySeparatorChar.ToString();
-			string libraryPath = $"..{seperator}..{seperator}..{seperator}..{seperator}verse-interpreter.lib{seperator}StandardLibrary.verse";
-			this.LoadStandardLibrary(libraryPath);
+			this.LoadStandardLibrary();
 
 			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 			var inputCode = options.Code != null ? options.Code :
@@ -73,8 +69,8 @@ namespace verse_interpreter.lib
 
 			if (IsDebug)
 			{
-                PrintDebugInformation(manager);
-            }
+				Printer.PrintDebugInformation(manager);
+			}
 		}
 
 		private void RunWithErrorHandling(string[] args)
@@ -87,12 +83,9 @@ namespace verse_interpreter.lib
 					return;
 				}
 				_services = BuildService();
+				this.LoadStandardLibrary();
 
-                string seperator = Path.DirectorySeparatorChar.ToString();
-                string libraryPath = $"..{seperator}..{seperator}..{seperator}..{seperator}verse-interpreter.lib{seperator}StandardLibrary.verse";
-                this.LoadStandardLibrary(libraryPath);
-
-                ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+				ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 
 				var inputCode = options.Code != null ? options.Code :
 					options.Path != null ? _reader.ReadFileToEnd(options.Path) :
@@ -105,7 +98,7 @@ namespace verse_interpreter.lib
 
                 if (IsDebug)
                 {
-                    PrintDebugInformation(manager);
+                    Printer.PrintDebugInformation(manager);
                 }
             }
 			catch (Exception ex)
@@ -116,96 +109,14 @@ namespace verse_interpreter.lib
 			}
 		}
 
-		private void PrintDebugInformation(LookupManager manager)
+        private void LoadStandardLibrary()
 		{
-			for (int i = 0; i < 5; i++)
-			{
-				Console.WriteLine(".");
-			}
-
-			Console.ForegroundColor = ConsoleColor.DarkYellow;
-			Console.WriteLine("DEBUG INFO:");
-			Console.ResetColor();
-
-			foreach (var variable in manager.GetAllVariables())
-			{
-				switch (true)
-				{
-					case true when variable.Value!.IntValue != null:
-						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.IntValue}");
-						break;
-
-					case true when variable.Value.StringValue != null:
-						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.StringValue}");
-						break;
-
-					case true when variable.Value.CollectionVariable != null:
-						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {PrintCollectionValues(variable.Value.CollectionVariable)}");
-						break;
-
-					case true when variable.Value.TypeData.Name == "false?":
-                        Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
-                        break;
-
-					default:
-						Console.WriteLine("null");
-						break;
-				}
-			}
+			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+			var inputCode = ByteArrayToString(Resources.StandardLibrary);
+			var parseTree = generator.GenerateParseTree(inputCode);
+			var mainVisitor = _services.GetRequiredService<MainVisitor>();
+			mainVisitor.VisitProgram(parseTree);
 		}
-
-        public static string PrintCollectionValues(VerseCollection collection)
-        {
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append("array( ");
-
-            if (collection.Values.Count == 0)
-            {
-                stringBuilder.Append(")");
-                return stringBuilder.ToString();
-            }
-
-            var last = collection.Values.Last();
-
-            foreach (var element in collection.Values)
-            {
-                if (element.Value.IntValue != null)
-                {
-                    stringBuilder.Append($"{element.Value.IntValue}");
-                }
-                if (element.Value.StringValue != null)
-                {
-                    stringBuilder.Append($"{element.Value.StringValue}");
-                }
-				if (element.Value.TypeData.Name == "false?")
-				{
-                    stringBuilder.Append($"{element.Value.TypeData.Name}");
-                }
-				if (element.Value.CollectionVariable != null)
-				{
-					stringBuilder.Append(PrintCollectionValues(element.Value.CollectionVariable));
-				}
-                if (element != last)
-                {
-                    stringBuilder.Append(", ");
-                }
-                else
-                {
-                    stringBuilder.Append(" ");
-                }
-            }
-            stringBuilder.Append(")");
-			return stringBuilder.ToString();
-        }
-
-        private void LoadStandardLibrary(string libraryPath)
-		{
-            ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
-			var inputCode = _reader.ReadFileToEnd(libraryPath);
-            var parseTree = generator.GenerateParseTree(inputCode);
-            var mainVisitor = _services.GetRequiredService<MainVisitor>();
-            mainVisitor.VisitProgram(parseTree);
-        }
 
 		private CommandLineOptions GetPath(string[] args)
 		{
@@ -247,8 +158,9 @@ namespace verse_interpreter.lib
 				.AddTransient<IEvaluator<StringExpression, List<List<ExpressionResult>>>, StringExpressionEvaluator>()
 				.AddTransient<IEvaluator<ComparisonExpression, List<List<ExpressionResult>>>, ComparisonEvaluator>()
 				.AddTransient<IEvaluator<ForExpression, ForResult>, ForEvaluator>()
+				.AddTransient<IEvaluator<bool, IfParseResult>, IfEvaluator>()
 				.AddTransient<IValidator<List<List<ExpressionResult>>>, ExpressionValidator>()
-				.AddTransient<IValidator<FunctionCall>, ParameterValidator>()
+				.AddTransient<ParameterValidator>()
 				.AddTransient<CustomTypeFactory>()
 				.AddTransient<ExpressionValidator>()
 				.AddTransient<DeclarationParser>()
@@ -275,11 +187,20 @@ namespace verse_interpreter.lib
 				.AddTransient<ExpressionValueParser>()
 				.AddTransient<FunctionFactory>()
 				.AddTransient<FilterApplyer>()
+				.AddTransient<LogicalExpressionVisitor>()
+				.AddTransient<ChoiceEvaluator>()
+				.AddTransient<ChoiceConversionVisitor>()
 				.AddTransient<EqualityVisitor>()
 				.AddLazyResolution()
 				.BuildServiceProvider();
 
 			return services;
+		}
+		public string ByteArrayToString(byte[] byteArray)
+		{
+			// Use UTF-8 encoding to convert the byte array to a string
+			string result = Encoding.UTF8.GetString(byteArray);
+			return result;
 		}
 	}
 }

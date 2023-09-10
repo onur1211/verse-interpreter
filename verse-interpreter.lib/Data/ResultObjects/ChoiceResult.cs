@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using verse_interpreter.lib.Data.Variables;
-using verse_interpreter.lib.ParseVisitors.Choice;
+using verse_interpreter.lib.ParseVisitors;
 
 namespace verse_interpreter.lib.Data.ResultObjects
 {

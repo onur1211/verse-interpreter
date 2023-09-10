@@ -6,8 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using verse_interpreter.lib.Grammar;
+using verse_interpreter.lib.ParseVisitors;
 
-namespace verse_interpreter.lib.ParseVisitors.Choice
+namespace verse_interpreter.lib.ParseVisitors
 {
 	public class ChoiceArrayIndexingVisitor : AbstractVerseVisitor<ArrayIndexingResult>
 	{

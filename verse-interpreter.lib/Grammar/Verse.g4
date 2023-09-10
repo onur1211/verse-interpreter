@@ -4,8 +4,8 @@ options {tokenVocab=VerseLexer;}
 verse_text: ( program ) * EOF;
 
 declaration : ID ':' type
-            | ID ':=' (value_definition | constructor_body | choice_rule)
-            | ID '=' (value_definition | constructor_body | choice_rule)
+            | ID ':=' (value_definition | constructor_body)
+            | ID '=' (value_definition | constructor_body)
             | ID ':=' array_literal
             | ID '=' array_literal
             ;
@@ -22,6 +22,8 @@ value_definition : INT #intValueDef
                  | array_index #arrayindexValueDef
                  | type_member_access #memberaccessValueDef
                  | range_expression #rangeValueDef
+                 | '(' value_definition ('|' value_definition)* ')' #choice
+                 | questionmark_operator #ChoiceConversion
                  ;
 
 program : function_definition program
@@ -46,6 +48,7 @@ program : function_definition program
         | if_block
         | value_definition
         | for_rule
+        | questionmark_operator
         ;
 
 block : declaration
@@ -53,6 +56,7 @@ block : declaration
       | expression
       | if_block
       | for_rule
+      | value_definition
       ;
 
 body : inline_body
@@ -115,6 +119,8 @@ param_call_item: value_definition
                | ID
                | value_definition ',' param_call_item
                | ID ',' param_call_item
+               | choice_rule
+               | choice_rule ',' param_call_item
                ;
 
 // For
@@ -134,6 +140,10 @@ constructor_body : INSTANCE ID '('')'
                  | INSTANCE ID '('param_def_item ')'
                  ;
 
+
+questionmark_operator : array_literal '?'
+                      | ID '?' 
+                      ;
 
 type_header : DATA ID '=' ID NEWLINE '{' multi_declaration NEWLINE '}'
             | DATA ID '=' ID '{' multi_declaration '}'
@@ -158,15 +168,16 @@ string_rule : SEARCH_TYPE
             ;
 
 choice_rule : value_definition ( '|' choice_rule)*
+            | '(' value_definition ( '|' choice_rule)* ')' 
             ;
 
             
 // Conditionals
 
-if_block    : 'if' '(' logical_expression ')' then_block else_block 
+if_block    : 'if' '(' (logical_expression | declaration)  ')' then_block (else_block)?
             ;
 
-then_block : (NEWLINE* INDENT*) 'then' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
+then_block : (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
            ;
 
 else_block : (NEWLINE* INDENT*) 'else' (NEWLINE* INDENT*) '{' NEWLINE* body NEWLINE* '}'
@@ -174,11 +185,10 @@ else_block : (NEWLINE* INDENT*) 'else' (NEWLINE* INDENT*) '{' NEWLINE* body NEWL
 
 
 // Logical operators
-logical_expression: (NOT)? expression
-                  | (NOT)? expression (COMMA expression)*
-                  | (NOT)? expression (CHOICE expression)*
+logical_expression: expression
+                  | expression (COMMA logical_expression)*
+                  | expression (CHOICE logical_expression)*
                   ;
-
 
 // Math expression rules
 expression
@@ -213,4 +223,4 @@ primary
 
 
 type : (INTTYPE | STRINGTYPE | COLLECTIONTYPE | ID | VOID ) ;
-operator : ('*' | '/' |'-'|'+'| '>' | '<' | '=');
+operator : ('*' | '/' |'-'|'+'| '>' | '<' | '=' | '<=' | '>=');

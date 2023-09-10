@@ -19,7 +19,6 @@ public class PredefinedFunctionInitializer
         Function print = new Function();
         print.FunctionName = "Print";
         print.Parameters.Add(new Variable("message", new ValueObject("any")));
-        print.StatelessFunctionCall = Printer.PrintResult;
         print.ReturnType = "void";
         return print;
     }

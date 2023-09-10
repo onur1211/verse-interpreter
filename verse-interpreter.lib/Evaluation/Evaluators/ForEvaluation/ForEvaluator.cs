@@ -46,7 +46,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 			resultSequence.AddRange(TraverseChoices(input));
 
 			_applicationState.DropScope();
-
+			_filters.Clear();
 			return new ForExpression()
 			{
 				Collection = new VerseCollection(resultSequence)
@@ -97,28 +97,21 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 			}
 
 			indexerVariable = ExpandVariable(indexerVariable, array);
-			var choice = indexerVariable.Value.Choice;
+			var indexerChoice = indexerVariable.Value.Choice;
 			List<Variable> result = new List<Variable>();
 
-			while (choice.Next != null)
+			foreach (var choice in indexerChoice.AllChoices())
 			{
+				if (array.Value.CollectionVariable.Values.Count == 0)
+				{
+					break;
+				}
 				indexerVariable.Value.IntValue = choice.ValueObject.IntValue;
+
 				var returnedValue = array.Value.CollectionVariable.Values[choice.ValueObject.IntValue!.Value];
 				if (_filterApplyer.DoesFilterMatch(this._filters, indexerVariable))
 				{
 					result.Add(returnedValue);
-				}
-
-				choice = choice.Next;
-
-				if (choice.Next == null)
-				{
-					indexerVariable.Value.IntValue = choice.ValueObject.IntValue;
-					returnedValue = array.Value.CollectionVariable.Values[choice.ValueObject.IntValue!.Value];
-					if (_filterApplyer.DoesFilterMatch(this._filters, indexerVariable))
-					{
-						result.Add(returnedValue);
-					}
 				}
 			}
 
