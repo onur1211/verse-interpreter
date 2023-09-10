@@ -141,17 +141,6 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                 }
             }
 
-            // Check if the types of the elements are the same.
-            // If there is at least one element which doesnt match
-            // then unification fails and return false.
-            for (int i = 0; i < collection.Values.Count; i++)
-            {
-                if (collection.Values[i].Value.TypeData.Name != secondCollection.Values[i].Value.TypeData.Name)
-                {
-                    return false;
-                }
-            }
-
             // Check if the values of the elements are the same.
             // If there is at least one element which doesnt match
             // then unification fails and return false.
