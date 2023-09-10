@@ -149,7 +149,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
         private void HandleArithmeticExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
-            var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
+			foreach (var variable in GetChoices(expressions))
+			{
+			}
+			var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
+
             if (result.PostponedExpression != null && identifier != null)
             {
                 _propagator.AddExpression(identifier, result);
@@ -162,6 +166,24 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             }
 
             ArithmeticExpressionResolved?.Invoke(this, new ArithmeticExpressionResolvedEventArgs(result));
+        }
+
+        private IEnumerable<Variable> GetChoices(List<List<ExpressionResult>> expressions)
+        {
+            foreach (var subExpressions in expressions)
+            {
+                foreach(var elements in subExpressions)
+                {
+                    if (!string.IsNullOrEmpty(elements.ValueIdentifier))
+                    {
+                        var variable = _propertyResolver.ResolveProperty(elements.ValueIdentifier);
+                        if (variable.Value.Choice != null)
+                        {
+                            yield return variable;
+                        }
+                    }
+                }
+            }
         }
 	}
 }

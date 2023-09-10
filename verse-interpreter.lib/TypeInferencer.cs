@@ -118,7 +118,8 @@ namespace verse_interpreter.lib
 
 			do
 			{
-				var type = declarationResult.ChoiceResult.Literals.First().Value.TypeData.Name;
+
+				var type = declarationResult.ChoiceResult.Literals.FirstOrDefault()?.Value.TypeData.Name;
 				typeName ??= type;
 
 				if (typeName != type)
@@ -128,6 +129,10 @@ namespace verse_interpreter.lib
 
 				declarationResult.TypeName = typeName;
 				current = current.Next;
+				if (current == null)
+				{
+					break;
+				}
 
 			} while (current.Next != null);
 

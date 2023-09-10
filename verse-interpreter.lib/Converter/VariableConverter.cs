@@ -34,6 +34,11 @@ namespace verse_interpreter.lib.Converter
 		{
 			Choice finishedChoice = new Choice();
 			var current = choice;
+			if (current.Next == null)
+			{
+				AddValuesToChoice(finishedChoice, current);
+			}
+
 			while (current.Next != null)
 			{
 				AddValuesToChoice(finishedChoice, current);

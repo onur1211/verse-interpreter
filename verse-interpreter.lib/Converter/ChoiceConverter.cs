@@ -34,6 +34,10 @@ namespace verse_interpreter.lib.Converter
 				{
 					current = current.Next;
 				}
+				if (element.ValueObject == null)
+				{
+					continue;
+				}
 
 				current.Literals.Add(new Variable()
 				{
