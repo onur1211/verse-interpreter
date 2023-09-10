@@ -24,6 +24,11 @@ using verse_interpreter.lib.ParseVisitors.Types;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
 using verse_interpreter.lib.Data.Variables;
+using System.Reflection.Emit;
+using System.Resources;
+using System.Reflection;
+using verse_interpreter.lib.Properties;
+using System.Text;
 
 namespace verse_interpreter.lib
 {
@@ -48,9 +53,7 @@ namespace verse_interpreter.lib
 				return;
 			}
 			_services = BuildService();
-
-			string libraryPath = "..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
-			this.LoadStandardLibrary(libraryPath);
+			this.LoadStandardLibrary();
 
 			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 			var inputCode = options.Code != null ? options.Code :
@@ -75,9 +78,6 @@ namespace verse_interpreter.lib
 				}
 				_services = BuildService();
 
-				string libraryPath = "..\\..\\..\\..\\..\\verse-interpreter.lib\\StandardLibrary.verse";
-				this.LoadStandardLibrary(libraryPath);
-
 				ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 
 				var inputCode = options.Code != null ? options.Code :
@@ -97,10 +97,10 @@ namespace verse_interpreter.lib
 			}
 		}
 
-		private void LoadStandardLibrary(string libraryPath)
+		private void LoadStandardLibrary()
 		{
 			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
-			var inputCode = _reader.ReadFileToEnd(libraryPath);
+			var inputCode = ByteArrayToString(Resources.StandardLibrary);
 			var parseTree = generator.GenerateParseTree(inputCode);
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
 			mainVisitor.VisitProgram(parseTree);
@@ -176,6 +176,12 @@ namespace verse_interpreter.lib
 				.BuildServiceProvider();
 
 			return services;
+		}
+		public string ByteArrayToString(byte[] byteArray)
+		{
+			// Use UTF-8 encoding to convert the byte array to a string
+			string result = Encoding.UTF8.GetString(byteArray);
+			return result;
 		}
 	}
 }
