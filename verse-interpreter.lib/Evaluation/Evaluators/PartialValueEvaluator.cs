@@ -11,7 +11,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
     {
         public Variable EvaluatePartialValues(Variable newVariable, Variable oldVariable)
         {
-            // Check if there is a collection variable.
+            // Check if there is a collection variable in both variables.
             // If not then just return the unchanged new variable.
             if (oldVariable.Value.CollectionVariable == null || newVariable.Value.CollectionVariable == null)
             {
@@ -28,6 +28,11 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
             {
                 var oldPartialValue = oldVariable.Value.CollectionVariable.Values[i];
                 var newPartialValue = newVariable.Value.CollectionVariable.Values[i];
+
+                if (oldPartialValue.Value.TypeData.Name != newPartialValue.Value.TypeData.Name)
+                {
+                    continue;
+                }
 
                 if (!oldPartialValue.HasValue())
                 {

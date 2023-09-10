@@ -74,6 +74,11 @@ namespace verse_interpreter.lib.IO
 
 			foreach (var element in collection.Values)
 			{
+				if (!element.HasValue() && element.Value.TypeData.Name != "false?" 
+				&& string.IsNullOrEmpty(element.Name) == false && string.IsNullOrEmpty(element.Value.TypeData.Name) == false)
+				{
+                    stringBuilder.Append($"{element.Name}:{element.Value.TypeData.Name}");
+                }
 				if (element.Value.IntValue != null)
 				{
 					stringBuilder.Append($"{element.Value.IntValue}");
@@ -178,13 +183,20 @@ namespace verse_interpreter.lib.IO
 
 			Console.ForegroundColor = ConsoleColor.DarkYellow;
 			Console.WriteLine("DEBUG INFO:");
+			Console.WriteLine("'x:int': declared variable, but no value assigned.");
+            Console.WriteLine("'null': error case.");
+            Console.WriteLine();
 			Console.ResetColor();
 
-			foreach (var variable in manager.GetAllVariables())
+            foreach (var variable in manager.GetAllVariables())
 			{
 				switch (true)
 				{
-					case true when variable.Value!.IntValue != null:
+					case true when !variable.HasValue():
+                        Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
+                        break;
+
+                    case true when variable.Value!.IntValue != null:
 						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.IntValue}");
 						break;
 
@@ -205,6 +217,6 @@ namespace verse_interpreter.lib.IO
 						break;
 				}
 			}
-		}
+        }
 	}
 }
