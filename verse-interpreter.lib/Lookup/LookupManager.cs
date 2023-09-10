@@ -3,6 +3,7 @@ using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
+using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Lookup.EventArguments;
@@ -13,11 +14,13 @@ namespace verse_interpreter.lib.Lookup
 	{
 		private ILookupTable<Variable> lookupTable;
 		private List<string> valueLessVariables;
+		private readonly PartialValueEvaluator _partialValueEvaluator;
 
 		public LookupManager()
 		{
 			this.lookupTable = new LookupTable<Variable>();
 			this.valueLessVariables = new List<string>();
+			_partialValueEvaluator = new PartialValueEvaluator();
 		}
 
 		public event EventHandler<VariableBoundEventArgs>? VariableBound;
@@ -50,13 +53,21 @@ namespace verse_interpreter.lib.Lookup
 			{
 				throw new VariableDoesNotExistException(variable.Name);
 			}
+			
 			var existingVariable = GetVariable(variable.Name);
-			if (variable.Value.TypeData != existingVariable.Value.TypeData)
+
+			if (variable.Value.TypeData.Name != "false?")
 			{
-				throw new InvalidTypeCombinationException($"The specified variable \"{variable.Name}\" was already declared in this scope with the type {existingVariable.Value.TypeData.Name}");
+				if (variable.Value.TypeData != existingVariable.Value.TypeData)
+				{
+					throw new InvalidTypeCombinationException($"The specified variable \"{variable.Name}\" was already declared in this scope with the type {existingVariable.Value.TypeData.Name}");
+				}
 			}
 
-			if (variable.HasValue())
+			// Evaluate possible partial values in the variables.
+			variable = _partialValueEvaluator.EvaluatePartialValues(variable, this.lookupTable.Table[variable.Name]);
+
+            if (variable.HasValue())
 			{
 				this.valueLessVariables.Remove(variable.Name);
 				this.lookupTable.Table[variable.Name] = variable;
@@ -75,7 +86,6 @@ namespace verse_interpreter.lib.Lookup
 				this.lookupTable.Table.Remove(variable.Name);
 			}
 		}
-
 
 		public Variable GetVariable(string variableName)
 		{

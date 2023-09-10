@@ -1,7 +1,5 @@
 ﻿lexer grammar VerseLexer;
 
-AND : 'and' ;
-OR : 'or' ;
 NOT : '!' ;
 ASSN : ':=';
 DEF : ':' ;

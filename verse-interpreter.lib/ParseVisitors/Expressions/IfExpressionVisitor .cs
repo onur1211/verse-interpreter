@@ -10,11 +10,11 @@ using verse_interpreter.lib.ParseVisitors.Expressions;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
-	public class IfExpressionVisitor : AbstractVerseVisitor<IfParseResult>
-	{
-		private readonly BodyParser _parser;
+    public class IfExpressionVisitor : AbstractVerseVisitor<IfParseResult>
+    {
+        private readonly LogicalExpressionVisitor  _expressionVisitor;
 		private readonly DeclarationParser _declarationParser;
-		private readonly LogicalExpressionVisitor _expressionVisitor;
+        private readonly BodyParser _parser;
 
 		public IfExpressionVisitor(ApplicationState applicationState,
 								   BodyParser parser,
@@ -43,11 +43,6 @@ namespace verse_interpreter.lib.ParseVisitors
 			}
 
 			return parseResult;
-		}
-
-		public override IfParseResult VisitDeclaration([NotNull] Verse.DeclarationContext context)
-		{
-			return base.VisitDeclaration(context);
 		}
 
 		private List<Verse.BlockContext> ParseThenBlock(Verse.If_blockContext context)

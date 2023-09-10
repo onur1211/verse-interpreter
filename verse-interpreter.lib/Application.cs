@@ -24,11 +24,11 @@ using verse_interpreter.lib.ParseVisitors.Types;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
 using verse_interpreter.lib.Data.Variables;
-using System.Reflection.Emit;
-using System.Resources;
-using System.Reflection;
 using verse_interpreter.lib.Properties;
 using System.Text;
+using verse_interpreter.lib.ParseVisitors.Unification;
+using verse_interpreter.lib.Lookup;
+using verse_interpreter.lib.Data;
 
 namespace verse_interpreter.lib
 {
@@ -45,7 +45,9 @@ namespace verse_interpreter.lib
 			_reader = new FileReader();
 		}
 
-		public void Run(string[] args)
+        public bool IsDebug { get; private set; }
+
+        public void Run(string[] args)
 		{
 			var options = GetPath(args);
 			if (options.Code == null && options.Path == null)
@@ -64,8 +66,12 @@ namespace verse_interpreter.lib
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
 			mainVisitor.VisitProgram(parseTree);
 			var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-			//Console.ReadKey();
-		 }
+
+			if (IsDebug)
+			{
+				Printer.PrintDebugInformation(manager);
+			}
+		}
 
 		private void RunWithErrorHandling(string[] args)
 		{
@@ -77,6 +83,7 @@ namespace verse_interpreter.lib
 					return;
 				}
 				_services = BuildService();
+				this.LoadStandardLibrary();
 
 				ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 
@@ -88,7 +95,12 @@ namespace verse_interpreter.lib
 				var mainVisitor = _services.GetRequiredService<MainVisitor>();
 				mainVisitor.VisitProgram(parseTree);
 				var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
-			}
+
+                if (IsDebug)
+                {
+                    Printer.PrintDebugInformation(manager);
+                }
+            }
 			catch (Exception ex)
 			{
 				Console.ForegroundColor = ConsoleColor.Red;
@@ -97,7 +109,7 @@ namespace verse_interpreter.lib
 			}
 		}
 
-		private void LoadStandardLibrary()
+        private void LoadStandardLibrary()
 		{
 			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 			var inputCode = ByteArrayToString(Resources.StandardLibrary);
@@ -119,7 +131,13 @@ namespace verse_interpreter.lib
 					}
 					options.Path = o.Path;
 					options.Code = o.Code;
+					options.Debug = o.Debug;
 				});
+
+			if (options.Debug)
+			{
+				this.IsDebug = true;
+			}
 
 			return options;
 		}
@@ -172,6 +190,7 @@ namespace verse_interpreter.lib
 				.AddTransient<LogicalExpressionVisitor>()
 				.AddTransient<ChoiceEvaluator>()
 				.AddTransient<ChoiceConversionVisitor>()
+				.AddTransient<EqualityVisitor>()
 				.AddLazyResolution()
 				.BuildServiceProvider();
 

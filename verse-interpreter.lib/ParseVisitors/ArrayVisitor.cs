@@ -35,66 +35,64 @@ namespace verse_interpreter.lib.ParseVisitors
 			_valueDefinitionVisitor = valueDefinitionVisitor;
 		}
 
-		public override DeclarationResult VisitArray_literal([NotNull] Verse.Array_literalContext context)
-		{
-			List<Variable> variables = new List<Variable>();
-			DeclarationResult rangeExpressionResult = new DeclarationResult();
-			var result = _collectionParser.Value.GetParameters(context.array_elements());
-			// Check if there are value elements in the collection
-			// Example: myArray:=(1,2,3) => 1,2 and 3 are value elements
-			if (result.ValueElements != null)
-			{
-				foreach (var valueDef in result.ValueElements)
-				{
-					// Accept the range expression
-					rangeExpressionResult = valueDef.Accept(_valueDefinitionVisitor.Value)!;
+        public override DeclarationResult VisitArray_literal([NotNull] Verse.Array_literalContext context)
+        {
+            List<Variable> variables = new List<Variable>();
+            DeclarationResult rangeExpressionResult = new DeclarationResult();
+            var result = _collectionParser.Value.GetParameters(context.array_elements());
 
-					// Check if there is a range expression
-					if (rangeExpressionResult.CollectionVariable != null)
-					{
-						continue;
-					}
+            for (int i = 0; i < result.TotalElements; i++)
+            {
+                // Check if there is a value element in the collection with the current index i
+                // Example: myArray:=(1,2,3) => 1,2 and 3 are value elements
+                if (result.ValueElements.Where(x => x.Key == i).Count() == 1)
+                {
+                    var valueDef = result.ValueElements.Where(x => x.Key == i).First();
 
-					var variableResult = VariableConverter.Convert(rangeExpressionResult);
-					variables.Add(variableResult);
-				}
-			}
+                    // Accept the range expression
+                    rangeExpressionResult = valueDef.Value.Accept(_valueDefinitionVisitor.Value)!;
 
-			// Check if there are declaration elements in the collection
-			// Example: myArray:=(x:=1,2) => x:=1 is a declaration element
-			if (result.DeclarationElements != null)
-			{
-				foreach (var declDef in result.DeclarationElements)
-				{
-					var variableResult = _declarationParser.Value.ParseDeclaration(declDef);
-					variables.Add(VariableConverter.Convert(variableResult));
-				}
-			}
+                    // Check if there is a range expression
+                    if (rangeExpressionResult.CollectionVariable != null)
+                    {
+                        continue;
+                    }
 
-			// Check if there are variable elements in the collection
-			// Example: x:=1; y:=2; myArray:=(x,y) => x and y are variable elements
-			if (result.VariableElements != null)
-			{
-				foreach (var variable in result.VariableElements)
-				{
-					var variableResult = ApplicationState.CurrentScope.LookupManager.GetVariable(variable);
-					variables.Add(variableResult);
-				}
-			}
+                    var variableResult = VariableConverter.Convert(rangeExpressionResult);
+                    variables.Add(variableResult);
+                }
 
-			DeclarationResult declarationResult = new DeclarationResult();
-			declarationResult.CollectionVariable = new VerseCollection(variables);
+                // Check if there is a declaration element in the collection with the current index i
+                // Example: myArray:=(x:=1,2) => x:=1 is a declaration element
+                if (result.DeclarationElements.Where(x => x.Key == i).Count() == 1)
+                {
+                    var declDef = result.DeclarationElements.Where(x => x.Key == i).First();
+                    var variableResult = _declarationParser.Value.ParseDeclaration(declDef.Value);
+                    variables.Add(VariableConverter.Convert(variableResult));
+                }
 
-			if (rangeExpressionResult.CollectionVariable != null)
-			{
-				declarationResult = rangeExpressionResult;
-			}
+                // Check if there is a variable element in the collection with the current index i
+                // Example: x:=1; y:=2; myArray:=(x,y) => x and y are variable elements
+                if (result.VariableElements.Where(x => x.Key == i).Count() == 1)
+                {
+                    var variable = result.VariableElements.Where(x => x.Key == i).First();
+                    var variableResult = ApplicationState.CurrentScope.LookupManager.GetVariable(variable.Value);
+                    variables.Add(variableResult);
+                }
+            }
 
-			return _typeInferencer.Value.InferGivenType(declarationResult);
-		}
+            DeclarationResult declarationResult = new DeclarationResult();
+            declarationResult.CollectionVariable = new VerseCollection(variables);
 
+            if (rangeExpressionResult.CollectionVariable != null)
+            {
+                declarationResult = rangeExpressionResult;
+            }
 
-		public override DeclarationResult VisitNumericArrayIndex([NotNull] Verse.NumericArrayIndexContext context)
+            return _typeInferencer.Value.InferGivenType(declarationResult);
+        }
+
+        public override DeclarationResult VisitNumericArrayIndex([NotNull] Verse.NumericArrayIndexContext context)
 		{
 			// Example: myArray[0]
 			string index = context.INT().GetText();

@@ -13,12 +13,15 @@ namespace verse_interpreter.lib.Parser
         public CollectionParseResult GetParameters(Verse.Array_elementsContext context)
         {
             CollectionParseResult collectionParseResult = new CollectionParseResult();
-            return this.ParseParameterRecursive(context, collectionParseResult);
+            int indexCounter = 0;
+            collectionParseResult = this.ParseParameterRecursive(context, collectionParseResult, indexCounter);
+            collectionParseResult.TotalElements = collectionParseResult.ValueElements.Count + collectionParseResult.DeclarationElements.Count + collectionParseResult.VariableElements.Count;
+            return collectionParseResult;
         }
 
-        private CollectionParseResult ParseParameterRecursive(Verse.Array_elementsContext context, CollectionParseResult collectionParseResult)
+        private CollectionParseResult ParseParameterRecursive(Verse.Array_elementsContext context, CollectionParseResult collectionParseResult, int indexCounter)
         {
-            if (context == null) 
+            if (context == null)
             {
                 // Done no children left. Return the collection parse result.
                 return collectionParseResult;
@@ -28,23 +31,26 @@ namespace verse_interpreter.lib.Parser
             var declDefs = context.declaration();
             var variableDefs = context.ID();
 
-            if (valueDefs != null) 
+            if (valueDefs != null)
             {
-                collectionParseResult.ValueElements.Add(valueDefs);
+                collectionParseResult.ValueElements.Add(indexCounter, valueDefs);
+                indexCounter++;
             }
 
-            if (declDefs != null) 
+            if (declDefs != null)
             {
-                collectionParseResult.DeclarationElements.Add(declDefs);
+                collectionParseResult.DeclarationElements.Add(indexCounter, declDefs);
+                indexCounter++;
             }
 
-            if (variableDefs != null) 
+            if (variableDefs != null)
             {
-                collectionParseResult.VariableElements.Add(variableDefs.GetText());
+                collectionParseResult.VariableElements.Add(indexCounter, variableDefs.GetText());
+                indexCounter++;
             }
 
             // Go to the next child recursive.
-            return ParseParameterRecursive(context.array_elements().FirstOrDefault(), collectionParseResult);
+            return ParseParameterRecursive(context.array_elements().FirstOrDefault(), collectionParseResult, indexCounter);
         }
     }
 }

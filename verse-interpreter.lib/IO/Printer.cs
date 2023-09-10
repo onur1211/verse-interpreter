@@ -10,6 +10,7 @@ using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Factories;
+using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib.IO
 {
@@ -54,40 +55,54 @@ namespace verse_interpreter.lib.IO
             throw new NotImplementedException();
         }
 
-		public static void PrintResult(VerseCollection collection)
+		public static string PrintResult(VerseCollection collection)
 		{
 			Console.ForegroundColor = ConsoleColor.Blue;
 			Console.WriteLine("VERSE CODE RESULT: ");
 			Console.ResetColor();
-            Console.Write("array(");
-            if (collection.Values.Count == 0)
-            {
-                Console.Write(")");
-                return;
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.Append("array( ");
+
+			if (collection.Values.Count == 0)
+			{
+				stringBuilder.Append(")");
+                Console.WriteLine(stringBuilder.ToString());
+				return stringBuilder.ToString();
             }
-            var last = collection.Values.Last();
+
+			var last = collection.Values.Last();
+
 			foreach (var element in collection.Values)
-            {
-                if (element.Value.IntValue != null)
-                {
-					Console.Write($"{element.Value.IntValue}");
+			{
+				if (element.Value.IntValue != null)
+				{
+					stringBuilder.Append($"{element.Value.IntValue}");
 				}
-                if (element.Value.StringValue != null)
-                {
-                    Console.Write($"{element.Value.StringValue}");
-                }
-                if (element != last)
-                {
-                    Console.Write(",");
-                }
-                else
-                {
-                    Console.Write("");
-                }
-            }
-            Console.Write(")");
-            Console.WriteLine("\n");
-        }
+				if (element.Value.StringValue != null)
+				{
+					stringBuilder.Append($"{element.Value.StringValue}");
+				}
+				if (element.Value.TypeData.Name == "false?")
+				{
+					stringBuilder.Append($"{element.Value.TypeData.Name}");
+				}
+				if (element.Value.CollectionVariable != null)
+				{
+					stringBuilder.Append(PrintResult(element.Value.CollectionVariable));
+				}
+				if (element != last)
+				{
+					stringBuilder.Append(", ");
+				}
+				else
+				{
+					stringBuilder.Append(" ");
+				}
+			}
+			stringBuilder.Append(")");
+            Console.WriteLine(stringBuilder.ToString());
+            return stringBuilder.ToString();
+		}
 
 		public static void PrintResult(ArithmeticExpression arithmeticExpression)
         {
@@ -152,6 +167,44 @@ namespace verse_interpreter.lib.IO
                 }
 			}
             Console.Write(")");
+		}
+
+		public static void PrintDebugInformation(LookupManager manager)
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				Console.WriteLine(".");
+			}
+
+			Console.ForegroundColor = ConsoleColor.DarkYellow;
+			Console.WriteLine("DEBUG INFO:");
+			Console.ResetColor();
+
+			foreach (var variable in manager.GetAllVariables())
+			{
+				switch (true)
+				{
+					case true when variable.Value!.IntValue != null:
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.IntValue}");
+						break;
+
+					case true when variable.Value.StringValue != null:
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.StringValue}");
+						break;
+
+					case true when variable.Value.CollectionVariable != null:
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {PrintResult(variable.Value.CollectionVariable)}");
+						break;
+
+					case true when variable.Value.TypeData.Name == "false?":
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
+						break;
+
+					default:
+						Console.WriteLine("null");
+						break;
+				}
+			}
 		}
 	}
 }

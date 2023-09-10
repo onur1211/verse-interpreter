@@ -30,8 +30,8 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
 				current = current.Next;
 			}
 
-			var and = context.AND();
-			var or = context.OR();
+			var and = context.COMMA();
+			var or = context.CHOICE();
 			if(and.Length > 0)
 			{
 				current.LogicalOperator = LogicalOperators.AND;
