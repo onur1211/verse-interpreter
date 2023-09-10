@@ -91,11 +91,7 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
 
             switch (true)
             {
-                // Partial value equality 
-                case true when
-                (!variable.HasValue() && secondVariable.Name == null)
-                || (!secondVariable.HasValue() && variable.Name == null)
-                && variable.Value.TypeData.Name == secondVariable.Value.TypeData.Name:
+                case true when (!variable.HasValue() || !secondVariable.HasValue()) && variable.Value.TypeData.Name == secondVariable.Value.TypeData.Name:
                     return true;
 
                 // Int value equality
@@ -132,17 +128,6 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
                 return false;
             }
 
-            // Check the types of the elements in the collections.
-            // If there is at least one element which doesnt match
-            // then unification fails and return false.
-            for (int i = 0; i < collection.Values.Count; i++)
-            {
-                if (collection.Values[i].Value.TypeData.Name != secondCollection.Values[i].Value.TypeData.Name)
-                {
-                    return false;
-                }
-            }
-
             // Check if the values of the elements are the same.
             // If there is at least one element which doesnt match
             // then unification fails and return false.
@@ -153,18 +138,14 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
 
                 switch (true)
                 {
-                    // Partial value equality 
-                    case true when
-                        (!variable.HasValue() && secondVariable.Name == null)
-                        || (!secondVariable.HasValue() && variable.Name == null)
-                        && variable.Value.TypeData.Name == secondVariable.Value.TypeData.Name:
-                        break;
-
                     case true when variable.Value!.IntValue != null && secondVariable.Value.IntValue != null:
                         if (variable.Value.IntValue.Value != secondVariable.Value.IntValue.Value)
                         {
                             return false;
                         }
+                        break;
+
+                    case true when (!variable.HasValue() || !secondVariable.HasValue()) && variable.Value.TypeData.Name == secondVariable.Value.TypeData.Name:
                         break;
 
                     case true when variable.Value!.StringValue != null && secondVariable.Value.StringValue != null:

@@ -184,7 +184,7 @@ namespace verse_interpreter.lib.IO
 			Console.ForegroundColor = ConsoleColor.DarkYellow;
 			Console.WriteLine("DEBUG INFO:");
 			Console.WriteLine("'x:int': declared variable, but no value assigned.");
-            Console.WriteLine("'null': error case.");
+            Console.WriteLine("'null': error case. Can not be printed.");
             Console.WriteLine();
 			Console.ResetColor();
 
