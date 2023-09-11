@@ -66,7 +66,7 @@ namespace verse_interpreter.lib
 		{
 			if (!Functions.ContainsKey(name))
 			{
-				throw new UnknownFunctionException(name);
+				throw new UnknownFunctionException($"The function {name} is unkown!");
 			}
 
 			var function = Functions[name].Clone();

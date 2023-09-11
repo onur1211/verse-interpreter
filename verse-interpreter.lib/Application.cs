@@ -48,17 +48,22 @@ namespace verse_interpreter.lib
 		public void Run(string[] args)
 		{
 			var options = GetPath(args);
-			if (options.Code == null && options.Path == null)
+			if (options.Path == null)
 			{
 				return;
 			}
 			_services = BuildService();
 			this.LoadStandardLibrary();
-
+			string inputCode = string.Empty;
 			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
-			var inputCode = options.Code != null ? options.Code :
-				options.Path != null ? _reader.ReadFileToEnd(options.Path) :
+			try
+			{
+				inputCode = _reader.ReadFileToEnd(options.Path);
+			}
+			catch
+			{
 				throw new ArgumentException("You have to specify either the path or add code!");
+			}
 
 			var parseTree = generator.GenerateParseTree(inputCode);
 			var mainVisitor = _services.GetRequiredService<MainVisitor>();
@@ -71,23 +76,27 @@ namespace verse_interpreter.lib
 			}
 		}
 
-		private void RunWithErrorHandling(string[] args)
+		public void RunWithErrorHandling(string[] args)
 		{
 			try
 			{
 				var options = GetPath(args);
-				if (options.Code == null && options.Path == null)
+				if (options.Path == null)
 				{
 					return;
 				}
 				_services = BuildService();
 				this.LoadStandardLibrary();
-
+				string inputCode = string.Empty;
 				ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
-
-				var inputCode = options.Code != null ? options.Code :
-					options.Path != null ? _reader.ReadFileToEnd(options.Path) :
+				try
+				{
+					inputCode = _reader.ReadFileToEnd(options.Path);
+				}
+				catch
+				{
 					throw new ArgumentException("You have to specify either the path or add code!");
+				}
 
 				var parseTree = generator.GenerateParseTree(inputCode);
 				var mainVisitor = _services.GetRequiredService<MainVisitor>();
@@ -123,12 +132,11 @@ namespace verse_interpreter.lib
 			CommandLine.Parser.Default.ParseArguments<CommandLineOptions>(args)
 				.WithParsed<CommandLineOptions>(o =>
 				{
-					if (string.IsNullOrEmpty(o.Path) && string.IsNullOrEmpty(o.Code))
+					if (string.IsNullOrEmpty(o.Path))
 					{
 						throw new ArgumentException("The path must not be null!");
 					}
 					options.Path = o.Path;
-					options.Code = o.Code;
 					options.Debug = o.Debug;
 				});
 
