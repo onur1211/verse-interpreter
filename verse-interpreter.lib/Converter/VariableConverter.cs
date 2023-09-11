@@ -49,11 +49,6 @@ namespace verse_interpreter.lib.Converter
 					AddValuesToChoice(finishedChoice, current);
 				}
 			}
-			foreach (var res in finishedChoice.AllChoices())
-			{
-                Console.WriteLine(res.ValueObject.IntValue);
-				Console.WriteLine(res.ValueObject.StringValue);
-			}
 
 			return new Variable()
 			{
