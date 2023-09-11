@@ -24,7 +24,7 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
 
 		public override LogicalExpression VisitLogical_expression([NotNull] Verse.Logical_expressionContext context)
 		{
-			var current = _logicalExpression;
+			var current = new LogicalExpression();
 			while(current.Next != null)
 			{
 				current = current.Next;
@@ -40,7 +40,7 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
 			{
 				current.LogicalOperator = LogicalOperators.OR;
 			}
-			current.Expressions = _expressionVisitor.Value.Visit(context);
+			current.Expressions = _expressionVisitor.Value.Visit(context.expression());
 
 			var nextExpression = context.logical_expression();
 			if (nextExpression.Length > 0)
@@ -49,13 +49,7 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
 				current.Next = Visit(nextExpression.First());
 			}
 
-			_logicalExpression = new LogicalExpression();
 			return current;
-		}
-
-		private void AddToExpression()
-		{
-
 		}
 	}
 }

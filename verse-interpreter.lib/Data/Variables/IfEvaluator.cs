@@ -14,11 +14,11 @@ namespace verse_interpreter.lib.Data.Variables
 		private readonly IEvaluator<ComparisonExpression, List<List<ExpressionResult>>> _evaluator;
 
 		public IfEvaluator(IEvaluator<ComparisonExpression, List<List<ExpressionResult>>> evaluator)
-        {
+		{
 			_evaluator = evaluator;
 		}
 
-        public bool AreVariablesBoundToValue(IfParseResult input)
+		public bool AreVariablesBoundToValue(IfParseResult input)
 		{
 			throw new NotImplementedException();
 		}
@@ -35,8 +35,26 @@ namespace verse_interpreter.lib.Data.Variables
 
 		private bool HandleLogicalExpressions(LogicalExpression expression)
 		{
-			var res =  _evaluator.Evaluate(expression.Expressions);
-			return res.IntValue != null || res.StringValue != null;
+			List<ComparisonExpression> results = new List<ComparisonExpression>();
+			var current = expression;
+
+			results.Add(_evaluator.Evaluate(current.Expressions));
+			while (current.Next != null)
+			{
+				current = current.Next;
+				results.Add(_evaluator.Evaluate(current.Expressions));
+			}
+
+			if (expression.LogicalOperator == Expressions.LogicalOperators.OR)
+			{
+				return results.Any(x => x.IntValue != null || x.StringValue != null);
+			}
+			if (expression.LogicalOperator == Expressions.LogicalOperators.AND)
+			{
+				return results.All(x => x.IntValue != null || x.StringValue != null);
+			}
+
+			return results.FirstOrDefault().StringValue != null || results.First().IntValue != null;
 		}
 	}
 }
