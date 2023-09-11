@@ -34,6 +34,7 @@ namespace verse_interpreter.lib.Data.Variables
 			var current = expression;
 
 			var evaluatedExpression = _evaluator.Evaluate(current.Expressions!);
+			results.Add(evaluatedExpression);
 
 			while (current.Next != null)
 			{
@@ -52,7 +53,7 @@ namespace verse_interpreter.lib.Data.Variables
 				return results.All(x => x.IntValue != null || x.StringValue != null);
 			}
 
-			return results.FirstOrDefault()!.StringValue != null || results.First().IntValue != null;
+			return results.FirstOrDefault()!.StringValue != null || results.FirstOrDefault().IntValue != null;
 		}
 	}
 }
