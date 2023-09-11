@@ -1,20 +1,11 @@
 using Antlr4.Runtime.Misc;
-using CommandLine.Text;
-using System;
-using System.Reflection;
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Evaluation.EvaluationManagement;
-using verse_interpreter.lib.Evaluation.FunctionEvaluator;
-using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Grammar;
-using verse_interpreter.lib.Parser;
 using verse_interpreter.lib.Parser.ValueDefinitionParser;
-using verse_interpreter.lib.ParseVisitors;
 using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.ParseVisitors.Functions;
 using verse_interpreter.lib.ParseVisitors.Types;
-using verse_interpreter.lib.Visitors;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
@@ -194,12 +185,12 @@ namespace verse_interpreter.lib.ParseVisitors
 			return _arrayVisitor.Value.Visit(context);
 		}
 
-        public override DeclarationResult VisitRange_expression([NotNull] Verse.Range_expressionContext context)
-        {
-            return _rangeExpressionVisitor.Value.Visit(context);
-        }
+		public override DeclarationResult VisitRange_expression([NotNull] Verse.Range_expressionContext context)
+		{
+			return _rangeExpressionVisitor.Value.Visit(context);
+		}
 
-        public override DeclarationResult VisitNumericArrayIndex([NotNull] Verse.NumericArrayIndexContext context)
+		public override DeclarationResult VisitNumericArrayIndex([NotNull] Verse.NumericArrayIndexContext context)
 		{
 			return _arrayVisitor.Value.Visit(context);
 		}

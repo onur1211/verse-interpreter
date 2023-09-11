@@ -85,7 +85,7 @@ namespace verse_interpreter.lib.Parser
 				return equalityResult;
 			}
 
-			
+
 			return result;
 		}
 
@@ -96,7 +96,7 @@ namespace verse_interpreter.lib.Parser
 		/// <returns></returns>
 		private DeclarationResult ParseValueAssignment(Verse.DeclarationContext context)
 		{
-			DeclarationResult declarationResult = _valueDefinitionVisitor.Value.Visit(context);
+			DeclarationResult declarationResult = _valueDefinitionVisitor.Value.Visit(context)!;
 			declarationResult.Name = context.ID().GetText();
 
 

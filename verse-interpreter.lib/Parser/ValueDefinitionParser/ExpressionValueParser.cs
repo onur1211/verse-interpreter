@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
-using verse_interpreter.lib.Evaluators;
 
 namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 {
@@ -15,11 +9,11 @@ namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 		private readonly GeneralEvaluator _evaluator;
 
 		public ExpressionValueParser(GeneralEvaluator generalEvaluator)
-        {
+		{
 			_evaluator = generalEvaluator;
 		}
 
-        public DeclarationResult? ParseExpression(List<List<ExpressionResult>> expression)
+		public DeclarationResult? ParseExpression(List<List<ExpressionResult>> expression)
 		{
 			DeclarationResult declarationResult = new DeclarationResult
 			{
@@ -40,7 +34,7 @@ namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 			_evaluator.ExpressionWithNoValueFound += (x, y) =>
 			{
 				declarationResult.TypeName = "false?";
-				
+
 			};
 			_evaluator.ExecuteExpression(expression);
 

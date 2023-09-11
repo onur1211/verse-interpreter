@@ -1,18 +1,15 @@
 ﻿using verse_interpreter.lib.Data.ResultObjects;
-using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.ParseVisitors.Functions;
-using verse_interpreter.lib.Visitors;
-using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.Parser
 {
-    public class PrimaryRuleParser
+	public class PrimaryRuleParser
 	{
 		private readonly ApplicationState _applicationState;
 		private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
 
-		public PrimaryRuleParser(ApplicationState applicationState, 
+		public PrimaryRuleParser(ApplicationState applicationState,
 								 Lazy<FunctionCallVisitor> functionCallVisitor)
 		{
 			_applicationState = applicationState;
@@ -26,8 +23,8 @@ namespace verse_interpreter.lib.Parser
 			// Fetches the value / identifer from the current node
 			var fetchedValue = context.INT();
 			var fetchedIdentifier = context.ID();
-            var fetchedNoValue = context.NOVALUE();
-            var fetchedMemberAccess = context.type_member_access();
+			var fetchedNoValue = context.NOVALUE();
+			var fetchedMemberAccess = context.type_member_access();
 			var fetchedString = context.string_rule();
 			var fetchedArrayAccess = context.array_index();
 			var fetchedFunctionCall = context.function_call();
@@ -39,13 +36,13 @@ namespace verse_interpreter.lib.Parser
 				return result;
 			}
 
-            if (fetchedNoValue != null)
-            {
-                result.TypeName = "false?";
-                return result;
-            }
+			if (fetchedNoValue != null)
+			{
+				result.TypeName = "false?";
+				return result;
+			}
 
-            if (fetchedIdentifier != null)
+			if (fetchedIdentifier != null)
 			{
 				result.ValueIdentifier = fetchedIdentifier.GetText();
 				return result;

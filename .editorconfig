@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# CS8765: Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
+dotnet_diagnostic.CS8765.severity = suggestion
+
+# SYSLIB0011: Type or member is obsolete
+dotnet_diagnostic.SYSLIB0011.severity = none

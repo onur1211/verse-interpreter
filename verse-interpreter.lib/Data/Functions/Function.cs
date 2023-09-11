@@ -4,32 +4,32 @@ using static verse_interpreter.lib.Grammar.Verse;
 namespace verse_interpreter.lib.Data.Functions
 {
 	public struct Function : IScope<Variable>, ICloneable
-    {
-        public Function()
-        {
-            Parameters = new List<Variable>();
-            LookupManager = new LookupManager();
-            SubScope = new Dictionary<int, IScope<Variable>>();
-        }
+	{
+		public Function()
+		{
+			Parameters = new List<Variable>();
+			LookupManager = new LookupManager();
+			SubScope = new Dictionary<int, IScope<Variable>>();
+		}
 
-        public string FunctionName { get; set; } = null!;
+		public string FunctionName { get; set; } = null!;
 
-        public string ReturnType { get; set; } = null!;
+		public string ReturnType { get; set; } = null!;
 
-        public int ParameterCount { get { return Parameters.Count; } }
+		public int ParameterCount { get { return Parameters.Count; } }
 
-        public List<BlockContext> FunctionBody { get; set; } = null!;
+		public List<BlockContext> FunctionBody { get; set; } = null!;
 
-        public List<Variable> Parameters { get; set; } = null!;
+		public List<Variable> Parameters { get; set; } = null!;
 
-        public Dictionary<int, IScope<Variable>> SubScope { get; }
+		public Dictionary<int, IScope<Variable>> SubScope { get; }
 
-        public LookupManager LookupManager { get; set; }
+		public LookupManager LookupManager { get; set; }
 
-        public void AddScopedVariable(Variable variable)
-        {
-            LookupManager.AddVariable(variable);
-        }
+		public void AddScopedVariable(Variable variable)
+		{
+			LookupManager.AddVariable(variable);
+		}
 
 		public object Clone()
 		{
@@ -40,5 +40,5 @@ namespace verse_interpreter.lib.Data.Functions
 			function.FunctionBody = FunctionBody;
 			return function;
 		}
-    }
+	}
 }

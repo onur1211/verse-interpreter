@@ -1,13 +1,6 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data.ResultObjects;
+﻿using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Extensions;
-using verse_interpreter.lib.Factories;
 
 namespace verse_interpreter.lib.Evaluation.Evaluators
 {
@@ -16,7 +9,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 		private readonly Lazy<PropertyResolver> _resolver;
 		private readonly ApplicationState _state;
 
-		public ComparisonEvaluator(ApplicationState state, 
+		public ComparisonEvaluator(ApplicationState state,
 								   Lazy<PropertyResolver> resolver)
 		{
 			_resolver = resolver;
@@ -113,7 +106,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 								break;
 						}
 					}
-					if(expression.StringValue != null)
+					if (expression.StringValue != null)
 					{
 						var pureString = expression.StringValue.Replace("\"", "");
 						expression.StringValue = pureString;
@@ -133,7 +126,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 			}
 			if (firstOperand.StringValue != null)
 			{
-				expression.StringValue = GetStringValue(firstOperand.StringValue) <  GetStringValue(secondOperand.StringValue) ? firstOperand.StringValue : null;
+				expression.StringValue = GetStringValue(firstOperand.StringValue) < GetStringValue(secondOperand.StringValue!) ? firstOperand.StringValue : null;
 				return;
 			}
 
@@ -149,7 +142,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 			}
 			if (firstOperand.StringValue != null)
 			{
-				expression.StringValue = GetStringValue(firstOperand.StringValue) > GetStringValue(secondOperand.StringValue) ? firstOperand.StringValue : null;
+				expression.StringValue = GetStringValue(firstOperand.StringValue) > GetStringValue(secondOperand.StringValue!) ? firstOperand.StringValue : null;
 				return;
 			}
 
@@ -181,7 +174,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 			}
 			if (firstOperand.StringValue != null)
 			{
-				expression.StringValue = GetStringValue(firstOperand.StringValue) >= GetStringValue(secondOperand.StringValue) ? firstOperand.StringValue : null;
+				expression.StringValue = GetStringValue(firstOperand.StringValue) >= GetStringValue(secondOperand.StringValue!) ? firstOperand.StringValue : null;
 				return;
 			}
 
@@ -197,7 +190,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 			}
 			if (firstOperand.StringValue != null)
 			{
-				expression.StringValue = GetStringValue(firstOperand.StringValue) <= GetStringValue(secondOperand.StringValue) ? firstOperand.StringValue : null;
+				expression.StringValue = GetStringValue(firstOperand.StringValue) <= GetStringValue(secondOperand.StringValue!) ? firstOperand.StringValue : null;
 				return;
 			}
 

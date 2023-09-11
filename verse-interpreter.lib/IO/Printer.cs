@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
@@ -14,46 +8,46 @@ using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib.IO
 {
-    public static class Printer
-    {
-        public static void PrintResult(string result)
-        {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("VERSE CODE RESULT: ");
-            Console.ResetColor();
-            Console.WriteLine(result);
-        }
+	public static class Printer
+	{
+		public static void PrintResult(string result)
+		{
+			Console.ForegroundColor = ConsoleColor.Blue;
+			Console.WriteLine("VERSE CODE RESULT: ");
+			Console.ResetColor();
+			Console.WriteLine(result);
+		}
 
-        public static void PrintResult(FunctionCallResult result)
-        {
-            if (result == null && !result.WasValueResolved)
-            {
-                return;
-            }
-
-            if(result.ArithmeticExpression != null)
-            {
-                PrintResult(result.ArithmeticExpression.ResultValue.ToString());
-                return;
-            }
-            if(result.StringExpression != null)
-            {
-                PrintResult(result.StringExpression.Value);
-                return;
-            }
-            if (result.ForExpression != null)
-            {
-                PrintResult(result.ForExpression.Collection!);
-                return;
+		public static void PrintResult(FunctionCallResult result)
+		{
+			if (result == null && !result!.WasValueResolved)
+			{
+				return;
 			}
-            if (result.Variable != null)
-            {
-                PrintResult(result.Variable);
-                return;
-            }
 
-            throw new NotImplementedException();
-        }
+			if (result.ArithmeticExpression != null)
+			{
+				PrintResult(result.ArithmeticExpression.ResultValue.ToString()!);
+				return;
+			}
+			if (result.StringExpression != null)
+			{
+				PrintResult(result.StringExpression.Value);
+				return;
+			}
+			if (result.ForExpression != null)
+			{
+				PrintResult(result.ForExpression.Collection!);
+				return;
+			}
+			if (result.Variable != null)
+			{
+				PrintResult(result.Variable);
+				return;
+			}
+
+			throw new NotImplementedException();
+		}
 
 		public static void PrintResult(VerseCollection collection)
 		{
@@ -64,27 +58,27 @@ namespace verse_interpreter.lib.IO
 		}
 
 		public static void PrintResult(ArithmeticExpression arithmeticExpression)
-        {
-            if(arithmeticExpression.PostponedExpression != null)
-            {
-                return;
-            }
+		{
+			if (arithmeticExpression.PostponedExpression != null)
+			{
+				return;
+			}
 
-            PrintResult(arithmeticExpression.ResultValue.ToString()!);
-        }
+			PrintResult(arithmeticExpression.ResultValue.ToString()!);
+		}
 
-        public static void PrintResult(StringExpression stringExpression)
-        {
-            if(stringExpression.PostponedExpression != null)
-            {
-                return;
-            }
+		public static void PrintResult(StringExpression stringExpression)
+		{
+			if (stringExpression.PostponedExpression != null)
+			{
+				return;
+			}
 
-            PrintResult(stringExpression.Value);
-        }
+			PrintResult(stringExpression.Value);
+		}
 
-        public static void PrintResult(Variable variable)
-        {
+		public static void PrintResult(Variable variable)
+		{
 			if (variable.Value == ValueObject.False)
 			{
 				PrintResult("false?");
@@ -93,17 +87,17 @@ namespace verse_interpreter.lib.IO
 			switch (variable.Value)
 			{
 				case { IntValue: not null }:
-                    PrintResult(variable.Value.IntValue.ToString()!);
+					PrintResult(variable.Value.IntValue.ToString()!);
 					break;
 				case { StringValue: not null }:
 					PrintResult(variable.Value.StringValue.ToString()!);
 					break;
-                case { CollectionVariable: not null }:
-                    PrintResult(variable.Value.CollectionVariable);
-                    break;
-                case { Choice: not null }:
-                    PrintResult(variable.Value.Choice);
-                    break;
+				case { CollectionVariable: not null }:
+					PrintResult(variable.Value.CollectionVariable);
+					break;
+				case { Choice: not null }:
+					PrintResult(variable.Value.Choice);
+					break;
 			}
 		}
 
@@ -112,25 +106,25 @@ namespace verse_interpreter.lib.IO
 			Console.ForegroundColor = ConsoleColor.Blue;
 			Console.WriteLine("VERSE CODE RESULT: ");
 			Console.ResetColor();
-            Console.Write("(");
-            var choices = choice.AllChoices();
-            var last = choices.LastOrDefault();
+			Console.Write("(");
+			var choices = choice.AllChoices();
+			var last = choices.LastOrDefault();
 			foreach (var element in choices)
-            {
-                if (element.ValueObject.IntValue != null)
-                {
+			{
+				if (element.ValueObject.IntValue != null)
+				{
 					Console.Write($"{element.ValueObject.IntValue}");
 				}
 				if (element.ValueObject.StringValue != null)
 				{
 					Console.Write($"{element.ValueObject.StringValue}");
 				}
-                if (element != last)
-                {
-                    Console.Write("|");
-                }
+				if (element != last)
+				{
+					Console.Write("|");
+				}
 			}
-            Console.Write(")");
+			Console.Write(")");
 		}
 
 		private static string StringifyCollectionContent(VerseCollection collection)
@@ -189,27 +183,27 @@ namespace verse_interpreter.lib.IO
 		private static string StringifyChoiceContent(Choice choice)
 		{
 			StringBuilder sb = new StringBuilder();
-            sb.Append("(");
-            var choices = choice.AllChoices();
-            var last = choices.LastOrDefault();
-            foreach (var element in choices)
-            {
-                if (element.ValueObject.IntValue != null)
-                {
-                    sb.Append($"{element.ValueObject.IntValue}");
-                }
-                if (element.ValueObject.StringValue != null)
-                {
-                    sb.Append($"{element.ValueObject.StringValue}");
-                }
-                if (element != last)
-                {
-                    sb.Append("|");
-                }
-            }
-            sb.Append(")");
+			sb.Append("(");
+			var choices = choice.AllChoices();
+			var last = choices.LastOrDefault();
+			foreach (var element in choices)
+			{
+				if (element.ValueObject.IntValue != null)
+				{
+					sb.Append($"{element.ValueObject.IntValue}");
+				}
+				if (element.ValueObject.StringValue != null)
+				{
+					sb.Append($"{element.ValueObject.StringValue}");
+				}
+				if (element != last)
+				{
+					sb.Append("|");
+				}
+			}
+			sb.Append(")");
 			return sb.ToString();
-        }
+		}
 
 		public static void PrintDebugInformation(LookupManager manager)
 		{
@@ -221,19 +215,19 @@ namespace verse_interpreter.lib.IO
 			Console.ForegroundColor = ConsoleColor.DarkYellow;
 			Console.WriteLine("DEBUG INFO:");
 			Console.WriteLine("'x:int': declared variable, but no value assigned.");
-            Console.WriteLine("'error': error case. Can not be printed.");
-            Console.WriteLine();
+			Console.WriteLine("'error': error case. Can not be printed.");
+			Console.WriteLine();
 			Console.ResetColor();
 
-            foreach (var variable in manager.GetAllVariables())
+			foreach (var variable in manager.GetAllVariables())
 			{
 				switch (true)
 				{
 					case true when !variable.HasValue():
-                        Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
-                        break;
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
+						break;
 
-                    case true when variable.Value!.IntValue != null:
+					case true when variable.Value!.IntValue != null:
 						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {variable.Value.IntValue}");
 						break;
 
@@ -245,11 +239,11 @@ namespace verse_interpreter.lib.IO
 						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {StringifyCollectionContent(variable.Value.CollectionVariable)}");
 						break;
 
-                    case true when variable.Value.Choice != null:
-                        Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {StringifyChoiceContent(variable.Value.Choice)}");
-                        break;
+					case true when variable.Value.Choice != null:
+						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {StringifyChoiceContent(variable.Value.Choice)}");
+						break;
 
-                    case true when variable.Value.TypeData.Name == "false?":
+					case true when variable.Value.TypeData.Name == "false?":
 						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
 						break;
 
@@ -258,6 +252,6 @@ namespace verse_interpreter.lib.IO
 						break;
 				}
 			}
-    }
+		}
 	}
 }

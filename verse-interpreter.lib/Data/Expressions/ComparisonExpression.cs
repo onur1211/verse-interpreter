@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data.Interfaces;
+﻿using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
 
 namespace verse_interpreter.lib.Evaluation.Evaluators
@@ -15,6 +10,6 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 		public int? IntValue { get; set; }
 		public string? StringValue { get; set; }
 
-		public List<List<ExpressionResult>> Arguments { get; set; }
+		public List<List<ExpressionResult>>? Arguments { get; set; }
 	}
 }

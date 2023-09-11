@@ -1,12 +1,4 @@
 ﻿using Antlr4.Runtime.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Functions;
@@ -19,7 +11,6 @@ using verse_interpreter.lib.Extensions;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Visitors;
-using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.ParseVisitors.Functions
 {
@@ -54,8 +45,6 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 		private Variable? Variable { get; set; }
 		private bool WasValueResolved { get; set; }
 
-		public FunctionCall Test { get; set; }
-
 		public override FunctionCallResult VisitFunction_call([NotNull] Verse.Function_callContext context)
 		{
 			ClearResultSet();
@@ -67,10 +56,8 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 			}
 
 			ApplicationState.CurrentScopeLevel += 1;
-			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 2}");
 
 			var functionCall = PrepareFunctionForExecution(functionName, parameters);
-			Test = functionCall;
 			SetApplicationState(functionCall);
 
 			if (!WasValueResolved)
@@ -91,7 +78,6 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 			ApplicationState.Scopes.Remove(ApplicationState.CurrentScopeLevel);
 
 			ApplicationState.CurrentScopeLevel -= 1;
-			//Console.WriteLine($"Recursion depth: {ApplicationState.CurrentScopeLevel - 1}");
 			if (!CheckIfReturnedValueMatchesType(functionCall.Function))
 			{
 				throw new InvalidTypeException();
@@ -205,8 +191,8 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 
 		public void OnVariableResolved(Variable variable)
 		{
-            //Console.WriteLine($"Current depth VARIABLE      {ApplicationState.CurrentScopeLevel}. Name:{Test.Function.FunctionName} Return Type:{Test.Function.ReturnType}");
-            this.Variable = variable;
+			//Console.WriteLine($"Current depth VARIABLE      {ApplicationState.CurrentScopeLevel}. Name:{Test.Function.FunctionName} Return Type:{Test.Function.ReturnType}");
+			this.Variable = variable;
 		}
 
 		public void OnResultEvaluated(ExpressionWithNoValueFoundEventArgs eventArgs)

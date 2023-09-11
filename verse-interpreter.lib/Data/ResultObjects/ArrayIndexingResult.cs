@@ -2,7 +2,7 @@
 {
 	public class ArrayIndexingResult
 	{
-		public string ArrayIdentifier { get; internal set; }
-		public string Indexer { get; internal set; }
+		public string ArrayIdentifier { get; internal set; } = null!;
+		public string Indexer { get; internal set; } = null!;
 	}
 }

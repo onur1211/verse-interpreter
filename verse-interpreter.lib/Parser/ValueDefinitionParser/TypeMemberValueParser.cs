@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 
 namespace verse_interpreter.lib.Parser.ValueDefinitionParser
@@ -13,11 +8,11 @@ namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 		private readonly Lazy<PropertyResolver> _resolver;
 
 		public TypeMemberValueParser(Lazy<PropertyResolver> resolver)
-        {
+		{
 			_resolver = resolver;
 		}
 
-        public void ParseMemberAccess(TypeMemberAccessResult memberAccessResult)
+		public void ParseMemberAccess(TypeMemberAccessResult memberAccessResult)
 		{
 			DeclarationResult declarationResult = new DeclarationResult();
 

@@ -1,6 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
 using verse_interpreter.lib.Converter;
-using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.ResultObjects.Expressions;
 using verse_interpreter.lib.Grammar;
@@ -20,7 +19,7 @@ namespace verse_interpreter.lib.ParseVisitors
 						  ChoiceVisitor choiceVisitor,
 						  Lazy<DeclarationParser> declarationParser,
 						  ExpressionVisitor expressionVisitor,
-					      PrimaryRuleParser primaryParser) : base(applicationState)
+						  PrimaryRuleParser primaryParser) : base(applicationState)
 		{
 			_choiceVisitor = choiceVisitor;
 			_declarationParser = declarationParser;
@@ -48,9 +47,9 @@ namespace verse_interpreter.lib.ParseVisitors
 		public override ForResult VisitForExpression([NotNull] Verse.ForExpressionContext context)
 		{
 			var resultSet = new ExpressionSet(_expressionVisitor.Visit(context.expression()));
-			if(IsComparisionExpression(resultSet))
+			if (IsComparisionExpression(resultSet))
 			{
-				_result.Filters.Clear();
+				_result.Filters!.Clear();
 				_result.Filters.Add(resultSet);
 			}
 			else
@@ -74,7 +73,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			}
 
 			var variable = VariableConverter.Convert(_declarationParser.Value.ParseDeclaration(context.declaration()));
-			initialResult.LocalVariables.Add(variable);
+			initialResult.LocalVariables!.Add(variable);
 
 			var childElement = context.for_declaration();
 			if (childElement != null && childElement.Any())

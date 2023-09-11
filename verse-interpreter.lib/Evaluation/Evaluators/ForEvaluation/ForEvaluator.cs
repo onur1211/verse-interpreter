@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Converter;
+﻿using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
@@ -40,10 +34,10 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 		{
 			List<Variable> resultSequence = new List<Variable>();
 
-			_filters = input.Filters;
+			_filters = input.Filters!;
 
 			_applicationState.AddScope();
-			PrepareLocalVariables(input.LocalVariables);
+			PrepareLocalVariables(input.LocalVariables!);
 			resultSequence.AddRange(TraverseChoices(input));
 
 			_applicationState.DropScope();
@@ -80,13 +74,13 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 				}
 				foreach (var literal in current.Literals)
 				{
-                    if (literal.Value.Choice != null)
-                    {
-                        sequence.AddRange(ResolveChoice(literal.Value.Choice));
+					if (literal.Value.Choice != null)
+					{
+						sequence.AddRange(ResolveChoice(literal.Value.Choice));
 						continue;
-                    }
+					}
 
-                    sequence.Add(literal);
+					sequence.Add(literal);
 				}
 
 				current = current.Next;
@@ -134,9 +128,9 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 				throw new ArgumentNullException(nameof(choice));
 			}
 
-            foreach (var element in choice.AllChoices()) 
+			foreach (var element in choice.AllChoices())
 			{
-                var elementRes = ChoiceConverter.Convert(element);
+				var elementRes = ChoiceConverter.Convert(element);
 				var variable = elementRes.Literals.FirstOrDefault();
 				yield return variable!;
 			}

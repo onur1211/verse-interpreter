@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.Variables;
-using verse_interpreter.lib.Exceptions;
-using verse_interpreter.lib.Extensions;
 
 namespace verse_interpreter.lib.Converter
 {
@@ -24,7 +15,7 @@ namespace verse_interpreter.lib.Converter
 				"int[]" => HandleExplicitCollectionVariables(declarationResult, "int"),
 				"string[]" => HandleExplicitCollectionVariables(declarationResult, "string"),
 				"false?" => new Variable(declarationResult.Name, ValueObject.False),
-				"collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable)),
+				"collection" => new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CollectionVariable!)),
 				"undefined" => new Variable(declarationResult.Name, new("undefined")),
 				_ => HandleCustomType(declarationResult)
 			};
@@ -114,7 +105,7 @@ namespace verse_interpreter.lib.Converter
 			return new Variable()
 			{
 				Name = declarationResult.Name,
-				Value = new ValueObject(declarationResult.TypeName, declarationResult.LiteralValue)
+				Value = new ValueObject(declarationResult.TypeName, declarationResult.LiteralValue!)
 			};
 		}
 
@@ -209,7 +200,7 @@ namespace verse_interpreter.lib.Converter
 
 		private static Variable HandleCustomType(DeclarationResult declarationResult)
 		{
-			return new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CustomType.Value!));
+			return new Variable(declarationResult.Name, new(declarationResult.TypeName, declarationResult.CustomType!.Value!));
 		}
 	}
 }

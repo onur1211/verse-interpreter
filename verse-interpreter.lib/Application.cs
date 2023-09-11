@@ -1,38 +1,36 @@
 ﻿using Antlr4.Runtime;
+using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text;
+using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Data.Expressions;
+using verse_interpreter.lib.Data.Functions;
 using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
+using verse_interpreter.lib.Data.ResultObjects.Validators;
+using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluation.Evaluators;
+using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
+using verse_interpreter.lib.Evaluation.FunctionEvaluator;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Extensions;
 using verse_interpreter.lib.Factories;
 using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Parser;
-using verse_interpreter.lib.ParseVisitors;
-using verse_interpreter.lib.Visitors;
-using verse_interpreter.lib.Wrapper;
-using CommandLine;
-using verse_interpreter.lib.Data.Functions;
-using verse_interpreter.lib.Evaluation.FunctionEvaluator;
-using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Parser.ValueDefinitionParser;
-using verse_interpreter.lib.Data.CustomTypes;
+using verse_interpreter.lib.ParseVisitors;
+using verse_interpreter.lib.ParseVisitors.Expressions;
 using verse_interpreter.lib.ParseVisitors.Functions;
 using verse_interpreter.lib.ParseVisitors.Types;
-using verse_interpreter.lib.ParseVisitors.Expressions;
-using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
-using verse_interpreter.lib.Data.Variables;
-using verse_interpreter.lib.Properties;
-using System.Text;
 using verse_interpreter.lib.ParseVisitors.Unification;
-using verse_interpreter.lib.Lookup;
-using verse_interpreter.lib.Data;
+using verse_interpreter.lib.Properties;
+using verse_interpreter.lib.Visitors;
+using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib
 {
-    public class Application
+	public class Application
 	{
 		private IParserErrorListener _errorListener;
 		private IServiceProvider _services;
@@ -45,9 +43,9 @@ namespace verse_interpreter.lib
 			_reader = new FileReader();
 		}
 
-        public bool IsDebug { get; private set; }
+		public bool IsDebug { get; private set; }
 
-        public void Run(string[] args)
+		public void Run(string[] args)
 		{
 			var options = GetPath(args);
 			if (options.Code == null && options.Path == null)
@@ -71,7 +69,7 @@ namespace verse_interpreter.lib
 			{
 				Printer.PrintDebugInformation(manager);
 			}
-			}
+		}
 
 		private void RunWithErrorHandling(string[] args)
 		{
@@ -96,11 +94,11 @@ namespace verse_interpreter.lib
 				mainVisitor.VisitProgram(parseTree);
 				var manager = mainVisitor.ApplicationState.CurrentScope.LookupManager;
 
-                if (IsDebug)
-                {
-                    Printer.PrintDebugInformation(manager);
-                }
-            }
+				if (IsDebug)
+				{
+					Printer.PrintDebugInformation(manager);
+				}
+			}
 			catch (Exception ex)
 			{
 				Console.ForegroundColor = ConsoleColor.Red;
@@ -109,7 +107,7 @@ namespace verse_interpreter.lib
 			}
 		}
 
-        private void LoadStandardLibrary()
+		private void LoadStandardLibrary()
 		{
 			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 			var inputCode = ByteArrayToString(Resources.StandardLibrary);

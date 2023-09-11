@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data.ResultObjects.Expressions;
+﻿using verse_interpreter.lib.Data.ResultObjects.Expressions;
 
 namespace verse_interpreter.lib.Data.ResultObjects
 {
 	public class ForResult
 	{
-		public List<Variable> LocalVariables { get; set; }
-		public ChoiceResult Choices { get; set; }
-		public List<ExpressionSet> Filters { get; set; }
+		public List<Variable>? LocalVariables { get; set; }
+		public ChoiceResult? Choices { get; set; }
+		public List<ExpressionSet>?	 Filters { get; set; }
 
 		public ForResult()
 		{

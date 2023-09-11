@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Extensions;
-
-namespace verse_interpreter.lib.Data.Variables.Utility
+﻿namespace verse_interpreter.lib.Data.Variables.Utility
 {
 	public static class VariableUtility
 	{
@@ -15,7 +8,7 @@ namespace verse_interpreter.lib.Data.Variables.Utility
 			valueObject.StringValue = value.StringValue;
 			valueObject.IntValue = value.IntValue;
 			//valueObject.CollectionVariable ??= new VerseCollection(value.CollectionVariable.Values.DeepClone());
-			
+
 			return valueObject;
 		}
 	}

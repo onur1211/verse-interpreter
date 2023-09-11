@@ -1,24 +1,17 @@
 ﻿using Antlr4.Runtime.Misc;
-using System;
 using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.Expressions;
-using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
-using verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation;
-using verse_interpreter.lib.Evaluation.FunctionEvaluator;
-using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.IO;
 using verse_interpreter.lib.ParseVisitors.Expressions;
-using verse_interpreter.lib.Visitors;
 using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
-    public class MainVisitor : AbstractVerseVisitor<object>
+	public class MainVisitor : AbstractVerseVisitor<object>
 	{
 		private readonly Lazy<DeclarationVisitor> _declarationVisitor;
 		private readonly Lazy<ExpressionVisitor> _expressionVisitor;
@@ -112,7 +105,7 @@ namespace verse_interpreter.lib.ParseVisitors
 
 			if (result == null || result.IsVoid)
 			{
-				return null;
+				return null!;
 			}
 			if (ApplicationState.CurrentScopeLevel == 1)
 			{
@@ -196,7 +189,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		{
 			var forExpression = _forVisitor.Value.Visit(context);
 			_generalEvaluator.Value.ExecuteExpression(forExpression);
-			return null;
+			return null!;
 		}
 
 		public override object VisitQuestionmark_operator([NotNull] Verse.Questionmark_operatorContext context)

@@ -1,16 +1,12 @@
-﻿using System;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.CustomTypes;
-using verse_interpreter.lib.Data.Functions;
-using verse_interpreter.lib.Evaluation.EvaluationManagement;
 using verse_interpreter.lib.Evaluation.Evaluators;
-using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Exceptions;
 using verse_interpreter.lib.Lookup.EventArguments;
 
 namespace verse_interpreter.lib.Lookup
 {
-    public class LookupManager
+	public class LookupManager
 	{
 		private ILookupTable<Variable> lookupTable;
 		private List<string> valueLessVariables;
@@ -53,7 +49,7 @@ namespace verse_interpreter.lib.Lookup
 			{
 				throw new VariableDoesNotExistException(variable.Name);
 			}
-			
+
 			var existingVariable = GetVariable(variable.Name);
 
 			if (variable.Value.TypeData.Name != "false?")
@@ -67,7 +63,7 @@ namespace verse_interpreter.lib.Lookup
 			// Evaluate possible partial values in the variables.
 			variable = _partialValueEvaluator.EvaluatePartialValues(variable, this.lookupTable.Table[variable.Name]);
 
-            if (variable.HasValue())
+			if (variable.HasValue())
 			{
 				this.valueLessVariables.Remove(variable.Name);
 				this.lookupTable.Table[variable.Name] = variable;
@@ -81,7 +77,7 @@ namespace verse_interpreter.lib.Lookup
 
 		public void RemoveVariable(Variable variable)
 		{
-			if(IsVariable(variable.Name))
+			if (IsVariable(variable.Name))
 			{
 				this.lookupTable.Table.Remove(variable.Name);
 			}

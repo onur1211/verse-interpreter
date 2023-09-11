@@ -1,13 +1,7 @@
 ﻿using Antlr4.Runtime.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Grammar;
-using verse_interpreter.lib.Parser;
 
 namespace verse_interpreter.lib.ParseVisitors.Expressions
 {
@@ -25,7 +19,7 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
 		public override LogicalExpression VisitLogical_expression([NotNull] Verse.Logical_expressionContext context)
 		{
 			var current = new LogicalExpression();
-			while(current.Next != null)
+			while (current.Next != null)
 			{
 				current = current.Next;
 			}
@@ -33,7 +27,7 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
 			var and = context.COMMA();
 			var or = context.CHOICE();
 			var not = context.NOT();
-			if(and.Length > 0)
+			if (and.Length > 0)
 			{
 				current.LogicalOperator = LogicalOperators.AND;
 			}

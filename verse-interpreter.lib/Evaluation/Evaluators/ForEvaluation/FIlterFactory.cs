@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.ResultObjects.Expressions;
 using verse_interpreter.lib.Evaluators;
-using verse_interpreter.lib.Extensions;
 
 namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 {

@@ -119,7 +119,7 @@ namespace verse_interpreter.lib
 			do
 			{
 
-				var type = declarationResult.ChoiceResult.Literals.FirstOrDefault()?.Value.TypeData.Name;
+				var type = declarationResult.ChoiceResult.Literals.FirstOrDefault()?.Value.TypeData.Name!;
 				typeName ??= type;
 
 				if (typeName != type)

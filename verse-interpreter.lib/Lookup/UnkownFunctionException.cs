@@ -2,7 +2,7 @@
 
 public class UnknownFunctionException : Exception
 {
-    public UnknownFunctionException(string? message) : base(message)
-    {
-    }
+	public UnknownFunctionException(string? message) : base(message)
+	{
+	}
 }

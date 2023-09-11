@@ -1,12 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using verse_interpreter.lib.Converter;
-using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.Variables;
 using verse_interpreter.lib.Grammar;
 
@@ -38,7 +31,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			if (arrayLiteral != null)
 			{
 				var literal = _valueDefinitionVisitor.Value.Visit(arrayLiteral);
-				return ChoiceConverter.Convert(VariableConverter.Convert(literal).Value.CollectionVariable);
+				return ChoiceConverter.Convert(VariableConverter.Convert(literal!).Value.CollectionVariable);
 			}
 			else
 			{

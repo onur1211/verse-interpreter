@@ -1,25 +1,17 @@
 ﻿using Antlr4.Runtime.Misc;
-using Antlr4.Runtime.Tree;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
 using verse_interpreter.lib.Data.ResultObjects;
-using verse_interpreter.lib.Extensions;
 using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
 	public class ChoiceVisitor : AbstractVerseVisitor<ChoiceResult>
 	{
-		private readonly ChoiceArrayIndexingVisitor _indexingVisitor;
-		private readonly ValueDefinitionVisitor valueDefinitionVisitor;
+		private readonly Lazy<ChoiceArrayIndexingVisitor> _indexingVisitor;
+		private readonly Lazy<ValueDefinitionVisitor> valueDefinitionVisitor;
 
 		public ChoiceVisitor(ApplicationState applicationState,
-							 ChoiceArrayIndexingVisitor indexingVisitor,
-							 ValueDefinitionVisitor valueDefinitionVisitor) : base(applicationState)
+							 Lazy<ChoiceArrayIndexingVisitor> indexingVisitor,
+							 Lazy<ValueDefinitionVisitor> valueDefinitionVisitor) : base(applicationState)
 		{
 			_indexingVisitor = indexingVisitor;
 			this.valueDefinitionVisitor = valueDefinitionVisitor;
@@ -80,7 +72,7 @@ namespace verse_interpreter.lib.ParseVisitors
 				return result;
 			}
 
-			var arrayIndex = _indexingVisitor.Visit(context);
+			var arrayIndex = _indexingVisitor.Value.Visit(context);
 			if (arrayIndex == null)
 			{
 				return result;
@@ -96,8 +88,8 @@ namespace verse_interpreter.lib.ParseVisitors
 			{
 				return result;
 			}
-			var declarationResult = valueDefinitionVisitor.Visit(context);
-			if (declarationResult.TypeName == "false?")
+			var declarationResult = valueDefinitionVisitor.Value.Visit(context);
+			if (declarationResult!.TypeName == "false?")
 			{
 				return result;
 			}

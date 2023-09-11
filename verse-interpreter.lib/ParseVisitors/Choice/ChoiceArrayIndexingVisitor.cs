@@ -1,12 +1,5 @@
 ﻿using Antlr4.Runtime.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
 using verse_interpreter.lib.Grammar;
-using verse_interpreter.lib.ParseVisitors;
 
 namespace verse_interpreter.lib.ParseVisitors
 {

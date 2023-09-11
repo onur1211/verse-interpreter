@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 
 namespace verse_interpreter.lib.Converter
@@ -31,12 +26,12 @@ namespace verse_interpreter.lib.Converter
 				declarationResult.TypeName = "string";
 			}
 
-			if(result.ForExpression != null)
+			if (result.ForExpression != null)
 			{
 				declarationResult.CollectionVariable = result.ForExpression.Collection;
 				declarationResult.TypeName = "collection";
 			}
-			if(result.Variable != null)
+			if (result.Variable != null)
 			{
 				declarationResult = VariableConverter.ConvertBack(result.Variable);
 			}

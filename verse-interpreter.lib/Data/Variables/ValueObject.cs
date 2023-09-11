@@ -1,14 +1,11 @@
-﻿using System.Diagnostics.Metrics;
-using System.Reflection;
-using verse_interpreter.lib.Data.CustomTypes;
-using verse_interpreter.lib.Data.ResultObjects;
+﻿using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Data.Variables;
 
 namespace verse_interpreter.lib.Data
 {
 	public class ValueObject
 	{
-		private static ValueObject _false;
+		private static ValueObject _false = null!;
 
 		public ValueObject(string typeName)
 		{

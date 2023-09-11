@@ -3,19 +3,19 @@ using verse_interpreter.lib.Data.ResultObjects;
 
 namespace verse_interpreter.lib.Data.Expressions
 {
-    [Serializable]
+	[Serializable]
 
-    public class StringExpression : IExpression<StringExpression>
-    {
-        public Func<StringExpression>? PostponedExpression { get; set; }
+	public class StringExpression : IExpression<StringExpression>
+	{
+		public Func<StringExpression>? PostponedExpression { get; set; }
 
-        public string Value { get; internal set; } = null!;
+		public string Value { get; internal set; } = null!;
 
-        public List<List<ExpressionResult>> Arguments { get; set; }
+		public List<List<ExpressionResult>> Arguments { get; set; }
 
-        public StringExpression()
-        {
-            Arguments = new List<List<ExpressionResult>>();
-        }
-    }
+		public StringExpression()
+		{
+			Arguments = new List<List<ExpressionResult>>();
+		}
+	}
 }

@@ -2,13 +2,13 @@
 
 namespace verse_interpreter.lib.Lookup.EventArguments
 {
-    public class VariableBoundEventArgs
-    {
-        public VariableBoundEventArgs(Variable variable)
-        {
-            Variable = variable;
-        }
+	public class VariableBoundEventArgs
+	{
+		public VariableBoundEventArgs(Variable variable)
+		{
+			Variable = variable;
+		}
 
-        public Variable Variable { get; }
-    }
+		public Variable Variable { get; }
+	}
 }

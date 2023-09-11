@@ -1,10 +1,4 @@
-﻿using CommandLine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data.ResultObjects;
+﻿using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.Evaluators;
 
@@ -39,7 +33,7 @@ namespace verse_interpreter.lib.Data.Variables
 			List<ComparisonExpression> results = new List<ComparisonExpression>();
 			var current = expression;
 
-			var evaluatedExpression = _evaluator.Evaluate(current.Expressions);
+			var evaluatedExpression = _evaluator.Evaluate(current.Expressions!);
 
 			if (evaluatedExpression.IntValue != null && current.IsNegated ||
 				evaluatedExpression.StringValue != null && current.IsNegated)
@@ -70,7 +64,7 @@ namespace verse_interpreter.lib.Data.Variables
 			while (current.Next != null)
 			{
 				current = current.Next;
-				evaluatedExpression = _evaluator.Evaluate(current.Expressions);
+				evaluatedExpression = _evaluator.Evaluate(current.Expressions!);
 
 				if (evaluatedExpression.IntValue != null && current.IsNegated ||
 				   evaluatedExpression.StringValue != null && current.IsNegated)
@@ -105,7 +99,7 @@ namespace verse_interpreter.lib.Data.Variables
 				return results.All(x => x.IntValue != null || x.StringValue != null);
 			}
 
-			return results.FirstOrDefault().StringValue != null || results.First().IntValue != null;
+			return results.FirstOrDefault()!.StringValue != null || results.First().IntValue != null;
 		}
 	}
 }

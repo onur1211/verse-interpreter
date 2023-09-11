@@ -1,8 +1,3 @@
-
-using System.Reflection;
-using System.Threading.Tasks.Sources;
-using verse_interpreter.lib.Data.Interfaces;
-
 namespace verse_interpreter.lib.Data
 {
 	public class Variable : IUnifiable<Variable>
@@ -15,6 +10,7 @@ namespace verse_interpreter.lib.Data
 
 		public Variable()
 		{
+			this.Value = null!;
 		}
 
 		public string Name { get; set; } = null!;
@@ -28,9 +24,9 @@ namespace verse_interpreter.lib.Data
 
 		public bool HasValue()
 		{
-			return Value.IntValue != null || 
-				Value.StringValue != null || 
-				Value.CustomType.HasValue || 
+			return Value.IntValue != null ||
+				Value.StringValue != null ||
+				Value.CustomType.HasValue ||
 				Value.CollectionVariable != null ||
 				Value.Choice != null;
 		}
