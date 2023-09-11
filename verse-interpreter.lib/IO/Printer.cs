@@ -149,6 +149,10 @@ namespace verse_interpreter.lib.IO
 
 			foreach (var element in collection.Values)
 			{
+				if (!element.HasValue())
+				{
+					stringBuilder.Append($"{element.Name}:{element.Value.TypeData.Name}");
+				}
 				if (element.Value.IntValue != null)
 				{
 					stringBuilder.Append($"{element.Value.IntValue}");
@@ -165,6 +169,10 @@ namespace verse_interpreter.lib.IO
 				{
 					stringBuilder.Append(StringifyCollectionContent(element.Value.CollectionVariable));
 				}
+				if (element.Value.Choice != null)
+				{
+					stringBuilder.Append(StringifyChoiceContent(element.Value.Choice));
+				}
 				if (element != last)
 				{
 					stringBuilder.Append(", ");
@@ -178,6 +186,31 @@ namespace verse_interpreter.lib.IO
 			return stringBuilder.ToString();
 		}
 
+		private static string StringifyChoiceContent(Choice choice)
+		{
+			StringBuilder sb = new StringBuilder();
+            sb.Append("(");
+            var choices = choice.AllChoices();
+            var last = choices.LastOrDefault();
+            foreach (var element in choices)
+            {
+                if (element.ValueObject.IntValue != null)
+                {
+                    sb.Append($"{element.ValueObject.IntValue}");
+                }
+                if (element.ValueObject.StringValue != null)
+                {
+                    sb.Append($"{element.ValueObject.StringValue}");
+                }
+                if (element != last)
+                {
+                    sb.Append("|");
+                }
+            }
+            sb.Append(")");
+			return sb.ToString();
+        }
+
 		public static void PrintDebugInformation(LookupManager manager)
 		{
 			for (int i = 0; i < 5; i++)
@@ -188,7 +221,7 @@ namespace verse_interpreter.lib.IO
 			Console.ForegroundColor = ConsoleColor.DarkYellow;
 			Console.WriteLine("DEBUG INFO:");
 			Console.WriteLine("'x:int': declared variable, but no value assigned.");
-            Console.WriteLine("'null': error case. Can not be printed.");
+            Console.WriteLine("'error': error case. Can not be printed.");
             Console.WriteLine();
 			Console.ResetColor();
 
@@ -212,12 +245,16 @@ namespace verse_interpreter.lib.IO
 						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {StringifyCollectionContent(variable.Value.CollectionVariable)}");
 						break;
 
-					case true when variable.Value.TypeData.Name == "false?":
+                    case true when variable.Value.Choice != null:
+                        Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}, Value: {StringifyChoiceContent(variable.Value.Choice)}");
+                        break;
+
+                    case true when variable.Value.TypeData.Name == "false?":
 						Console.WriteLine($"Name: {variable.Name}, Type: {variable.Value.TypeData.Name}");
 						break;
 
 					default:
-						Console.WriteLine("null");
+						Console.WriteLine("error");
 						break;
 				}
 			}
