@@ -71,7 +71,7 @@ namespace verse_interpreter.lib
 			{
 				Printer.PrintDebugInformation(manager);
 			}
-		}
+			}
 
 		private void RunWithErrorHandling(string[] args)
 		{

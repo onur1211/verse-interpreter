@@ -34,7 +34,7 @@ namespace verse_interpreter.lib
 			}
 			if (propertyName.EndsWith("]"))
 			{
-				return ResolveArrayAccess(propertyName);
+				return ResolveIndexing(propertyName);
 			}
 
 			return _applicationState.CurrentScope.LookupManager.GetVariable(propertyName);
@@ -68,18 +68,33 @@ namespace verse_interpreter.lib
 		/// </summary>
 		/// <param name="variableName">The name of the variable with array access.</param>
 		/// <returns>The resolved variable corresponding to the array access.</returns>
-		private Variable ResolveArrayAccess(string variableName)
+		private Variable ResolveIndexing(string variableName)
 		{
 			var identifieres = variableName.Split('[', ']');
+			var variable = ResolveProperty(identifieres[0]);
 
-			var collection = _applicationState.CurrentScope.LookupManager.GetVariable(identifieres[0]).Value.CollectionVariable.Values;
+			if (variable.Value.StringValue != null)
+			{
+				return ResolveStringAccess(variable, identifieres[1]);
+			}
+			if (variable.Value.CollectionVariable != null)
+			{
+				return ResolveArrayAccess(variable, identifieres[1]);
+			}
+
+			throw new NotImplementedException($"This kind of indexing is currently not supported! \"{variableName}\"");
+		}
+
+		private Variable ResolveArrayAccess(Variable variable, string indexer)
+		{
+			var collection = variable.Value.CollectionVariable.Values;
 			int index;
-			bool isNumber = int.TryParse(identifieres[1], out index);
+			bool isNumber = int.TryParse(indexer, out index);
 			if (!isNumber)
 			{
-				index = ResolveProperty(identifieres[1]).Value.IntValue!.Value;
+				index = ResolveProperty(indexer).Value.IntValue!.Value;
 			}
-			if(collection.Count <=  index)
+			if (collection.Count <= index)
 			{
 				return new Variable()
 				{
@@ -88,6 +103,28 @@ namespace verse_interpreter.lib
 			}
 
 			return collection[index];
+		}
+
+		private Variable ResolveStringAccess(Variable variable, string indexer)
+		{
+			var stringVariable = variable.Value.StringValue;
+			int index;
+			bool isNumber = int.TryParse(indexer, out index);
+			if (!isNumber)
+			{
+				index = ResolveProperty(indexer).Value.IntValue!.Value;
+			}
+			if (stringVariable.Length <= index)
+			{
+				return new Variable()
+				{
+					Value = ValueObject.False
+				};
+			}
+			return new Variable()
+			{
+				Value = new ValueObject("string", stringVariable[index].ToString())
+			};
 		}
 	}
 }

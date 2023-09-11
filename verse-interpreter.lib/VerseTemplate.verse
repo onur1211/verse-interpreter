@@ -1,2 +1,2 @@
-x:int
-x = (1|2)
+t := "String"
+for{a:int; t[a] > "r"; t[a]}

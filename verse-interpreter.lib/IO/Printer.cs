@@ -159,7 +159,7 @@ namespace verse_interpreter.lib.IO
 				}
 				if (element.Value.StringValue != null)
 				{
-					stringBuilder.Append($"{element.Value.StringValue}");
+					stringBuilder.Append($"\"{element.Value.StringValue}\"");
 				}
 				if (element.Value.TypeData.Name == "false?")
 				{

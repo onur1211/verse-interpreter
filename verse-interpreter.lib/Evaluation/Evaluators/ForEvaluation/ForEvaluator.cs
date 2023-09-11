@@ -75,6 +75,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 				foreach (var indexing in current.IndexingResults)
 				{
 					sequence.AddRange(ExpandArrayToChoice(indexing.ArrayIdentifier, indexing.Indexer));
+					sequence.AddRange(ExpandStringToChoice(indexing.ArrayIdentifier, indexing.Indexer));
 				}
 				foreach (var literal in current.Literals)
 				{
@@ -87,18 +88,21 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 			return sequence;
 		}
 
-		private List<Variable> ExpandArrayToChoice(string arrayIdentifier, string indexingIdentifier)
+		private IEnumerable<Variable> ExpandArrayToChoice(string arrayIdentifier, string indexingIdentifier)
 		{
 			var array = _propertyResolver.ResolveProperty(arrayIdentifier);
 			var indexerVariable = _propertyResolver.ResolveProperty(indexingIdentifier);
+			if (array.Value.CollectionVariable == null)
+			{
+				yield break;
+			}
 			if (indexerVariable.HasValue())
 			{
 				throw new NotImplementedException();
 			}
 
-			indexerVariable = ExpandVariable(indexerVariable, array);
+			indexerVariable = ExpandVariable(indexerVariable, array.Value.CollectionVariable.Values.Count);
 			var indexerChoice = indexerVariable.Value.Choice;
-			List<Variable> result = new List<Variable>();
 
 			foreach (var choice in indexerChoice.AllChoices())
 			{
@@ -111,14 +115,43 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 				var returnedValue = array.Value.CollectionVariable.Values[choice.ValueObject.IntValue!.Value];
 				if (_filterApplyer.DoesFilterMatch(this._filters, indexerVariable))
 				{
-					result.Add(returnedValue);
+					yield return returnedValue;
 				}
 			}
-
-			return result;
 		}
 
-		private Variable ExpandVariable(Variable counterVariable, Variable collectionVariable)
+		private IEnumerable<Variable> ExpandStringToChoice(string identifier, string indexer)
+		{
+			var stringVariable = _propertyResolver.ResolveProperty(identifier);
+			var indexerVariable = _propertyResolver.ResolveProperty(indexer);
+			if (stringVariable.Value.StringValue == null)
+			{
+				yield break;
+			}
+
+			indexerVariable = ExpandVariable(indexerVariable, stringVariable.Value.StringValue.Length);
+			var indexerChoice = indexerVariable.Value.Choice;
+
+			foreach (var choice in indexerChoice.AllChoices())
+			{
+				if (stringVariable.Value.StringValue.Length == 0)
+				{
+					break;
+				}
+				indexerVariable.Value.IntValue = choice.ValueObject.IntValue;
+
+				var returnedValue = stringVariable.Value.StringValue[indexerVariable.Value.IntValue!.Value];
+				if (_filterApplyer.DoesFilterMatch(this._filters, indexerVariable))
+				{
+					yield return new Variable()
+					{
+						Value = new ValueObject("string", returnedValue.ToString())
+					};
+				}
+			}
+		}
+
+		private Variable ExpandVariable(Variable counterVariable, int count)
 		{
 			if (counterVariable.Value.Choice != null)
 			{
@@ -129,7 +162,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 				counterVariable.Value.Choice = new Choice(counterVariable.Value);
 			}
 
-			for (int i = 0; i < collectionVariable.Value.CollectionVariable.Values.Count; i++)
+			for (int i = 0; i < count; i++)
 			{
 				counterVariable.Value.Choice.AddValue(i);
 			}

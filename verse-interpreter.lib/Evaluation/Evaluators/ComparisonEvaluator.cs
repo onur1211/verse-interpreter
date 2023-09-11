@@ -112,6 +112,11 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 								break;
 						}
 					}
+					if(expression.StringValue != null)
+					{
+						var pureString = expression.StringValue.Replace("\"", "");
+						expression.StringValue = pureString;
+					}
 				}
 			}
 
