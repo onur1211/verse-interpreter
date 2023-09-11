@@ -1,6 +1,5 @@
 ﻿using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Data.ResultObjects;
-using verse_interpreter.lib.Data.Variables;
 
 namespace verse_interpreter.lib.Data
 {

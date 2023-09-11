@@ -1,6 +1,4 @@
-﻿using verse_interpreter.lib.Data.Functions;
-using verse_interpreter.lib.Evaluation.EvaluationManagement;
-using verse_interpreter.lib.Lookup;
+﻿using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib.Data
 {

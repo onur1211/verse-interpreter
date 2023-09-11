@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data.ResultObjects;
+﻿using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib.Parser
@@ -50,7 +45,9 @@ namespace verse_interpreter.lib.Parser
             }
 
             // Go to the next child recursive.
+#pragma warning disable CS8604 // Mögliches Nullverweisargument.
             return ParseParameterRecursive(context.array_elements().FirstOrDefault(), collectionParseResult, indexCounter);
+#pragma warning restore CS8604 // Mögliches Nullverweisargument.
         }
     }
 }

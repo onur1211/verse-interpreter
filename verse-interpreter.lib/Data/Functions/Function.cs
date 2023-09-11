@@ -3,7 +3,7 @@ using static verse_interpreter.lib.Grammar.Verse;
 
 namespace verse_interpreter.lib.Data.Functions
 {
-	public struct Function : IScope<Variable>, ICloneable
+    public struct Function : IScope<Variable>, ICloneable
     {
         public Function()
         {
@@ -31,14 +31,14 @@ namespace verse_interpreter.lib.Data.Functions
             LookupManager.AddVariable(variable);
         }
 
-		public object Clone()
-		{
-			Function function = new Function();
-			function.FunctionName = FunctionName;
-			function.Parameters = Parameters;
-			function.ReturnType = ReturnType;
-			function.FunctionBody = FunctionBody;
-			return function;
-		}
+        public object Clone()
+        {
+            Function function = new Function();
+            function.FunctionName = FunctionName;
+            function.Parameters = Parameters;
+            function.ReturnType = ReturnType;
+            function.FunctionBody = FunctionBody;
+            return function;
+        }
     }
 }

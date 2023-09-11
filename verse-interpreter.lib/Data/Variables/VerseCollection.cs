@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data.Interfaces;
-using verse_interpreter.lib.Data.Variables;
-using verse_interpreter.lib.Exceptions;
+﻿using verse_interpreter.lib.Data.Variables;
 
 namespace verse_interpreter.lib.Data
 {

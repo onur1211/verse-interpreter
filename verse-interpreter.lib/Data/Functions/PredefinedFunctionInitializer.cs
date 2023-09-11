@@ -1,6 +1,4 @@
-﻿using verse_interpreter.lib.IO;
-
-namespace verse_interpreter.lib.Data.Functions;
+﻿namespace verse_interpreter.lib.Data.Functions;
 
 public class PredefinedFunctionInitializer
 {

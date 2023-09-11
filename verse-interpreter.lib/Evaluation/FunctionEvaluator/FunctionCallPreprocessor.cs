@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.SymbolStore;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.Interfaces;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.Data.Variables.Utility;
 using verse_interpreter.lib.Exceptions;
@@ -15,11 +8,11 @@ namespace verse_interpreter.lib.Evaluation.FunctionEvaluator
 {
     public class FunctionCallPreprocessor
     {
-        public ParameterValidator FunctionCallValidator { get; } 
+        public ParameterValidator FunctionCallValidator { get; }
 
         public FunctionCallPreprocessor(ParameterValidator functionCallValidator)
         {
-			FunctionCallValidator = functionCallValidator;
+            FunctionCallValidator = functionCallValidator;
         }
 
         public bool TryBuildExecutableFunction(FunctionCall item)

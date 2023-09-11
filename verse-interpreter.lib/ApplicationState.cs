@@ -8,83 +8,83 @@ using verse_interpreter.lib.Lookup;
 namespace verse_interpreter.lib
 {
     public class ApplicationState
-	{
-		public Dictionary<int, IScope<Variable>> Scopes { get; set; }
-		public Dictionary<string, CustomType> Types { get; set; }
+    {
+        public Dictionary<int, IScope<Variable>> Scopes { get; set; }
+        public Dictionary<string, CustomType> Types { get; set; }
 
-		public List<Function> PredefinedFunctions { get; set; }
+        public List<Function> PredefinedFunctions { get; set; }
 
-		public Dictionary<string, Function> Functions { get; set; }
+        public Dictionary<string, Function> Functions { get; set; }
 
-		public ApplicationState(PredefinedFunctionInitializer initializer)
-		{
-			Scopes = new Dictionary<int, IScope<Variable>>
-			{
-				{ 1, new CurrentScope(1) }
-			};
+        public ApplicationState(PredefinedFunctionInitializer initializer)
+        {
+            Scopes = new Dictionary<int, IScope<Variable>>
+            {
+                { 1, new CurrentScope(1) }
+            };
 
-			Types = new Dictionary<string, CustomType>();
-			Functions = new Dictionary<string, Function>();
+            Types = new Dictionary<string, CustomType>();
+            Functions = new Dictionary<string, Function>();
 
-			CurrentScopeLevel = 1;
+            CurrentScopeLevel = 1;
 
-			WellKnownTypes = new List<TypeData>()
-			{
-				new TypeData("int"),
-				new TypeData("string"),
-				new TypeData("int[]"),
-				new TypeData("string[]"),
-				new TypeData("false?"),
-				new TypeData("custom"),
-				new TypeData("collection")
-			};
+            WellKnownTypes = new List<TypeData>()
+            {
+                new TypeData("int"),
+                new TypeData("string"),
+                new TypeData("int[]"),
+                new TypeData("string[]"),
+                new TypeData("false?"),
+                new TypeData("custom"),
+                new TypeData("collection")
+            };
 
-			PredefinedFunctions = initializer.GetPredefinedFunctions();
-		}
+            PredefinedFunctions = initializer.GetPredefinedFunctions();
+        }
 
-		public List<TypeData> WellKnownTypes { get; }
+        public List<TypeData> WellKnownTypes { get; }
 
-		public int CurrentScopeLevel { get; set; }
+        public int CurrentScopeLevel { get; set; }
 
-		public IScope<Variable> CurrentScope { get { return Scopes[CurrentScopeLevel]; } }
+        public IScope<Variable> CurrentScope { get { return Scopes[CurrentScopeLevel]; } }
 
-		public void AddFunction(Function? function)
-		{
-			if (function == null)
-			{
-				throw new ArgumentNullException(nameof(function));
-			}
-			if (Functions.ContainsKey(function.Value.FunctionName))
-			{
-				throw new VariableAlreadyExistException(function.Value.FunctionName);
-			}
+        public void AddFunction(Function? function)
+        {
+            if (function == null)
+            {
+                throw new ArgumentNullException(nameof(function));
+            }
+            if (Functions.ContainsKey(function.Value.FunctionName))
+            {
+                throw new VariableAlreadyExistException(function.Value.FunctionName);
+            }
 
-			Functions.Add(function.Value.FunctionName, function.Value);
-		}
+            Functions.Add(function.Value.FunctionName, function.Value);
+        }
 
-		public Function GetFunction(string name)
-		{
-			if (!Functions.ContainsKey(name))
-			{
-				throw new UnknownFunctionException(name);
-			}
+        public Function GetFunction(string name)
+        {
+            if (!Functions.ContainsKey(name))
+            {
+                throw new UnknownFunctionException(name);
+            }
 
-			var function = Functions[name].Clone();
+            var function = Functions[name].Clone();
 
-			return (Function)function;
-		}
+            return (Function)function;
+        }
 
-		public void AddScope()
-		{
-			CurrentScopeLevel += 1;
-			var newScope = new CurrentScope(CurrentScopeLevel + 1);
-			Scopes.Add(CurrentScopeLevel, newScope);
-		}
+        public void AddScope()
+        {
+            CurrentScopeLevel += 1;
+            var newScope = new CurrentScope(CurrentScopeLevel + 1);
+            Scopes.Add(CurrentScopeLevel, newScope);
+        }
 
-		public void DropScope()
-		{
-			Scopes.Remove(CurrentScopeLevel);
-			CurrentScopeLevel -= 1;
-		}
-	}
+        public void DropScope()
+        {
+            Scopes.Remove(CurrentScopeLevel);
+            CurrentScopeLevel -= 1;
+        }
+    }
 }

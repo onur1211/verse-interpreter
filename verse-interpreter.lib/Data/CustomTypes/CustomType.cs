@@ -1,5 +1,4 @@
-﻿using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Lookup;
+﻿using verse_interpreter.lib.Lookup;
 
 namespace verse_interpreter.lib.Data.CustomTypes
 {

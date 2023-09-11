@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data.Interfaces;
+﻿using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.ParseVisitors;
 
@@ -26,7 +21,7 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
                     continue;
                 }
 
-				if (parameterTypeName != passedValueTypeName)
+                if (parameterTypeName != passedValueTypeName)
                 {
                     return false;
                 }

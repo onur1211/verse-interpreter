@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Evaluation.Evaluators;
 using verse_interpreter.lib.EventArguments;
 using verse_interpreter.lib.Factories;
-using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Lookup.EventArguments;
 
 namespace verse_interpreter.lib.Evaluation.EvaluationManagement
@@ -27,7 +21,13 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         // Keeps track of Expressions which are not yet ready to execute
         // When they are ready to execute, execute them
         // Return their given result
+#pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
+#pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
+#pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
         public BackpropagationEventSystem(ApplicationState applicationState)
+#pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
+#pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
+#pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
         {
             _applicationState = applicationState;
 
@@ -39,9 +39,9 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             _associatedStringExpressions = new Dictionary<string, IExpression<StringExpression>>();
         }
 
-        public event EventHandler<StringExpressionResolvedEventArgs>? StringExpressionResolved;
-        public event EventHandler<ArithmeticExpressionResolvedEventArgs>? ArithmeticExpressionResolved;
-        public event EventHandler<ComparisonExpressionResolvedEventArgs>? ComparisonExpressionResolved;
+        public event EventHandler<StringExpressionResolvedEventArgs> StringExpressionResolved;
+        public event EventHandler<ArithmeticExpressionResolvedEventArgs> ArithmeticExpressionResolved;
+        public event EventHandler<ComparisonExpressionResolvedEventArgs> ComparisonExpressionResolved;
 
         public void AddExpression(IExpression<ComparisonExpression> expression)
         {
@@ -106,7 +106,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 }
             }
 
-            for(int i = 0; i < _comparisonExpressions.Count ; i++)
+            for (int i = 0; i < _comparisonExpressions.Count; i++)
             {
                 var res = _comparisonExpressions[i].PostponedExpression!.Invoke();
                 if (res.PostponedExpression == null)

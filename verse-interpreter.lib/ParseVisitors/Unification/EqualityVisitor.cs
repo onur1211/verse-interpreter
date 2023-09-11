@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Converter;
-using verse_interpreter.lib.Data.ResultObjects.Validators;
+﻿using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
-using verse_interpreter.lib.Grammar;
-using System.Diagnostics.CodeAnalysis;
-using verse_interpreter.lib.Data.Variables;
-using System.Xml.Serialization;
 
 namespace verse_interpreter.lib.ParseVisitors.Unification
 {
@@ -20,16 +10,16 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
         private readonly Lazy<TypeInferencer> _inferencer;
         private readonly Lazy<PropertyResolver> _propertyResolver;
         private readonly Lazy<ValueDefinitionVisitor> _valueDefinitionVisitor;
-		private readonly GeneralEvaluator _generalEvaluator;
+        private readonly GeneralEvaluator _generalEvaluator;
 
-		public EqualityVisitor(ApplicationState applicationState,
+        public EqualityVisitor(ApplicationState applicationState,
                                  Lazy<TypeInferencer> typeInferencer,
                                  Lazy<PropertyResolver> propertyResolver,
                                  Lazy<ValueDefinitionVisitor> valueDefinitionVisitor,
                                  GeneralEvaluator generalEvaluator
-			)
+            )
 
-		{
+        {
             _state = applicationState;
             _inferencer = typeInferencer;
             _generalEvaluator = generalEvaluator;

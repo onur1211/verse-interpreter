@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Data.Expressions;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Data.ResultObjects.Validators;
 using verse_interpreter.lib.EventArguments;
@@ -15,14 +9,14 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
     public class GeneralEvaluator
     {
         private readonly EvaluatorWrapper _evaluatorWrapper;
-        private readonly Lazy<PropertyResolver> _propertyResolver;
+        private readonly PropertyResolver _propertyResolver;
         private readonly BackpropagationEventSystem _propagator;
-        private readonly Lazy<ExpressionValidator> _expressionValidator;
+        private readonly ExpressionValidator _expressionValidator;
 
         public GeneralEvaluator(EvaluatorWrapper evaluatorWrapper,
-                                Lazy<PropertyResolver> propertyResolver,
+                                PropertyResolver propertyResolver,
                                 BackpropagationEventSystem propagator,
-                                Lazy<ExpressionValidator> expressionValidator)
+                                ExpressionValidator expressionValidator)
         {
             _evaluatorWrapper = evaluatorWrapper;
             _propertyResolver = propertyResolver;
@@ -61,7 +55,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
                     foreach (var value in arrayIndex)
                     {
-                        if (_propertyResolver.Value.ResolveProperty(value.ValueIdentifier).Value == ValueObject.False)
+                        if (_propertyResolver.ResolveProperty(value.ValueIdentifier).Value == ValueObject.False)
                         {
                             ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
                             return;
@@ -70,12 +64,12 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 }
             }
 
-            if (!_expressionValidator.Value.IsTypeConformityGiven(expressions))
+            if (!_expressionValidator.IsTypeConformityGiven(expressions))
             {
                 throw new InvalidTypeCombinationException("The given expression contains multiple types!");
             }
 
-            var typeName = _expressionValidator.Value.GetExpressionType(expressions);
+            var typeName = _expressionValidator.GetExpressionType(expressions);
 
             switch (typeName)
             {
@@ -92,10 +86,10 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                     break;
 
                 case "false?":
-					ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
+                    ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
                     break;
 
-				default:
+                default:
                     throw new UnknownTypeException(typeName);
             }
         }
@@ -116,7 +110,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             var res = _evaluatorWrapper.IfParseResultEvaluator.Evaluate(result);
 
             IfExpressionResolved?.Invoke(this, new IfExpressionResolvedEventArgs(result, res));
-		}
+        }
 
         private void HandleComparisonExpression(List<List<ExpressionResult>> expressions, string? identifier)
         {
@@ -134,7 +128,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         private void HandleStringExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
             var result = _evaluatorWrapper.StringEvaluator.Evaluate(expressions);
-            if(result.PostponedExpression != null && identifier != null)
+            if (result.PostponedExpression != null && identifier != null)
             {
                 _propagator.AddExpression(identifier, result);
                 return;
@@ -150,10 +144,10 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
         private void HandleArithmeticExpression(List<List<ExpressionResult>> expressions, string? identifier = null)
         {
-			foreach (var variable in GetChoices(expressions))
-			{
-			}
-			var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
+            foreach (var variable in GetChoices(expressions))
+            {
+            }
+            var result = _evaluatorWrapper.ArithmeticEvaluator.Evaluate(expressions);
 
             if (result.PostponedExpression != null && identifier != null)
             {
@@ -173,11 +167,11 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
         {
             foreach (var subExpressions in expressions)
             {
-                foreach(var elements in subExpressions)
+                foreach (var elements in subExpressions)
                 {
                     if (!string.IsNullOrEmpty(elements.ValueIdentifier))
                     {
-                        var variable = _propertyResolver.Value.ResolveProperty(elements.ValueIdentifier);
+                        var variable = _propertyResolver.ResolveProperty(elements.ValueIdentifier);
                         if (variable.Value.Choice != null)
                         {
                             yield return variable;
@@ -186,5 +180,5 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 }
             }
         }
-	}
+    }
 }

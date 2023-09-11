@@ -1,9 +1,4 @@
 ﻿using Antlr4.Runtime.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using verse_interpreter.lib.Data.CustomTypes;
 using verse_interpreter.lib.Grammar;
 
@@ -36,12 +31,12 @@ namespace verse_interpreter.lib.ParseVisitors.Types
             return _customType;
         }
 
-		public override CustomType VisitMulti_declaration([NotNull] Verse.Multi_declarationContext context)
-		{
-			// Gets all the variables and adds it to the classes scope
-			var res = context.declaration().Accept(_declarationVisitor);
-			_customType.AddScopedVariable(res);
-			return VisitChildren(context);
-		}
+        public override CustomType VisitMulti_declaration([NotNull] Verse.Multi_declarationContext context)
+        {
+            // Gets all the variables and adds it to the classes scope
+            var res = context.declaration().Accept(_declarationVisitor);
+            _customType.AddScopedVariable(res);
+            return VisitChildren(context);
+        }
     }
 }

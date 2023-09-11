@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
+﻿using System.Text;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluators;
 using verse_interpreter.lib.Extensions;
 using verse_interpreter.lib.Factories;
-using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.Evaluation.Evaluators
 {
     public class ArithmeticEvaluator : IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>
     {
         private ApplicationState _state;
-        private readonly Lazy<PropertyResolver> _resolver;
+        private readonly PropertyResolver _resolver;
 
-        public ArithmeticEvaluator(ApplicationState applicationState, Lazy<PropertyResolver> resolver)
+        public ArithmeticEvaluator(ApplicationState applicationState, PropertyResolver resolver)
         {
             _state = applicationState;
             _resolver = resolver;
@@ -26,7 +20,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
         public ArithmeticExpression Evaluate(List<List<ExpressionResult>> input)
         {
             // Remove any empty lists from the input
-            
+
             ArithmeticExpression lastExpression = new ArithmeticExpression();
             if (!AreVariablesBoundToValue(input))
             {
@@ -42,7 +36,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 
             foreach (var expression in input)
             {
-                if(expression.Count == 0)
+                if (expression.Count == 0)
                 {
                     continue;
                 }
@@ -90,7 +84,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
                 if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
                 {
                     // Lookup the variable value and substitute it in the expression
-                    int? result = _resolver.Value.ResolveProperty(expressionResult.ValueIdentifier).Value.IntValue;
+                    int? result = _resolver.ResolveProperty(expressionResult.ValueIdentifier).Value.IntValue;
                     expressionResult.IntegerValue = result;
                     expressionResult.ValueIdentifier = string.Empty;
                     results.Add(expressionResult);
@@ -192,7 +186,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
                 {
                     if (!string.IsNullOrEmpty(subExpression.ValueIdentifier))
                     {
-                        var result = _resolver.Value.ResolveProperty(subExpression.ValueIdentifier);
+                        var result = _resolver.ResolveProperty(subExpression.ValueIdentifier);
 
                         if (!result.HasValue())
                         {

@@ -1,5 +1,4 @@
-﻿using verse_interpreter.lib.Data;
-using verse_interpreter.lib.Grammar;
+﻿using verse_interpreter.lib.Grammar;
 
 namespace verse_interpreter.lib.ParseVisitors
 {

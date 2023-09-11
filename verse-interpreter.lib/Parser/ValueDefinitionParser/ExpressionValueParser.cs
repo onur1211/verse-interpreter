@@ -1,63 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
+﻿using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Evaluation.EvaluationManagement;
-using verse_interpreter.lib.Evaluators;
 
 namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 {
-	public class ExpressionValueParser
-	{
-		private readonly GeneralEvaluator _evaluator;
+    public class ExpressionValueParser
+    {
+        private readonly GeneralEvaluator _evaluator;
 
-		public ExpressionValueParser(GeneralEvaluator generalEvaluator)
+        public ExpressionValueParser(GeneralEvaluator generalEvaluator)
         {
-			_evaluator = generalEvaluator;
-		}
+            _evaluator = generalEvaluator;
+        }
 
         public DeclarationResult? ParseExpression(List<List<ExpressionResult>> expression)
-		{
-			DeclarationResult declarationResult = new DeclarationResult
-			{
-				ExpressionResults = expression
-			};
-			_evaluator.ArithmeticExpressionResolved += (x, y) =>
-			{
-				declarationResult.LiteralValue = y.Result.ResultValue.ToString()!;
-				declarationResult.ExpressionResults = null;
-				declarationResult.TypeName = "int";
-			};
-			_evaluator.StringExpressionResolved += (x, y) =>
-			{
-				declarationResult.ExpressionResults = null;
-				declarationResult.LiteralValue = y.Result.Value;
-				declarationResult.TypeName = "string";
-			};
-			_evaluator.ExpressionWithNoValueFound += (x, y) =>
-			{
-				declarationResult.TypeName = "false?";
-				
-			};
-			_evaluator.ExecuteExpression(expression);
+        {
+            DeclarationResult declarationResult = new DeclarationResult
+            {
+                ExpressionResults = expression
+            };
+            _evaluator.ArithmeticExpressionResolved += (x, y) =>
+            {
+                declarationResult.LiteralValue = y.Result.ResultValue.ToString()!;
+                declarationResult.ExpressionResults = null;
+                declarationResult.TypeName = "int";
+            };
+            _evaluator.StringExpressionResolved += (x, y) =>
+            {
+                declarationResult.ExpressionResults = null;
+                declarationResult.LiteralValue = y.Result.Value;
+                declarationResult.TypeName = "string";
+            };
+            _evaluator.ExpressionWithNoValueFound += (x, y) =>
+            {
+                declarationResult.TypeName = "false?";
 
-			return declarationResult;
-		}
+            };
+            _evaluator.ExecuteExpression(expression);
 
-		public DeclarationResult ParseForExpression(ForResult result)
-		{
-			DeclarationResult declarationResult = new DeclarationResult();
-			_evaluator.ForExpressionResolved += (x, y) =>
-			{
-				declarationResult.CollectionVariable = y.ForExpression.Collection!;
-				declarationResult.TypeName = "collection";
-			};
-			_evaluator.ExecuteExpression(result);
+            return declarationResult;
+        }
 
-			return declarationResult;
-		}
-	}
+        public DeclarationResult ParseForExpression(ForResult result)
+        {
+            DeclarationResult declarationResult = new DeclarationResult();
+            _evaluator.ForExpressionResolved += (x, y) =>
+            {
+                declarationResult.CollectionVariable = y.ForExpression.Collection!;
+                declarationResult.TypeName = "collection";
+            };
+            _evaluator.ExecuteExpression(result);
+
+            return declarationResult;
+        }
+    }
 }

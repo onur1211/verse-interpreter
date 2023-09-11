@@ -2,7 +2,7 @@
 {
     public class LookupTable<T> : ILookupTable<T>
     {
-        public LookupTable() 
+        public LookupTable()
         {
             this.Table = new Dictionary<string, T>();
         }

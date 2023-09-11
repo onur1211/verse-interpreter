@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Grammar;
+﻿using verse_interpreter.lib.Grammar;
 using static verse_interpreter.lib.Grammar.Verse;
 
 namespace verse_interpreter.lib.Parser
@@ -28,15 +23,15 @@ namespace verse_interpreter.lib.Parser
             var inlineBody = context.inline_body();
             var spacedBody = context.spaced_body();
 
-            if(inlineBody != null)
+            if (inlineBody != null)
             {
                 blocks.Add(inlineBody.block());
                 return GetInlineBody(inlineBody.inline_body(), blocks);
             }
-            if(spacedBody != null)
+            if (spacedBody != null)
             {
                 blocks.Add(spacedBody.block());
-                var spacedBodies =  GetSpacedBody(spacedBody.spaced_body(), blocks);
+                var spacedBodies = GetSpacedBody(spacedBody.spaced_body(), blocks);
 
                 return spacedBodies;
             }
@@ -79,7 +74,7 @@ namespace verse_interpreter.lib.Parser
                 return GetSpacedBody(context.spaced_body(), blocks);
             }
 
-           return blocks;
+            return blocks;
         }
     }
 }

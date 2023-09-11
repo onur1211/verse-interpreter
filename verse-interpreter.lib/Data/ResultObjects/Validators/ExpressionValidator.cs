@@ -1,7 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using verse_interpreter.lib.Data.Interfaces;
-using verse_interpreter.lib.Data.ResultObjects;
+﻿using verse_interpreter.lib.Data.Interfaces;
 using verse_interpreter.lib.Exceptions;
 
 namespace verse_interpreter.lib.Data.ResultObjects.Validators
@@ -24,11 +21,11 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
         /// <returns></returns>
         public bool IsTypeConformityGiven(List<List<ExpressionResult>> expressions)
         {
-            string typeName = null;
+            string typeName = null!;
 
             foreach (var expression in expressions)
             {
-                string currentIterationType = null;
+                string currentIterationType = null!;
 
                 foreach (var exp in expression)
                 {
@@ -77,7 +74,6 @@ namespace verse_interpreter.lib.Data.ResultObjects.Validators
             }
 
             var result = expressions.Last().Where(x => string.IsNullOrEmpty(x.Operator)).First();
-            //var result = expressions.Select(x => x.Where(y => string.IsNullOrEmpty(y.Operator))).First().First();
 
             if (expressions.Select(x => x.Select(y => y.Operator)).Any(x => x.Any(y => y == ">" || y == "=" || y == "<")))
             {

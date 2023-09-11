@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace verse_interpreter.lib.Extensions
 {
@@ -31,7 +26,7 @@ namespace verse_interpreter.lib.Extensions
 
         public static bool ContainsWhere<T>(this IEnumerable<T> values, Func<T, bool> predicate)
         {
-            foreach(var value in values)
+            foreach (var value in values)
             {
                 if (predicate(value))
                 {

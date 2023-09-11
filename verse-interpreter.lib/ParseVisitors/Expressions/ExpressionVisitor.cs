@@ -1,8 +1,6 @@
 ﻿using Antlr4.Runtime.Misc;
-using System.Security.Cryptography;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.EventArguments;
-using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.Parser;
 using verse_interpreter.lib.ParseVisitors.Functions;
 using static verse_interpreter.lib.Grammar.Verse;
@@ -26,20 +24,22 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
         }
         private Stack<List<List<ExpressionResult>>> _stack;
         private readonly Lazy<PrimaryRuleParser> _primaryRuleParser;
-		private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
+        private readonly Lazy<FunctionCallVisitor> _functionCallVisitor;
 
-		public ExpressionVisitor(ApplicationState applicationState,
+        public ExpressionVisitor(ApplicationState applicationState,
                                  Lazy<PrimaryRuleParser> primaryRuleParser,
                                  Lazy<FunctionCallVisitor> functionCallVisitor) : base(applicationState)
         {
             _stack = new Stack<List<List<ExpressionResult>>>();
             ExpressionTerminalVisited += TerminalNodeVisitedCallback;
             _primaryRuleParser = primaryRuleParser;
-			_functionCallVisitor = functionCallVisitor;
-		}
+            _functionCallVisitor = functionCallVisitor;
+        }
 
         private event EventHandler<ExpressionTerminalVisited> ExpressionTerminalVisited = null!;
+#pragma warning disable CS0414 // Dem Feld "ExpressionVisitor.ExpressionParsedSucessfully" wurde ein Wert zugewiesen, der aber nie verwendet wird.
         public event EventHandler<ExpressionParsedSucessfullyEventArgs> ExpressionParsedSucessfully = null!;
+#pragma warning restore CS0414 // Dem Feld "ExpressionVisitor.ExpressionParsedSucessfully" wurde ein Wert zugewiesen, der aber nie verwendet wird.
 
         public override List<List<ExpressionResult>> VisitExpression([NotNull] ExpressionContext context)
         {
@@ -84,7 +84,7 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
             {
                 VisitExpression(expressionContext);
                 Expressions.Add(new List<ExpressionResult>());
-                return null;
+                return null!;
             }
             var expressionResult = _primaryRuleParser.Value.ParsePrimary(context);
             // When the instance is finalized the event is triggered to append it to the final result set
@@ -103,20 +103,20 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
             return base.VisitChildren(context);
         }
 
-		public override List<List<ExpressionResult>> VisitFunction_call([NotNull] Function_callContext context)
-		{
+        public override List<List<ExpressionResult>> VisitFunction_call([NotNull] Function_callContext context)
+        {
             var result = _functionCallVisitor.Value.Visit(context);
-			if (Expressions.Count == 0)
-			{
-				Expressions.Add(new List<ExpressionResult>());
-			}
-			Expressions.Last().Add(new ExpressionResult()
+            if (Expressions.Count == 0)
+            {
+                Expressions.Add(new List<ExpressionResult>());
+            }
+            Expressions.Last().Add(new ExpressionResult()
             {
                 IntegerValue = result.ArithmeticExpression?.ResultValue,
-                StringValue = result.StringExpression?.Value,
+                StringValue = result.StringExpression?.Value!,
                 TypeName = result.StringExpression != null ? "string" : "int"
             });
-			return base.VisitChildren(context);
-		}
-	}
+            return base.VisitChildren(context);
+        }
+    }
 }

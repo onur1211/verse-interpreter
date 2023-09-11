@@ -1,29 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace verse_interpreter.lib.Data.Variables
+﻿namespace verse_interpreter.lib.Data.Variables
 {
-	public class TypeData 
-	{
-		public TypeData(string typeName)
-		{
-			this.Name = typeName;
-		}
+    public class TypeData
+    {
+        public TypeData(string typeName)
+        {
+            this.Name = typeName;
+        }
 
-		public string Name { get; set; }
+        public string Name { get; set; }
 
-		public static bool operator ==(TypeData firstData, TypeData secondData)
-		{
-			return firstData.Name == secondData.Name;
-		}
+        public override bool Equals(object? obj)
+        {
+            return base.Equals(obj);
+        }
 
-		public static bool operator !=(TypeData firstData, TypeData secondData)
-		{
-			return firstData.Name != secondData.Name;
-		}
-	}
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public static bool operator ==(TypeData firstData, TypeData secondData)
+        {
+            return firstData.Name == secondData.Name;
+        }
+
+        public static bool operator !=(TypeData firstData, TypeData secondData)
+        {
+            return firstData.Name != secondData.Name;
+        }
+    }
 }

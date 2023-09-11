@@ -1,6 +1,5 @@
 ﻿using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Exceptions;
-using verse_interpreter.lib.Grammar;
 using verse_interpreter.lib.IO;
 using verse_interpreter.lib.Visitors;
 
@@ -25,8 +24,9 @@ public class PredefinedFunctionEvaluator
 
         switch (function.FunctionName)
         {
-            case "Print": ExecutePrint(functionName, parameters);
-            break;
+            case "Print":
+                ExecutePrint(functionName, parameters);
+                break;
         }
     }
 
@@ -40,7 +40,9 @@ public class PredefinedFunctionEvaluator
         }
         if (parameters.Parameters[0].Value.IntValue != null)
         {
+#pragma warning disable CS8604 // Mögliches Nullverweisargument.
             Printer.PrintResult(parameters.Parameters[0].Value.IntValue.ToString());
+#pragma warning restore CS8604 // Mögliches Nullverweisargument.
         }
         if (parameters.Parameters[0].Value.TypeData.Name == "false?")
         {

@@ -1,9 +1,4 @@
 ﻿using Antlr4.Runtime.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Grammar;
 
@@ -25,11 +20,11 @@ namespace verse_interpreter.lib.ParseVisitors.Types
         {
             var identfier = context.type_member_access().Accept(this);
 
-            var value = Converter.VariableConverter.Convert(context.value_definition().Accept(_valueDefinitionVisitor));
+            var value = Converter.VariableConverter.Convert(context.value_definition().Accept(_valueDefinitionVisitor)!);
             value.Name = identfier.PropertyName;
 
             var instance = _applicationState.CurrentScope.LookupManager.GetVariable(identfier.VariableName).Value.CustomType;
-            instance.Value.LookupManager.UpdateVariable(value);
+            instance!.Value.LookupManager.UpdateVariable(value);
             return base.VisitType_member_definition(context);
         }
 

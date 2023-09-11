@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using verse_interpreter.lib.Data;
+﻿using System.Text;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
 using verse_interpreter.lib.Extensions;
@@ -16,7 +10,7 @@ namespace verse_interpreter.lib.Evaluators
         private ApplicationState _applicationState;
         private readonly Lazy<PropertyResolver> _resolver;
 
-        public StringExpressionEvaluator(ApplicationState applicationState, 
+        public StringExpressionEvaluator(ApplicationState applicationState,
                                          Lazy<PropertyResolver> resolver)
         {
             _applicationState = applicationState;
@@ -67,7 +61,7 @@ namespace verse_interpreter.lib.Evaluators
             {
                 return _resolver.Value.ResolveProperty(expressionResult.ValueIdentifier).Value.StringValue;
             }
-            if(expressionResult.StringValue != null)
+            if (expressionResult.StringValue != null)
             {
                 return expressionResult.StringValue.Replace("\"", "");
             }
@@ -98,7 +92,7 @@ namespace verse_interpreter.lib.Evaluators
                     {
                         var identfieres = subExpression.ValueIdentifier.Split('.');
                         var instanceVariable = _applicationState.CurrentScope.LookupManager.GetVariable(identfieres[0]).Value.CustomType;
-                        string result = _applicationState.CurrentScope.LookupManager.GetMemberVariable(instanceVariable.Value, identfieres[0], identfieres[1]).Value.StringValue;
+                        string result = _applicationState.CurrentScope.LookupManager.GetMemberVariable(instanceVariable!.Value, identfieres[0], identfieres[1]).Value.StringValue;
                         if (result == null)
                         {
                             return false;
