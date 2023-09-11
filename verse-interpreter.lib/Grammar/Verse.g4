@@ -186,9 +186,9 @@ else_block : (NEWLINE* INDENT*) 'else' (NEWLINE* INDENT*) '{' NEWLINE* body NEWL
 
 
 // Logical operators
-logical_expression: expression
-                  | expression (COMMA logical_expression)*
-                  | expression (CHOICE logical_expression)*
+logical_expression: (NOT)* expression
+                  | (NOT)* expression (COMMA logical_expression)*
+                  | (NOT)* expression (CHOICE logical_expression)*
                   ;
 
 // Math expression rules

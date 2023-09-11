@@ -32,6 +32,7 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
 
 			var and = context.COMMA();
 			var or = context.CHOICE();
+			var not = context.NOT();
 			if(and.Length > 0)
 			{
 				current.LogicalOperator = LogicalOperators.AND;
@@ -39,6 +40,10 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
 			if (or.Length > 0)
 			{
 				current.LogicalOperator = LogicalOperators.OR;
+			}
+			if (not.Length > 0)
+			{
+				current.IsNegated = true;
 			}
 			current.Expressions = _expressionVisitor.Value.Visit(context.expression());
 

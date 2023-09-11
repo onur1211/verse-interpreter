@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommandLine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,11 +39,61 @@ namespace verse_interpreter.lib.Data.Variables
 			List<ComparisonExpression> results = new List<ComparisonExpression>();
 			var current = expression;
 
-			results.Add(_evaluator.Evaluate(current.Expressions));
+			var evaluatedExpression = _evaluator.Evaluate(current.Expressions);
+
+			if (evaluatedExpression.IntValue != null && current.IsNegated ||
+				evaluatedExpression.StringValue != null && current.IsNegated)
+			{
+				results.Add(new ComparisonExpression()
+				{
+					IntValue = null,
+					StringValue = null
+				});
+			}
+
+			if (evaluatedExpression.IntValue == null && current.IsNegated ||
+				evaluatedExpression.StringValue == null && current.IsNegated)
+			{
+				results.Add(new ComparisonExpression()
+				{
+					IntValue = 0,
+					StringValue = ""
+				});
+			}
+
+			if (evaluatedExpression.IntValue == null && !current.IsNegated ||
+				evaluatedExpression.StringValue == null && !current.IsNegated)
+			{
+				results.Add(evaluatedExpression);
+			}
+
 			while (current.Next != null)
 			{
 				current = current.Next;
-				results.Add(_evaluator.Evaluate(current.Expressions));
+				evaluatedExpression = _evaluator.Evaluate(current.Expressions);
+
+				if (evaluatedExpression.IntValue != null && current.IsNegated ||
+				   evaluatedExpression.StringValue != null && current.IsNegated)
+				{
+					results.Add(new ComparisonExpression()
+					{
+						IntValue = null,
+						StringValue = null
+					});
+					continue;
+				}
+				if (evaluatedExpression.IntValue == null && !current.IsNegated ||
+					evaluatedExpression.StringValue == null && !current.IsNegated)
+				{
+					results.Add(new ComparisonExpression()
+					{
+						IntValue = 0,
+						StringValue = ""
+					});
+					continue;
+				}
+
+				results.Add(evaluatedExpression);
 			}
 
 			if (expression.LogicalOperator == Expressions.LogicalOperators.OR)

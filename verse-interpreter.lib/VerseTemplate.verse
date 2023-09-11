@@ -1,3 +1,4 @@
-a := 70
+a := array("A", "A", "B", "A")
+b := array("B", "A", "B", "C")
 
-if(a = 3 | a < 69) { Print("Was") } else { Print("Cool") }
+diff(a, b)
