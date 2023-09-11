@@ -159,6 +159,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			{
 				foreach (var element in result.ElseBlock)
 				{
+					// This indicates a value literal which is piped to the function visitor
 					if (element.value_definition() != null)
 					{
 						var res = VariableConverter.Convert(_valueDefinitionVisitor.Value.Visit(element.value_definition())!);
@@ -173,6 +174,7 @@ namespace verse_interpreter.lib.ParseVisitors
 
 		public override object VisitLambdaFunc([NotNull] Verse.LambdaFuncContext context)
 		{
+			// Adds the function definition into the scope
 			var res = _functionWrapper.Value.FunctionDeclarationVisitor.Visit(context);
 			ApplicationState.AddFunction(res);
 			return null!;
@@ -180,6 +182,7 @@ namespace verse_interpreter.lib.ParseVisitors
 
 		public override object VisitFunc([NotNull] Verse.FuncContext context)
 		{
+			// Adds the function definition into the scope
 			var res = _functionWrapper.Value.FunctionDeclarationVisitor.Visit(context);
 			ApplicationState.AddFunction(res);
 			return null!;
@@ -195,9 +198,15 @@ namespace verse_interpreter.lib.ParseVisitors
 		public override object VisitQuestionmark_operator([NotNull] Verse.Questionmark_operatorContext context)
 		{
 			var result = _choiceConversionVisitor.Value.Visit(context);
+			if (ApplicationState.CurrentScopeLevel == 1)
+			{
+				Printer.PrintResult(result);
+			}
 			return result;
 		}
 
+
+		// This region is used to pipe the returned values into the function to be used as the return value
 		#region Callbacks
 		private void StringExpressionResolved(object? sender, StringExpressionResolvedEventArgs e)
 		{

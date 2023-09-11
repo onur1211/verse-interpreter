@@ -12,19 +12,16 @@ namespace verse_interpreter.lib.ParseVisitors
 	{
 		private readonly ChoiceVisitor _choiceVisitor;
 		private readonly Lazy<DeclarationParser> _declarationParser;
-		private readonly ExpressionVisitor _expressionVisitor;
-		private readonly PrimaryRuleParser _primaryParser;
+		private readonly Lazy<ExpressionVisitor> _expressionVisitor;
 
 		public ForVisitor(ApplicationState applicationState,
 						  ChoiceVisitor choiceVisitor,
 						  Lazy<DeclarationParser> declarationParser,
-						  ExpressionVisitor expressionVisitor,
-						  PrimaryRuleParser primaryParser) : base(applicationState)
+						  Lazy<ExpressionVisitor> expressionVisitor) : base(applicationState)
 		{
 			_choiceVisitor = choiceVisitor;
 			_declarationParser = declarationParser;
 			_expressionVisitor = expressionVisitor;
-			_primaryParser = primaryParser;
 			_result = new ForResult();
 		}
 
@@ -46,7 +43,7 @@ namespace verse_interpreter.lib.ParseVisitors
 
 		public override ForResult VisitForExpression([NotNull] Verse.ForExpressionContext context)
 		{
-			var resultSet = new ExpressionSet(_expressionVisitor.Visit(context.expression()));
+			var resultSet = new ExpressionSet(_expressionVisitor.Value.Visit(context.expression()));
 			if (IsComparisionExpression(resultSet))
 			{
 				_result.Filters!.Clear();
