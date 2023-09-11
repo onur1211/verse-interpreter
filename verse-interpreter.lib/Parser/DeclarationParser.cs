@@ -10,20 +10,19 @@ namespace verse_interpreter.lib.Parser
 	public class DeclarationParser
 	{
 		private readonly ApplicationState _state;
-		private readonly TypeInferencer _inferencer;
-		private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
+		private readonly Lazy<TypeInferencer> _inferencer;
+		private readonly Lazy<ValueDefinitionVisitor> _valueDefinitionVisitor;
 		private readonly Lazy<DeclarationVisitor> _declarationVisitor;
+		private readonly Lazy<EqualityVisitor> _equalityVisitor;
 		private readonly GeneralEvaluator _generalEvaluator;
-		private readonly EqualityVisitor _equalityVisitor;
 
 		public DeclarationParser(ApplicationState applicationState,
-								 TypeInferencer typeInferencer,
-								 ValueDefinitionVisitor valueDefinitionVisitor,
-								 BackpropagationEventSystem backPropagator,
-								 ExpressionValidator validator,
+								 Lazy<TypeInferencer> typeInferencer,
+								 Lazy<ValueDefinitionVisitor> valueDefinitionVisitor,
+								 Lazy<ExpressionValidator> validator,
 								 Lazy<DeclarationVisitor> declarationVisitor,
 								 GeneralEvaluator generalEvaluator,
-								 EqualityVisitor equalityVisitor)
+								 Lazy<EqualityVisitor> equalityVisitor)
 		{
 			_state = applicationState;
 			_inferencer = typeInferencer;
@@ -66,7 +65,7 @@ namespace verse_interpreter.lib.Parser
 		private DeclarationResult ParseGiveValueOperator(Verse.DeclarationContext context)
 		{
 			var variable = ParseValueAssignment(context);
-			return _inferencer.InferGivenType(variable);
+			return _inferencer.Value.InferGivenType(variable);
 		}
 
 		private DeclarationResult ParseAssignValueToExistingVariable(Verse.DeclarationContext context)
@@ -77,15 +76,16 @@ namespace verse_interpreter.lib.Parser
 			{
 				throw new InvalidOperationException($"Invalid usage of out of scope variable {nameof(variableName)}");
 			}
+			var result = ParseValueAssignment(context);
+			result.Name = variableName;
+			var equalityResult = _equalityVisitor.Value.ParseEquality(result);
 
-            var equalityResult = _equalityVisitor.ParseEquality(context);
+			if (equalityResult != null)
+			{
+				return equalityResult;
+			}
 
-            if (equalityResult != null)
-            {
-                return equalityResult;
-            }
-
-            var result = ParseValueAssignment(context);
+			
 			return result;
 		}
 
@@ -96,7 +96,7 @@ namespace verse_interpreter.lib.Parser
 		/// <returns></returns>
 		private DeclarationResult ParseValueAssignment(Verse.DeclarationContext context)
 		{
-			DeclarationResult declarationResult = _valueDefinitionVisitor.Visit(context);
+			DeclarationResult declarationResult = _valueDefinitionVisitor.Value.Visit(context);
 			declarationResult.Name = context.ID().GetText();
 
 

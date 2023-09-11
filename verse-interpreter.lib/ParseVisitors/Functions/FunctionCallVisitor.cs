@@ -121,7 +121,7 @@ namespace verse_interpreter.lib.ParseVisitors.Functions
 
 		private bool CheckIfReturnedValueMatchesType(Function function)
 		{
-			if (function.ReturnType == "void")
+			if (function.ReturnType == "void" || function.ReturnType == null)
 			{
 				return true;
 			}

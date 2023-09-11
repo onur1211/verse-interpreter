@@ -39,9 +39,9 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
             _associatedStringExpressions = new Dictionary<string, IExpression<StringExpression>>();
         }
 
-        public event EventHandler<StringExpressionResolvedEventArgs> StringExpressionResolved;
-        public event EventHandler<ArithmeticExpressionResolvedEventArgs> ArithmeticExpressionResolved;
-        public event EventHandler<ComparisonExpressionResolvedEventArgs> ComparisonExpressionResolved;
+        public event EventHandler<StringExpressionResolvedEventArgs>? StringExpressionResolved;
+        public event EventHandler<ArithmeticExpressionResolvedEventArgs>? ArithmeticExpressionResolved;
+        public event EventHandler<ComparisonExpressionResolvedEventArgs>? ComparisonExpressionResolved;
 
         public void AddExpression(IExpression<ComparisonExpression> expression)
         {

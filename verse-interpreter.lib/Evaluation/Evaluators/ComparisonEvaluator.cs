@@ -13,10 +13,11 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 {
 	public class ComparisonEvaluator : IEvaluator<ComparisonExpression, List<List<ExpressionResult>>>
 	{
-		private readonly PropertyResolver _resolver;
+		private readonly Lazy<PropertyResolver> _resolver;
 		private readonly ApplicationState _state;
 
-		public ComparisonEvaluator(ApplicationState state, PropertyResolver resolver)
+		public ComparisonEvaluator(ApplicationState state, 
+								   Lazy<PropertyResolver> resolver)
 		{
 			_resolver = resolver;
 			_state = state;
@@ -78,7 +79,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 						continue;
 					}
 
-					var result = _resolver.ResolveProperty(expression.ValueIdentifier);
+					var result = _resolver.Value.ResolveProperty(expression.ValueIdentifier);
 					if (!result.HasValue())
 					{
 						return false;
@@ -97,7 +98,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
 				{
 					if (!string.IsNullOrEmpty(expression.ValueIdentifier))
 					{
-						var variable = _resolver.ResolveProperty(expression.ValueIdentifier);
+						var variable = _resolver.Value.ResolveProperty(expression.ValueIdentifier);
 						switch (variable.Value.TypeData.Name)
 						{
 							case "string":

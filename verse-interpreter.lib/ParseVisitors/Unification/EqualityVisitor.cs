@@ -17,19 +17,19 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
     public class EqualityVisitor
     {
         private readonly ApplicationState _state;
-        private readonly TypeInferencer _inferencer;
-        private readonly GeneralEvaluator _generalEvaluator;
-        private readonly PropertyResolver _propertyResolver;
-        private readonly ValueDefinitionVisitor _valueDefinitionVisitor;
+        private readonly Lazy<TypeInferencer> _inferencer;
+        private readonly Lazy<PropertyResolver> _propertyResolver;
+        private readonly Lazy<ValueDefinitionVisitor> _valueDefinitionVisitor;
+		private readonly GeneralEvaluator _generalEvaluator;
 
+		public EqualityVisitor(ApplicationState applicationState,
+                                 Lazy<TypeInferencer> typeInferencer,
+                                 Lazy<PropertyResolver> propertyResolver,
+                                 Lazy<ValueDefinitionVisitor> valueDefinitionVisitor,
+                                 GeneralEvaluator generalEvaluator
+			)
 
-        public EqualityVisitor(ApplicationState applicationState,
-                                 TypeInferencer typeInferencer,
-                                 GeneralEvaluator generalEvaluator,
-                                 PropertyResolver propertyResolver,
-                                 ValueDefinitionVisitor valueDefinitionVisitor)
-
-        {
+		{
             _state = applicationState;
             _inferencer = typeInferencer;
             _generalEvaluator = generalEvaluator;
@@ -38,23 +38,30 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
             _valueDefinitionVisitor = valueDefinitionVisitor;
         }
 
-        public DeclarationResult ParseEquality(Verse.DeclarationContext context)
+        public DeclarationResult ParseEquality(DeclarationResult declarationResult)
         {
             // Get the name of the variable
             // Example: x=2 or x=y then get 'x'
-            var variableName = context.ID().GetText();
 
             // Check if the name is a declared variable.
-            if (!_state.CurrentScope.LookupManager.IsVariable(variableName))
+            if (!_state.CurrentScope.LookupManager.IsVariable(declarationResult.Name))
             {
-                throw new InvalidOperationException($"Invalid usage of out-of-scope variable {variableName}");
+                throw new InvalidOperationException($"Invalid usage of out-of-scope variable {declarationResult.Name}");
             }
 
             // Get the variable on the left side.
-            Variable actualVariable = _propertyResolver.ResolveProperty(variableName);
+            Variable actualVariable = _propertyResolver.Value.ResolveProperty(declarationResult.Name);
 
             // Get the value from the right side as an anonym variable.
-            Variable value = GetValueFromContext(context);
+            Variable value = VariableConverter.Convert(declarationResult);
+
+
+            // Due to the fact that the both variable currently may still get unified at later point,
+            // leave it there and wait for it to bind
+            if (!actualVariable.HasValue() && !value.HasValue())
+            {
+                return declarationResult;
+            }
 
             // If there is no variable or value then return null and let the
             // declaration parser handle the value assignement.
@@ -69,7 +76,7 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
             {
                 return new DeclarationResult
                 {
-                    Name = variableName,
+                    Name = declarationResult.Name,
                     TypeName = "false?"
                 };
             }
@@ -185,28 +192,29 @@ namespace verse_interpreter.lib.ParseVisitors.Unification
             return false;
         }
 
-        private Variable GetValueFromContext(Verse.DeclarationContext context)
+        private Variable GetValueFromContext(DeclarationResult declarationResult)
         {
-            if (context.value_definition() != null)
-            {
-                Variable anonymVariable = VariableConverter.Convert(context.value_definition().Accept(_valueDefinitionVisitor)!);
-                string value = context.value_definition().GetText();
-                if (anonymVariable.Value.Choice != null)
-                {
-                    return null!;
-                }
 
-                // Check if the value is a variable and if true get the value from it
-                // Example: x=y then y is the value as a variable
-                if (_state.CurrentScope.LookupManager.IsVariable(value))
-                {
-                    return _propertyResolver.ResolveProperty(value);
-                }
-                else
-                {
-                    return anonymVariable;
-                }
-            }
+            //if (context.value_definition() != null)
+            //{
+            //    Variable anonymVariable = VariableConverter.Convert(context.value_definition().Accept(_valueDefinitionVisitor.Value)!);
+            //    string value = context.value_definition().GetText();
+            //    if (anonymVariable.Value.Choice != null)
+            //    {
+            //        return null!;
+            //    }
+
+            //    // Check if the value is a variable and if true get the value from it
+            //    // Example: x=y then y is the value as a variable
+            //    if (_state.CurrentScope.LookupManager.IsVariable(value))
+            //    {
+            //        return _propertyResolver.Value.ResolveProperty(value);
+            //    }
+            //    else
+            //    {
+            //        return anonymVariable;
+            //    }
+            //}
 
             return null!;
         }

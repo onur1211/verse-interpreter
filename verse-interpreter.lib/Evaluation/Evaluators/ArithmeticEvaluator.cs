@@ -15,9 +15,9 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
     public class ArithmeticEvaluator : IEvaluator<ArithmeticExpression, List<List<ExpressionResult>>>
     {
         private ApplicationState _state;
-        private readonly PropertyResolver _resolver;
+        private readonly Lazy<PropertyResolver> _resolver;
 
-        public ArithmeticEvaluator(ApplicationState applicationState, PropertyResolver resolver)
+        public ArithmeticEvaluator(ApplicationState applicationState, Lazy<PropertyResolver> resolver)
         {
             _state = applicationState;
             _resolver = resolver;
@@ -90,7 +90,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
                 if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
                 {
                     // Lookup the variable value and substitute it in the expression
-                    int? result = _resolver.ResolveProperty(expressionResult.ValueIdentifier).Value.IntValue;
+                    int? result = _resolver.Value.ResolveProperty(expressionResult.ValueIdentifier).Value.IntValue;
                     expressionResult.IntegerValue = result;
                     expressionResult.ValueIdentifier = string.Empty;
                     results.Add(expressionResult);
@@ -192,7 +192,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators
                 {
                     if (!string.IsNullOrEmpty(subExpression.ValueIdentifier))
                     {
-                        var result = _resolver.ResolveProperty(subExpression.ValueIdentifier);
+                        var result = _resolver.Value.ResolveProperty(subExpression.ValueIdentifier);
 
                         if (!result.HasValue())
                         {

@@ -16,14 +16,14 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 {
 	public class ForEvaluator : IEvaluator<ForExpression, ForResult>
 	{
-		private PropertyResolver _propertyResolver;
-		private readonly ApplicationState _applicationState;
-		private readonly FilterApplyer _filterApplyer;
+		private readonly Lazy<PropertyResolver> _propertyResolver;
+		private readonly Lazy<FilterApplyer> _filterApplyer;
 		private List<ExpressionSet> _filters;
+		private readonly ApplicationState _applicationState;
 
-		public ForEvaluator(PropertyResolver resolver,
-							ApplicationState applicationState,
-							FilterApplyer filterApplyer)
+		public ForEvaluator(ApplicationState applicationState,
+							Lazy<PropertyResolver> resolver,
+							Lazy<FilterApplyer> filterApplyer)
 		{
 			_propertyResolver = resolver;
 			_applicationState = applicationState;
@@ -97,8 +97,8 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 
 		private IEnumerable<Variable> ExpandArrayToChoice(string arrayIdentifier, string indexingIdentifier)
 		{
-			var array = _propertyResolver.ResolveProperty(arrayIdentifier);
-			var indexerVariable = _propertyResolver.ResolveProperty(indexingIdentifier);
+			var array = _propertyResolver.Value.ResolveProperty(arrayIdentifier);
+			var indexerVariable = _propertyResolver.Value.ResolveProperty(indexingIdentifier);
 			if (array.Value.CollectionVariable == null)
 			{
 				yield break;
@@ -120,7 +120,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 				indexerVariable.Value.IntValue = choice.ValueObject.IntValue;
 
 				var returnedValue = array.Value.CollectionVariable.Values[choice.ValueObject.IntValue!.Value];
-				if (_filterApplyer.DoesFilterMatch(this._filters, indexerVariable))
+				if (_filterApplyer.Value.DoesFilterMatch(this._filters, indexerVariable))
 				{
 					yield return returnedValue;
 				}
@@ -144,8 +144,8 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 
 		private IEnumerable<Variable> ExpandStringToChoice(string identifier, string indexer)
 		{
-			var stringVariable = _propertyResolver.ResolveProperty(identifier);
-			var indexerVariable = _propertyResolver.ResolveProperty(indexer);
+			var stringVariable = _propertyResolver.Value.ResolveProperty(identifier);
+			var indexerVariable = _propertyResolver.Value.ResolveProperty(indexer);
 			if (stringVariable.Value.StringValue == null)
 			{
 				yield break;
@@ -163,7 +163,7 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 				indexerVariable.Value.IntValue = choice.ValueObject.IntValue;
 
 				var returnedValue = stringVariable.Value.StringValue[indexerVariable.Value.IntValue!.Value];
-				if (_filterApplyer.DoesFilterMatch(this._filters, indexerVariable))
+				if (_filterApplyer.Value.DoesFilterMatch(this._filters, indexerVariable))
 				{
 					yield return new Variable()
 					{

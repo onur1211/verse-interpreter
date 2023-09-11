@@ -151,7 +151,7 @@ type_header : DATA ID '=' ID NEWLINE '{' multi_declaration NEWLINE '}'
             ;
             
 multi_declaration : NEWLINE INDENT declaration
-                  | NEWLINE INDENT declaration multi_declaration
+                  | NEWLINE INDENT declaration ',' multi_declaration
                   | declaration ',' multi_declaration
                   | declaration
                   ;

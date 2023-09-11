@@ -14,9 +14,10 @@ namespace verse_interpreter.lib.Evaluators
     public class StringExpressionEvaluator : IEvaluator<StringExpression, List<List<ExpressionResult>>>
     {
         private ApplicationState _applicationState;
-        private readonly PropertyResolver _resolver;
+        private readonly Lazy<PropertyResolver> _resolver;
 
-        public StringExpressionEvaluator(ApplicationState applicationState, PropertyResolver resolver)
+        public StringExpressionEvaluator(ApplicationState applicationState, 
+                                         Lazy<PropertyResolver> resolver)
         {
             _applicationState = applicationState;
             _resolver = resolver;
@@ -64,7 +65,7 @@ namespace verse_interpreter.lib.Evaluators
         {
             if (!string.IsNullOrEmpty(expressionResult.ValueIdentifier))
             {
-                return _resolver.ResolveProperty(expressionResult.ValueIdentifier).Value.StringValue;
+                return _resolver.Value.ResolveProperty(expressionResult.ValueIdentifier).Value.StringValue;
             }
             if(expressionResult.StringValue != null)
             {

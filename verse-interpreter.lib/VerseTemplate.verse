@@ -1,4 +1,6 @@
-a := array("A", "A", "B", "A")
-b := array("B", "A", "B", "C")
-
-diff(a, b)
+x:int
+y:int
+z:int
+x = y + z
+z = y + 2
+y = 3

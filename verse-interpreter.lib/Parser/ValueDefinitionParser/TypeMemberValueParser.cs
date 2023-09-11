@@ -10,9 +10,9 @@ namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 {
 	public class TypeMemberValueParser
 	{
-		private readonly PropertyResolver _resolver;
+		private readonly Lazy<PropertyResolver> _resolver;
 
-		public TypeMemberValueParser(PropertyResolver resolver)
+		public TypeMemberValueParser(Lazy<PropertyResolver> resolver)
         {
 			_resolver = resolver;
 		}
@@ -21,7 +21,7 @@ namespace verse_interpreter.lib.Parser.ValueDefinitionParser
 		{
 			DeclarationResult declarationResult = new DeclarationResult();
 
-			var variable = _resolver.ResolveProperty(memberAccessResult.AbsoluteCall);
+			var variable = _resolver.Value.ResolveProperty(memberAccessResult.AbsoluteCall);
 
 			declarationResult.TypeName = variable.Value.TypeData.Name;
 			declarationResult.CollectionVariable = variable.Value.CollectionVariable;

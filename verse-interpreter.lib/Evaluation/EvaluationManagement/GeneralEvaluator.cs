@@ -15,14 +15,14 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
     public class GeneralEvaluator
     {
         private readonly EvaluatorWrapper _evaluatorWrapper;
-        private readonly PropertyResolver _propertyResolver;
+        private readonly Lazy<PropertyResolver> _propertyResolver;
         private readonly BackpropagationEventSystem _propagator;
-        private readonly ExpressionValidator _expressionValidator;
+        private readonly Lazy<ExpressionValidator> _expressionValidator;
 
         public GeneralEvaluator(EvaluatorWrapper evaluatorWrapper,
-                                PropertyResolver propertyResolver,
+                                Lazy<PropertyResolver> propertyResolver,
                                 BackpropagationEventSystem propagator,
-                                ExpressionValidator expressionValidator)
+                                Lazy<ExpressionValidator> expressionValidator)
         {
             _evaluatorWrapper = evaluatorWrapper;
             _propertyResolver = propertyResolver;
@@ -61,7 +61,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
 
                     foreach (var value in arrayIndex)
                     {
-                        if (_propertyResolver.ResolveProperty(value.ValueIdentifier).Value == ValueObject.False)
+                        if (_propertyResolver.Value.ResolveProperty(value.ValueIdentifier).Value == ValueObject.False)
                         {
                             ExpressionWithNoValueFound?.Invoke(this, new ExpressionWithNoValueFoundEventArgs());
                             return;
@@ -70,12 +70,12 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 }
             }
 
-            if (!_expressionValidator.IsTypeConformityGiven(expressions))
+            if (!_expressionValidator.Value.IsTypeConformityGiven(expressions))
             {
                 throw new InvalidTypeCombinationException("The given expression contains multiple types!");
             }
 
-            var typeName = _expressionValidator.GetExpressionType(expressions);
+            var typeName = _expressionValidator.Value.GetExpressionType(expressions);
 
             switch (typeName)
             {
@@ -177,7 +177,7 @@ namespace verse_interpreter.lib.Evaluation.EvaluationManagement
                 {
                     if (!string.IsNullOrEmpty(elements.ValueIdentifier))
                     {
-                        var variable = _propertyResolver.ResolveProperty(elements.ValueIdentifier);
+                        var variable = _propertyResolver.Value.ResolveProperty(elements.ValueIdentifier);
                         if (variable.Value.Choice != null)
                         {
                             yield return variable;

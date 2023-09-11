@@ -13,15 +13,12 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 {
 	public class FilterApplyer
 	{
-		private readonly PropertyResolver _resolver;
 		private readonly ApplicationState _state;
 		private readonly IEvaluator<ComparisonExpression, List<List<ExpressionResult>>> _evaluator;
 
-		public FilterApplyer(PropertyResolver resolver,
-							 ApplicationState state,
+		public FilterApplyer(ApplicationState state,
 							  IEvaluator<ComparisonExpression, List<List<ExpressionResult>>> evaluator)
 		{
-			_resolver = resolver;
 			_state = state;
 			_evaluator = evaluator;
 		}
@@ -30,14 +27,14 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 		{
 			_state.CurrentScope.LookupManager.UpdateVariable(returnedValue);
 			foreach (var filter in filters)
-			{	
+			{
 				var copiedFilter = CopyFilter(filter);
 				var res = _evaluator.Evaluate(copiedFilter.Expressions);
-                if (res.IntValue == null && res.StringValue == null)
-                {
+				if (res.IntValue == null && res.StringValue == null)
+				{
 					return false;
-                }
-            }
+				}
+			}
 
 			return true;
 		}
