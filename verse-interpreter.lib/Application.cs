@@ -46,19 +46,17 @@ namespace verse_interpreter.lib
         public bool IsDebug { get; private set; }
 
         public void Run(string[] args)
-        {
-            var options = GetPath(args);
-            if (options.Code == null && options.Path == null)
-            {
-                return;
-            }
-            _services = BuildService();
-            this.LoadStandardLibrary();
+		{
+			var options = GetPath(args);
+			if (options.Path == null)
+			{
+				return;
+			}
+			_services = BuildService();
+			this.LoadStandardLibrary();
 
-            ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
-            var inputCode = options.Code != null ? options.Code :
-                options.Path != null ? _reader.ReadFileToEnd(options.Path) :
-                throw new ArgumentException("You have to specify either the path or add code!");
+			ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
+			var inputCode = _reader.ReadFileToEnd(options.Path);
 
             var parseTree = generator.GenerateParseTree(inputCode);
             var mainVisitor = _services.GetRequiredService<MainVisitor>();
@@ -71,23 +69,21 @@ namespace verse_interpreter.lib
             }
         }
 
-        private void RunWithErrorHandling(string[] args)
-        {
-            try
-            {
-                var options = GetPath(args);
-                if (options.Code == null && options.Path == null)
-                {
-                    return;
-                }
-                _services = BuildService();
-                this.LoadStandardLibrary();
+		private void RunWithErrorHandling(string[] args)
+		{
+			try
+			{
+				var options = GetPath(args);
+				if (options.Path == null)
+				{
+					return;
+				}
+				_services = BuildService();
+				this.LoadStandardLibrary();
 
                 ParserTreeGenerator generator = new ParserTreeGenerator(_errorListener);
 
-                var inputCode = options.Code != null ? options.Code :
-                    options.Path != null ? _reader.ReadFileToEnd(options.Path) :
-                    throw new ArgumentException("You have to specify either the path or add code!");
+				var inputCode = _reader.ReadFileToEnd(options.Path);
 
                 var parseTree = generator.GenerateParseTree(inputCode);
                 var mainVisitor = _services.GetRequiredService<MainVisitor>();
@@ -120,17 +116,16 @@ namespace verse_interpreter.lib
         {
             CommandLineOptions options = new CommandLineOptions();
 
-            CommandLine.Parser.Default.ParseArguments<CommandLineOptions>(args)
-                .WithParsed<CommandLineOptions>(o =>
-                {
-                    if (string.IsNullOrEmpty(o.Path) && string.IsNullOrEmpty(o.Code))
-                    {
-                        throw new ArgumentException("The path must not be null!");
-                    }
-                    options.Path = o.Path;
-                    options.Code = o.Code;
-                    options.Debug = o.Debug;
-                });
+			CommandLine.Parser.Default.ParseArguments<CommandLineOptions>(args)
+				.WithParsed<CommandLineOptions>(o =>
+				{
+					if (string.IsNullOrEmpty(o.Path))
+					{
+						throw new ArgumentException("The path must not be null!");
+					}
+					options.Path = o.Path;
+					options.Debug = o.Debug;
+				});
 
             if (options.Debug)
             {

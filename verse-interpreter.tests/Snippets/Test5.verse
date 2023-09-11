@@ -1,6 +1,6 @@
 ﻿data Triangle = Triangle 
 {
-    width:int
+    width:int,
     height:int
 }
 

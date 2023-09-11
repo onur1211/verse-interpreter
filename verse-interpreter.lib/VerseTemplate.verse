@@ -1,6 +1,11 @@
 x:int
 y:int
-z:int
-x = y + z
-z = y + 2
-y = 3
+f(x:int):void {
+    x = 5
+}
+
+match(x:int, y:int):void {
+    x = y
+}
+
+match(5, x)
