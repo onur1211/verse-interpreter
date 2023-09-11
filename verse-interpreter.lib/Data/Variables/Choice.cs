@@ -32,58 +32,78 @@ namespace verse_interpreter.lib.Data.Variables
 
 		public void AddValue(int? value)
 		{
+			var current = this;
 			if (value == null)
 			{
 				return;
 			}
-			if (ValueObject == null)
+
+			while (current.Next != null)
 			{
-				ValueObject = new ValueObject("int");
+				current = current.Next;
 			}
 
-			Choice choice = new Choice(new ValueObject("int", value));
-			if (ValueObject.IntValue == null)
+			if (current.ValueObject == null)
 			{
-				ValueObject.IntValue = value;
+				current.ValueObject = new ValueObject("int");
+			}
+			if (current.ValueObject.IntValue == null &&
+				current.ValueObject.StringValue == null)
+			{
+				current.ValueObject.IntValue = value;
 				return;
 			}
 
-			choice.Next = null;
-
-			Choice temp = this;
-			while (temp.Next != null)
+			if (current.Next == null)
 			{
-				temp = temp.Next;
+				current.Next = new Choice(new ValueObject("int"));
+				current = current.Next;
 			}
-			temp.Next = choice;
+			while (current.Next != null)
+			{
+				current = current.Next;
+			}
+
+			current.ValueObject = new ValueObject("int");
+			current.ValueObject.IntValue = value;
 		}
 
 		public void AddValue(string? value)
 		{
+			var current = this;
 			if (value == null)
 			{
 				return;
 			}
-			if (ValueObject == null)
+
+			while (current.Next != null)
 			{
-				ValueObject = new ValueObject("string");
+				current = current.Next;
 			}
 
-			Choice choice = new Choice(new ValueObject("string", value));
-			if (ValueObject.StringValue == null)
+			if (current.ValueObject == null)
 			{
-				ValueObject.StringValue = value;
+				current.ValueObject = new ValueObject("string");
+			}
+			if (current.ValueObject.IntValue == null &&
+				current.ValueObject.StringValue == null)
+			{
+				current.ValueObject.StringValue = value;
 				return;
 			}
 
-			choice.Next = null;
-
-			Choice temp = this;
-			while (temp.Next != null)
+			if (current.Next == null)
 			{
-				temp = temp.Next;
+				current.Next = new Choice(new ValueObject("string"));
+				current = current.Next;
 			}
-			temp.Next = choice;
+			while (current.Next != null)
+			{
+				current = current.Next;
+			}
+
+			current.ValueObject = new ValueObject("string");
+			current.ValueObject.StringValue = value;
 		}
 
 		public IEnumerable<Choice> AllChoices()
