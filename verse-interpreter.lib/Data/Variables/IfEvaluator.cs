@@ -35,57 +35,10 @@ namespace verse_interpreter.lib.Data.Variables
 
 			var evaluatedExpression = _evaluator.Evaluate(current.Expressions!);
 
-			if (evaluatedExpression.IntValue != null && current.IsNegated ||
-				evaluatedExpression.StringValue != null && current.IsNegated)
-			{
-				results.Add(new ComparisonExpression()
-				{
-					IntValue = null,
-					StringValue = null
-				});
-			}
-
-			if (evaluatedExpression.IntValue == null && current.IsNegated ||
-				evaluatedExpression.StringValue == null && current.IsNegated)
-			{
-				results.Add(new ComparisonExpression()
-				{
-					IntValue = 0,
-					StringValue = ""
-				});
-			}
-
-			if (evaluatedExpression.IntValue == null && !current.IsNegated ||
-				evaluatedExpression.StringValue == null && !current.IsNegated)
-			{
-				results.Add(evaluatedExpression);
-			}
-
 			while (current.Next != null)
 			{
 				current = current.Next;
 				evaluatedExpression = _evaluator.Evaluate(current.Expressions!);
-
-				if (evaluatedExpression.IntValue != null && current.IsNegated ||
-				   evaluatedExpression.StringValue != null && current.IsNegated)
-				{
-					results.Add(new ComparisonExpression()
-					{
-						IntValue = null,
-						StringValue = null
-					});
-					continue;
-				}
-				if (evaluatedExpression.IntValue == null && !current.IsNegated ||
-					evaluatedExpression.StringValue == null && !current.IsNegated)
-				{
-					results.Add(new ComparisonExpression()
-					{
-						IntValue = 0,
-						StringValue = ""
-					});
-					continue;
-				}
 
 				results.Add(evaluatedExpression);
 			}
