@@ -191,6 +191,7 @@ namespace verse_interpreter.lib
 				.AddTransient<ChoiceEvaluator>()
 				.AddTransient<ChoiceConversionVisitor>()
 				.AddTransient<EqualityVisitor>()
+				.AddTransient<RangeExpressionVisitor>()
 				.AddLazyResolution()
 				.BuildServiceProvider();
 

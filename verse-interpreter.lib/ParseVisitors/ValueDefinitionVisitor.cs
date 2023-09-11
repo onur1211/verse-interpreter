@@ -31,6 +31,7 @@ namespace verse_interpreter.lib.ParseVisitors
 		private readonly Lazy<ArrayVisitor> _arrayVisitor;
 		private readonly Lazy<ChoiceVisitor> _choiceVisitor;
 		private readonly Lazy<ChoiceConversionVisitor> _choiceConversionVisitor;
+		private readonly Lazy<RangeExpressionVisitor> _rangeExpressionVisitor;
 
 		public ValueDefinitionVisitor(ApplicationState applicationState,
 									  Lazy<TypeInferencer> typeInferencer,
@@ -43,7 +44,8 @@ namespace verse_interpreter.lib.ParseVisitors
 									  Lazy<PropertyResolver> resolver,
 									  Lazy<ArrayVisitor> arrayVisitor,
 									  Lazy<ChoiceVisitor> choiceVisitor,
-									  Lazy<ChoiceConversionVisitor> choiceConversionVisitor) : base(applicationState)
+									  Lazy<ChoiceConversionVisitor> choiceConversionVisitor,
+									  Lazy<RangeExpressionVisitor> rangeExpressionVisitor) : base(applicationState)
 		{
 			_typeInferencer = typeInferencer;
 			_expressionVisitor = expressionVisitor;
@@ -56,6 +58,7 @@ namespace verse_interpreter.lib.ParseVisitors
 			_arrayVisitor = arrayVisitor;
 			_choiceVisitor = choiceVisitor;
 			_choiceConversionVisitor = choiceConversionVisitor;
+			_rangeExpressionVisitor = rangeExpressionVisitor;
 		}
 		public override DeclarationResult VisitIntValueDef([NotNull] Verse.IntValueDefContext context)
 		{
@@ -191,7 +194,12 @@ namespace verse_interpreter.lib.ParseVisitors
 			return _arrayVisitor.Value.Visit(context);
 		}
 
-		public override DeclarationResult VisitNumericArrayIndex([NotNull] Verse.NumericArrayIndexContext context)
+        public override DeclarationResult VisitRange_expression([NotNull] Verse.Range_expressionContext context)
+        {
+            return _rangeExpressionVisitor.Value.Visit(context);
+        }
+
+        public override DeclarationResult VisitNumericArrayIndex([NotNull] Verse.NumericArrayIndexContext context)
 		{
 			return _arrayVisitor.Value.Visit(context);
 		}
