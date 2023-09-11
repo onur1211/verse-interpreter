@@ -11,6 +11,9 @@ using verse_interpreter.lib.Wrapper;
 
 namespace verse_interpreter.lib.ParseVisitors
 {
+	/// <summary>
+	/// This visitor calls all the child visitors and controlls the flow of the application
+	/// </summary>
 	public class MainVisitor : AbstractVerseVisitor<object>
 	{
 		private readonly Lazy<DeclarationVisitor> _declarationVisitor;
