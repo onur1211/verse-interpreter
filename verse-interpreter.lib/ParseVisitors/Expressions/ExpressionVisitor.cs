@@ -37,9 +37,7 @@ namespace verse_interpreter.lib.ParseVisitors.Expressions
         }
 
         private event EventHandler<ExpressionTerminalVisited> ExpressionTerminalVisited = null!;
-#pragma warning disable CS0414 // Dem Feld "ExpressionVisitor.ExpressionParsedSucessfully" wurde ein Wert zugewiesen, der aber nie verwendet wird.
-        public event EventHandler<ExpressionParsedSucessfullyEventArgs> ExpressionParsedSucessfully = null!;
-#pragma warning restore CS0414 // Dem Feld "ExpressionVisitor.ExpressionParsedSucessfully" wurde ein Wert zugewiesen, der aber nie verwendet wird.
+        public event EventHandler<ExpressionParsedSucessfullyEventArgs>? ExpressionParsedSucessfully;
 
         public override List<List<ExpressionResult>> VisitExpression([NotNull] ExpressionContext context)
         {
