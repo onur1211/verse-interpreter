@@ -1,2 +1,1 @@
-t := "String"
-for {a:int; t[a] >"r"; t[a]}
+snoc(array(5, 4), 3)
