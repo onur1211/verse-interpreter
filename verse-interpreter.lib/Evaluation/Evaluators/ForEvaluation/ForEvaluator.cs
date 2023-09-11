@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using verse_interpreter.lib.Converter;
 using verse_interpreter.lib.Data;
 using verse_interpreter.lib.Data.Expressions;
 using verse_interpreter.lib.Data.ResultObjects;
@@ -79,7 +80,13 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 				}
 				foreach (var literal in current.Literals)
 				{
-					sequence.Add(literal);
+                    if (literal.Value.Choice != null)
+                    {
+                        sequence.AddRange(ResolveChoice(literal.Value.Choice));
+						continue;
+                    }
+
+                    sequence.Add(literal);
 				}
 
 				current = current.Next;
@@ -117,6 +124,21 @@ namespace verse_interpreter.lib.Evaluation.Evaluators.ForEvaluation
 				{
 					yield return returnedValue;
 				}
+			}
+		}
+
+		private IEnumerable<Variable> ResolveChoice(Choice choice)
+		{
+			if (choice == null)
+			{
+				throw new ArgumentNullException(nameof(choice));
+			}
+
+            foreach (var element in choice.AllChoices()) 
+			{
+                var elementRes = ChoiceConverter.Convert(element);
+				var variable = elementRes.Literals.FirstOrDefault();
+				yield return variable!;
 			}
 		}
 

@@ -129,6 +129,7 @@ for_rule    : 'for' '{' for_declaration? for_expression '}'
 
 for_expression : expression (';' for_expression)? #forExpression
                | choice_rule (';' for_expression)? #forChoice
+               | ID (';' for_expression)? #forVariable
                ;
 
 for_declaration : declaration ';' for_declaration*
